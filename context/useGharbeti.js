@@ -1,6 +1,6 @@
 import React from "react";
 import { useContext } from "react";
-import TlogContext from "./context";
+import GharbetiContext from "./context";
 
-const useGharbeti = () => useContext(TlogContext);
+const useGharbeti = () => useContext(GharbetiContext);
 export default useGharbeti;

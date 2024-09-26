@@ -34,7 +34,7 @@ export default function SignupScreen({ navigation }) {
           placeholderTextColor={"#fff"}
         />
         <StyledTextInput
-          placeholder="Contact"
+          placeholder="Phone Number"
           keyboardType="numeric"
           className="w-full border border-gray-300 p-3 rounded-lg mb-4 text-white placeholder:text-white"
           placeholderTextColor={"#fff"}

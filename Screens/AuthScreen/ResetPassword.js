@@ -1,18 +1,15 @@
+import { Entypo } from "@expo/vector-icons";
+import { styled } from "nativewind";
 import React, { useState } from "react";
 import {
-  View,
-  Text,
   Image,
-  TouchableOpacity,
-  TextInput,
   ScrollView,
-  Modal,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { styled } from "nativewind";
 import logo from "../../assets/icon.png";
-import { OtpInput } from "react-native-otp-entry";
-import { Alert } from "react-native";
-import { AntDesign, Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -72,7 +69,7 @@ const ResetPassword = ({ navigation }) => {
           </View>
           <StyledTouchableOpacity
             className="bg-[#F59A73] w-full py-2 rounded-lg mt-4"
-            onPress={() => navigation.replace("login")}
+            onPress={() => navigation.replace("getStarted")}
           >
             <StyledText className="text-white text-center text-lg">
               Reset Password
