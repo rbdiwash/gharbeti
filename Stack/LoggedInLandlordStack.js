@@ -11,8 +11,14 @@ import Tenants from "../Screens/screens/Tabs/Tenants/Tenants";
 import TenantStack from "../Screens/screens/Tabs/Tenants/TenantStack";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Notifications from "../Screens/screens/Tabs/Notifications";
+import AddAnnouncementScreen from "../Screens/screens/Tabs/AnnouncementAddScreen";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import AnnouncementList from "../Screens/screens/Tabs/AnnouncementList";
 
 const Tab = createBottomTabNavigator();
+
+const Stack = createNativeStackNavigator();
+
 const TabArr = [
   {
     route: "Home",
@@ -41,8 +47,8 @@ const TabArr = [
   },
   {
     route: "Settings",
-    label: "Settings",
-    activeIcon: "setting",
+    label: "More",
+    activeIcon: "ellipsis1",
     component: Settings,
   },
 ];
@@ -84,37 +90,69 @@ const TabButton = (props) => {
   );
 };
 
+function AnnouncementStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="AnnouncementList"
+        component={AnnouncementList}
+        options={{ title: "Announcements" }}
+      />
+      <Stack.Screen
+        name="AddAnnouncement"
+        component={AddAnnouncementScreen}
+        options={{ title: "Add Announcement" }}
+      />
+    </Stack.Navigator>
+  );
+}
+function MainTabs() {
+  return (
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: {
+          height: 60,
+          position: "absolute",
+          margin: 0,
+          borderRadius: 0,
+          justifyContent: "center",
+          alignItems: "center",
+        },
+        tabBarHideOnKeyboard: true,
+      }}
+    >
+      {TabArr.map((item, index) => {
+        return (
+          <Tab.Screen
+            key={index}
+            name={item.route}
+            component={item.component}
+            options={{
+              tabBarShowLabel: false,
+              tabBarButton: (props) => <TabButton {...props} item={item} />,
+            }}
+          />
+        );
+      })}
+    </Tab.Navigator>
+  );
+}
 const LoggedInLandlordStack = () => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <Tab.Navigator
-        screenOptions={{
-          headerShown: false,
-          tabBarStyle: {
-            height: 60,
-            position: "absolute",
-            margin: 0,
-            borderRadius: 0,
-            justifyContent: "center",
-            alignItems: "center",
-          },
-          tabBarHideOnKeyboard: true,
-        }}
-      >
-        {TabArr.map((item, index) => {
-          return (
-            <Tab.Screen
-              key={index}
-              name={item.route}
-              component={item.component}
-              options={{
-                tabBarShowLabel: false,
-                tabBarButton: (props) => <TabButton {...props} item={item} />,
-              }}
-            />
-          );
-        })}
-      </Tab.Navigator>
+      <Stack.Navigator>
+        <Stack.Screen
+          name="MainTabs"
+          component={MainTabs}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Announcements"
+          component={AnnouncementStack}
+          options={{ headerShown: false }}
+        />
+      </Stack.Navigator>
     </SafeAreaView>
   );
 };

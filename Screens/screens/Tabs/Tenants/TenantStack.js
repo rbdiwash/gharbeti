@@ -3,6 +3,8 @@ import React from "react";
 import TenantList from "./Tenants";
 import AddTenants from "./AddTenants";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import TenantDetails from "./TenantDetails";
+import ChatScreen from "../ChatScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -27,8 +29,22 @@ const TenantStack = () => {
         }}
       />
       <Stack.Screen
+        name="individualTenants"
+        component={TenantDetails}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
         name="editTenants"
         component={AddTenants}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="chatScreen"
+        component={ChatScreen}
         options={{
           headerShown: false,
         }}

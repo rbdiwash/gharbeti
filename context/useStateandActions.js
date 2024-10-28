@@ -3,7 +3,7 @@ import { useState } from "react";
 
 const useStateandActions = () => {
   const [loggedUser, setLoggedUser] = useState({});
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const [users, setUsers] = useState([
     {

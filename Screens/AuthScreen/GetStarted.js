@@ -31,16 +31,14 @@ const GetStarted = ({ navigation }) => {
   };
 
   const handleLogin = () => {
-    console.log("here");
-
     setIsLoggedIn(true);
-    navigation.navigate("home");
-    // if (data?.email === "admin" && data?.password === "password") {
-    //   setIsLoggedIn(true);
-    //   navigation.navigate("home");
-    // } else {
-    //   alert("Invalid credentials");
-    // }
+    // navigation.navigate("home");
+    if (data?.email === "admin" && data?.password === "password") {
+      setIsLoggedIn(true);
+      navigation.navigate("home");
+    } else {
+      alert("Invalid credentials");
+    }
   };
 
   return (
