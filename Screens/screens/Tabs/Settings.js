@@ -9,11 +9,12 @@ import {
 } from "react-native";
 import { styled } from "nativewind";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import divash from "../../../assets/divash.jpeg";
 
 const Settings = ({ navigation }) => {
   const [user] = useState({
-    name: "Ram Sharma",
-    imageUrl: "https://randomuser.me/api/portraits/men/1.jpg",
+    name: "Divash Ranabhat",
+    imageUrl: divash,
   });
 
   // Helper function to render each option row
@@ -38,10 +39,7 @@ const Settings = ({ navigation }) => {
     <ScrollView className="flex-1 bg-gray-100">
       {/* Header with Profile Info */}
       <View className="bg-primary p-6 flex-row items-center">
-        <Image
-          source={{ uri: user.imageUrl }}
-          className="w-16 h-16 rounded-full mr-4"
-        />
+        <Image source={divash} className="w-16 h-16 rounded-full mr-4" />
         <View>
           <Text className="text-2xl font-bold text-white">{user.name}</Text>
           <Text className="text-lg text-white">Landlord</Text>

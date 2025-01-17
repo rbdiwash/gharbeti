@@ -138,7 +138,7 @@ const TenantList = ({ navigation }) => {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-100 relative px-4 h-full mb-[60px]">
+    <SafeAreaView className="flex-1 bg-gray-100 relative px-4 h-full">
       <View className="flex justify-between flex-row items-center">
         <Text className="my-4 text-2xl font-bold">Tenants</Text>
         <TouchableOpacity

@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView, Image } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  Image,
+  SafeAreaView,
+} from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
 import TextTicker from "react-native-text-ticker";
@@ -7,6 +14,8 @@ import esewa from "../../../assets/esewa.png";
 import khalti from "../../../assets/khalti.png";
 import connectIPS from "../../../assets/connectIPS.png";
 import fonePay from "../../../assets/fonepay.png";
+import divash from "../../../assets/divash.jpeg";
+import AutoScroll from "@homielab/react-native-auto-scroll";
 
 const HomeScreen = ({ username = "Divash" }) => {
   const [isDueVisible, setIsDueVisible] = useState(true);
@@ -22,22 +31,19 @@ const HomeScreen = ({ username = "Divash" }) => {
       onPress={() => navigation.navigate(screen)}
       style={{ width: "30%" }} // Ensures 3 blocks in a row
     >
-      <Icon name={icon} size={28} color="#F59A73" />
+      <Icon name={icon} size={28} color="#0e2f4f" />
       <Text className="mt-2 text-gray-800 font-bold text-center">{label}</Text>
     </TouchableOpacity>
   );
 
   return (
-    <ScrollView className="flex-1 bg-gray-100 mb-[60px]">
+    <ScrollView className="flex-1 bg-gray-100">
       <View className="w-full flex flex-row justify-between bg-primary items-center">
         <View className="flex flex-row items-center p-4 text-white ">
-          <Image
-            source={{ uri: "https://randomuser.me/api/portraits/men/41.jpg" }}
-            className="h-12 w-12 rounded-full mr-4"
-          />
+          <Image source={divash} className="h-12 w-12 rounded-full mr-4" />
           <Text className="text-2xl font-bold text-white">Hi, {username}</Text>
         </View>
-        <View className="flex flex-row gap-3 items-center mr-4">
+        <View className="flex flex-row gap-5 items-center mr-4">
           <Icon name="refresh" size={24} color="white" />
           <Icon name="notifications" size={24} color="white" />
         </View>
@@ -46,7 +52,7 @@ const HomeScreen = ({ username = "Divash" }) => {
         {/* Greeting */}
 
         {/* Total Due Block */}
-        <View className="bg-white p-4 rounded-lg shadow-md flex-row justify-between items-center mb-6">
+        <View className="bg-white p-4 rounded-lg shadow-md flex-row justify-between items-center">
           <View className="border-r pr-8">
             <Text className="text-gray-500">
               Total Due <Text className="text-xs">this month</Text>
@@ -70,7 +76,7 @@ const HomeScreen = ({ username = "Divash" }) => {
           </TouchableOpacity>
         </View>
 
-        <View className="flex-row justify-between mb-6">
+        <View className="flex-row justify-between mt-6">
           <View className="bg-primary p-4 rounded-lg shadow-md items-center flex-1 mr-2">
             <Text className="text-white">Total Rooms</Text>
             <Text className="text-2xl font-bold text-white">12</Text>
@@ -84,7 +90,7 @@ const HomeScreen = ({ username = "Divash" }) => {
             <Text className="text-2xl font-bold text-white">0</Text>
           </View>
         </View>
-
+        {/* 
         <View>
           <TextTicker
             style={{ fontSize: 18 }}
@@ -101,27 +107,40 @@ const HomeScreen = ({ username = "Divash" }) => {
               Tip: Schedule maintenance early!
             </Text>
           </TextTicker>
-        </View>
+        </View> */}
 
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={true}
-          className="my-4"
-        >
-          <View className="bg-blue-500 p-4 rounded-lg mr-2">
-            <Text className="text-white font-bold">
-              Reminder: Rent due tomorrow
-            </Text>
-          </View>
-          <View className="bg-green-500 p-4 rounded-lg mr-2">
-            <Text className="text-white font-bold">
-              Tip: Schedule maintenance early!
-            </Text>
-          </View>
-        </ScrollView>
+        {/* Notice Section */}
+        <AutoScroll duration={10000} endPaddingWidth={10}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={true}
+            className="mt-6"
+          >
+            <View className="bg-white p-4 rounded-lg mr-2">
+              <Text className="text-primary shadow-lg font-bold">
+                Reminder: Rent due tomorrow
+              </Text>
+            </View>
+            <View className="bg-white p-4 rounded-lg mr-2">
+              <Text className="text-primary font-bold">
+                Tip: Schedule maintenance early!
+              </Text>
+            </View>
+            <View className="bg-white p-4 rounded-lg mr-2">
+              <Text className="text-primary font-bold">
+                Tip: Schedule maintenance early!
+              </Text>
+            </View>
+            <View className="bg-white p-4 rounded-lg mr-2">
+              <Text className="text-primary font-bold">
+                Tip: Schedule maintenance early!
+              </Text>
+            </View>
+          </ScrollView>
+        </AutoScroll>
 
         {/* Action Blocks */}
-        <Text className="font-bold text-base my-2">Featured Services</Text>
+        <Text className="font-bold text-base mb-2 mt-6">Featured Services</Text>
         <View className=" flex-row flex-wrap gap-0 justify-between">
           {renderActionBlock("group", "Tenants", "Tenants")}
           {renderActionBlock("person-add", "Add Tenants", "addTenants")}
@@ -174,8 +193,8 @@ const HomeScreen = ({ username = "Divash" }) => {
             Quick summary of activities and updates.
           </Text>
         </View>
-        <View className="bg-white">
-          <Text className="font-bold text-base mt-5 mb-2">
+        <View className="bg-white p-4 mt-6 rounded-lg shadow-lg">
+          <Text className="font-bold text-base mb-2">
             We accept payments from
           </Text>
           <ScrollView
@@ -205,7 +224,7 @@ const HomeScreen = ({ username = "Divash" }) => {
             </View>
           </ScrollView>
         </View>
-        <View className="bg-white p-4 rounded-lg shadow-lg mt-6 mb-[60px]">
+        <View className="bg-white p-4 rounded-lg shadow-lg mt-6">
           <Text className="text-lg font-bold text-gray-800">
             Recent Activity
           </Text>

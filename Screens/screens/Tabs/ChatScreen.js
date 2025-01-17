@@ -10,7 +10,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Icon from "react-native-vector-icons/MaterialIcons"; // For the action button icon
+import Icon from "react-native-vector-icons/FontAwesome"; // For the action button icon
 
 const ChatScreen = ({ navigation }) => {
   // Mock Tenant List
@@ -71,30 +71,34 @@ const ChatScreen = ({ navigation }) => {
   };
 
   const renderMessage = ({ item }) => (
-    <View
-      className={`p-3 my-2 rounded-lg max-w-[70%] ${
-        item.sender === "landlord" ? "bg-primary ml-auto" : "bg-gray-200"
-      }`}
-    >
-      <Text
-        className={`text-sm ${
-          item.sender === "landlord" ? "text-white" : "text-gray-800"
+    <View>
+      <View
+        className={`p-3 my-2 rounded-lg max-w-[70%] ${
+          item.sender === "landlord" ? "bg-primary ml-auto" : "bg-gray-200"
         }`}
       >
-        {item.text}
-      </Text>
-      <Text
-        className={`text-xs mt-1 ${
-          item.sender === "landlord" ? "text-gray-200" : "text-gray-500"
-        }`}
-      >
-        {item.timestamp}
-      </Text>
+        <Text
+          className={`text-sm ${
+            item.sender === "landlord" ? "text-white" : "text-gray-800"
+          }`}
+        >
+          {item.text}
+        </Text>
+        <Text
+          className={`text-xs  ${
+            item.sender === "landlord"
+              ? "text-gray-400 ml-auto "
+              : "text-gray-500 ml-auto"
+          }`}
+        >
+          {item.timestamp}
+        </Text>
+      </View>
     </View>
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-100 relative px-4 h-full mb-[60px]">
+    <SafeAreaView className="flex-1 bg-gray-100 relative px-4 h-full">
       {/* Tenant Dropdown */}
 
       <Modal visible={isModalVisible} transparent={true} animationType="slide">
@@ -103,7 +107,7 @@ const ChatScreen = ({ navigation }) => {
             <View className="flex-row justify-between items-center mb-4">
               <Text className="text-lg font-semibold">Select Tenant</Text>
               <TouchableOpacity onPress={() => setModalVisible(false)}>
-                <Icon size={24} color="black" name="down" />
+                <Icon size={24} color="black" name="times" />
               </TouchableOpacity>
             </View>
             <ScrollView>
@@ -127,7 +131,7 @@ const ChatScreen = ({ navigation }) => {
           </View>
         </View>
       </Modal>
-      <TouchableOpacity className="flex-row items-center bg-white p-3 rounded-lg shadow mb-4">
+      <View className="flex-row items-center bg-white p-3 rounded-lg shadow my-4">
         <Image
           source={{ uri: selectedTenant.imageUrl }}
           className="w-8 h-8 rounded-full mr-3"
@@ -135,22 +139,20 @@ const ChatScreen = ({ navigation }) => {
         <Text className="text-lg text-gray-800 flex-1">
           {selectedTenant.name}
         </Text>
-        <Icon
-          size={24}
-          color="black"
-          name="expand_circle_down"
+        <TouchableOpacity
           onPress={() => {
             setModalVisible(true);
           }}
-        />
-      </TouchableOpacity>
+        >
+          <Icon size={24} color="black" name="chevron-down" />
+        </TouchableOpacity>
+      </View>
 
       {/* Chat Messages */}
       <FlatList
         data={messages}
         keyExtractor={(item) => item.id}
         renderItem={renderMessage}
-        contentContainerStyle={{ paddingBottom: 100 }}
       />
 
       {/* Input Section */}

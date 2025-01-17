@@ -85,7 +85,7 @@ const TabButton = (props) => {
           color={focused ? "#F59A73" : "black"}
         />
       </Animatable.View>
-      <Text className={"text-#F59A73 font-bold"}>{item?.label}</Text>
+      <Text className={"text-[#F59A73] font-bold"}>{item?.label}</Text>
     </TouchableOpacity>
   );
 };
@@ -119,7 +119,21 @@ function MainTabs() {
           justifyContent: "center",
           alignItems: "center",
         },
+        tabStyle: {
+          marginTop: 10,
+        },
+        tabBarLabelStyle: {
+          fontSize: 22,
+          fontFamily: "Georgia",
+          fontWeight: 300,
+        },
+        tabBarActiveTintColor: "#F59A73",
+        tabBarInactiveTintColor: "#fff",
+        sceneContainerStyle: {
+          paddingBottom: 70, // ✅ Adds padding below all screens
+        },
         tabBarHideOnKeyboard: true,
+        animation: "fade",
       }}
     >
       {TabArr.map((item, index) => {
@@ -127,12 +141,18 @@ function MainTabs() {
           <Tab.Screen
             key={index}
             name={item.route}
-            component={item.component}
+            // component={item?.component}
             options={{
               tabBarShowLabel: false,
               tabBarButton: (props) => <TabButton {...props} item={item} />,
             }}
-          />
+          >
+            {() => (
+              <View style={{ flex: 1, paddingBottom: 70 }}>
+                <item.component />
+              </View>
+            )}
+          </Tab.Screen>
         );
       })}
     </Tab.Navigator>
