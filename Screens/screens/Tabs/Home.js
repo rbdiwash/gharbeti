@@ -1,21 +1,13 @@
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  Image,
-  SafeAreaView,
-} from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons";
-import { useNavigation } from "@react-navigation/native";
-import TextTicker from "react-native-text-ticker";
-import esewa from "../../../assets/esewa.png";
-import khalti from "../../../assets/khalti.png";
-import connectIPS from "../../../assets/connectIPS.png";
-import fonePay from "../../../assets/fonepay.png";
-import divash from "../../../assets/divash.jpeg";
 import AutoScroll from "@homielab/react-native-auto-scroll";
+import { useNavigation } from "@react-navigation/native";
+import React, { useState } from "react";
+import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import connectIPS from "../../../assets/connectIPS.png";
+import divash from "../../../assets/divash.jpeg";
+import esewa from "../../../assets/esewa.png";
+import fonePay from "../../../assets/fonepay.png";
+import khalti from "../../../assets/khalti.png";
 
 const HomeScreen = ({ username = "Divash" }) => {
   const [isDueVisible, setIsDueVisible] = useState(true);
@@ -143,11 +135,11 @@ const HomeScreen = ({ username = "Divash" }) => {
         <Text className="font-bold text-base mb-2 mt-6">Featured Services</Text>
         <View className=" flex-row flex-wrap gap-0 justify-between">
           {renderActionBlock("group", "Tenants", "Tenants")}
-          {renderActionBlock("person-add", "Add Tenants", "addTenants")}
-          {renderActionBlock("build", "Maintenance", "MaintenanceScreen")}
+          {renderActionBlock("person-add", "Add Tenants", "Add Tenants")}
+          {renderActionBlock("build", "Maintenance", "Maintenance Requests")}
           {renderActionBlock("account-balance", "Dues", "DuesScreen")}
           {renderActionBlock("campaign", "Notice", "Announcements")}
-          {renderActionBlock("account-circle", "Profile", "ProfileScreen")}
+          {renderActionBlock("account-circle", "Profile", "Profile")}
           {/* Add more action blocks as needed */}
         </View>
 

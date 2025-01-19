@@ -14,6 +14,9 @@ import Notifications from "../Screens/screens/Tabs/Notifications";
 import AddAnnouncementScreen from "../Screens/screens/Tabs/AnnouncementAddScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AnnouncementList from "../Screens/screens/Tabs/AnnouncementList";
+import MaintenanceScreen from "../Screens/screens/Tabs/Maintenance/MaintenanceScreen";
+import MaintenanceStack from "../Screens/screens/Tabs/Maintenance/MaintenanceStack";
+import LandlordProfile from "../Screens/screens/Tabs/LandlordProfile/Profile";
 
 const Tab = createBottomTabNavigator();
 
@@ -119,9 +122,7 @@ function MainTabs() {
           justifyContent: "center",
           alignItems: "center",
         },
-        tabStyle: {
-          marginTop: 10,
-        },
+
         tabBarLabelStyle: {
           fontSize: 22,
           fontFamily: "Georgia",
@@ -129,9 +130,7 @@ function MainTabs() {
         },
         tabBarActiveTintColor: "#F59A73",
         tabBarInactiveTintColor: "#fff",
-        sceneContainerStyle: {
-          paddingBottom: 70, // ✅ Adds padding below all screens
-        },
+
         tabBarHideOnKeyboard: true,
         animation: "fade",
       }}
@@ -148,7 +147,7 @@ function MainTabs() {
             }}
           >
             {() => (
-              <View style={{ flex: 1, paddingBottom: 70 }}>
+              <View style={{ flex: 1, paddingBottom: 60 }}>
                 <item.component />
               </View>
             )}
@@ -171,6 +170,16 @@ const LoggedInLandlordStack = () => {
           name="Announcements"
           component={AnnouncementStack}
           options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Maintenance Requests"
+          component={MaintenanceStack}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Profile"
+          component={LandlordProfile}
+          options={{ headerShown: true }}
         />
       </Stack.Navigator>
     </SafeAreaView>

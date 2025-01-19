@@ -2,7 +2,6 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import ForgotPassword from "../Screens/AuthScreen/ForgotPassword";
 import GetStarted from "../Screens/AuthScreen/GetStarted";
-import LoginScreen from "../Screens/AuthScreen/LoginScreen";
 import ResetPassword from "../Screens/AuthScreen/ResetPassword";
 import SignupScreen from "../Screens/AuthScreen/SignupScreen";
 import SplashScreen from "../Screens/SplashScreen";
@@ -28,14 +27,7 @@ const LoggedOutStack = () => {
           headerShown: false,
         }}
       />
-      <Stack.Screen
-        name="login"
-        component={LoginScreen}
-        options={{
-          title: "Login",
-          headerShown: false,
-        }}
-      />
+
       <Stack.Screen
         name="signup"
         component={SignupScreen}

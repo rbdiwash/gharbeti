@@ -87,13 +87,13 @@ const TenantList = ({ navigation }) => {
       imageUrl: "https://randomuser.me/api/portraits/men/4.jpg",
     };
     setTenants([...tenants, newTenant]);
-    navigation.navigate("addTenants");
+    navigation.navigate("Add Tenants");
   };
 
   // Render each tenant item
   const renderItem = ({ item }) => (
     <View
-      className="bg-white p-3 my-2 mx-- rounded-lg shadow-md flex-row items-center"
+      className="bg-white p-3 my-2 xrounded-lg shadow-md flex-row items-center "
       key={item.imageUrl}
     >
       <Image
@@ -112,7 +112,7 @@ const TenantList = ({ navigation }) => {
         <TouchableOpacity
           className="text-primary  p-2 rounded-full"
           onPress={() => {
-            navigation.navigate("chatScreen");
+            navigation.navigate("Chat");
           }}
         >
           <Icon name="chat" size={20} className="text-primary" />
@@ -120,7 +120,7 @@ const TenantList = ({ navigation }) => {
         <TouchableOpacity
           className="text-primary  p-2 rounded-full"
           onPress={() => {
-            navigation.navigate("individualTenants");
+            navigation.navigate("Tenant Details");
           }}
         >
           <Icon name="visibility" size={20} className="text-primary" />
@@ -128,7 +128,7 @@ const TenantList = ({ navigation }) => {
         <TouchableOpacity
           className="text-primary  p-2 rounded-full"
           onPress={() => {
-            navigation.navigate("editTenants");
+            navigation.navigate("Edit Tenant");
           }}
         >
           <Icon name="edit" size={20} className="text-primary" />

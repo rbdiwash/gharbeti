@@ -10,10 +10,7 @@ const Stack = createNativeStackNavigator();
 
 const TenantStack = () => {
   return (
-    <Stack.Navigator
-      initialRouteName="tenants"
-      screenOptions={{ cardStyle: { backgroundColor: "red" } }}
-    >
+    <Stack.Navigator initialRouteName="tenants">
       <Stack.Screen
         name="tenants"
         component={TenantList}
@@ -22,33 +19,21 @@ const TenantStack = () => {
         }}
       />
       <Stack.Screen
-        name="addTenants"
+        name="Add Tenants"
         component={AddTenants}
         options={{
-          headerShown: false,
+          headerShown: true,
         }}
       />
+      <Stack.Screen name="Tenant Details" component={TenantDetails} />
       <Stack.Screen
-        name="individualTenants"
-        component={TenantDetails}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="editTenants"
+        name="Edit Tenant"
         component={AddTenants}
         options={{
-          headerShown: false,
+          headerShown: true,
         }}
       />
-      <Stack.Screen
-        name="chatScreen"
-        component={ChatScreen}
-        options={{
-          headerShown: false,
-        }}
-      />
+      <Stack.Screen name="Chat" component={ChatScreen} />
     </Stack.Navigator>
   );
 };

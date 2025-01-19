@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from "react";
 import {
-  View,
-  TextInput,
-  Text,
-  TouchableOpacity,
   Image,
-  Button,
   ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { launchImageLibrary } from "react-native-image-picker";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Icon from "react-native-vector-icons/MaterialIcons"; // For icons
 
 import * as ImagePicker from "expo-image-picker";
 
@@ -84,8 +81,8 @@ const AddTenants = () => {
   return (
     <SafeAreaView>
       <ScrollView automaticallyAdjustKeyboardInsets={true}>
-        <View className="flex-1 bg-white p-4 mt-1 mb-[60px]">
-          <Text className="my-4 text-2xl font-bold">Add Tenants</Text>
+        <View className="flex-1 bg-white p-4">
+          {/* <Text className="my-4 text-2xl font-bold">Add Tenants</Text> */}
           {/* Name Input */}
           <Text className="text-lg font-bold mb-2">Name</Text>
           <TextInput

@@ -132,7 +132,7 @@ const TenantDetails = ({ tenant = tenantData, navigation }) => {
       </View>
 
       {/* Tenant Status */}
-      <View className="mt-8 bg-white p-4 rounded-lg shadow-sm flex-row justify-between items-center">
+      <View className="mt-8 bg-white p-4 rounded-lg shadow-sm flex-row justify-between items-center mb-10">
         <Text className="text-lg font-semibold text-gray-700">Status</Text>
         <Text
           className={`text-lg font-bold ${
