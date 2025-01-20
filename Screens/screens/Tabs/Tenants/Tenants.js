@@ -1,10 +1,13 @@
+import { useNavigation } from "@react-navigation/native";
 import React, { useState } from "react";
 import { View, Text, FlatList, TouchableOpacity, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/MaterialIcons"; // For the action button icon
 
-const TenantList = ({ navigation }) => {
+const TenantList = ({}) => {
   // State to manage the list of tenants
+  const navigation = useNavigation();
+
   const [tenants, setTenants] = useState([
     {
       id: "1",

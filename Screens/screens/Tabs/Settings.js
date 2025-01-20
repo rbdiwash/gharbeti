@@ -10,12 +10,17 @@ import {
 import { styled } from "nativewind";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import divash from "../../../assets/divash.jpeg";
+import { useNavigation } from "@react-navigation/native";
+import useGharbeti from "../../../context/useGharbeti";
 
-const Settings = ({ navigation }) => {
+const Settings = ({}) => {
   const [user] = useState({
     name: "Divash Ranabhat",
     imageUrl: divash,
   });
+
+  const navigation = useNavigation();
+  const [{ isLoggedIn }, { setIsLoggedIn }] = useGharbeti();
 
   // Helper function to render each option row
   const renderOption = (iconName, label, onPress) => (
@@ -31,7 +36,7 @@ const Settings = ({ navigation }) => {
   const handleLogout = () => {
     Alert.alert("Logout", "Are you sure you want to logout?", [
       { text: "Cancel", style: "cancel" },
-      { text: "Logout", onPress: () => console.log("User logged out") },
+      { text: "Logout", onPress: () => navigation.navigate("splash") },
     ]);
   };
 
@@ -52,7 +57,7 @@ const Settings = ({ navigation }) => {
           My Information
         </Text>
         {renderOption("account-circle", "My Information", () =>
-          navigation.navigate("MyInformation")
+          navigation.navigate("Profile")
         )}
         {renderOption("language", "Change Language", () =>
           navigation.navigate("ChangeLanguage")
@@ -80,7 +85,7 @@ const Settings = ({ navigation }) => {
 
       {/* Logout */}
       <View className="mt-6">
-        {renderOption("exit-to-app", "Logout", handleLogout)}
+        {renderOption("exit-to-app", "Logout", () => setIsLoggedIn(false))}
       </View>
     </ScrollView>
   );

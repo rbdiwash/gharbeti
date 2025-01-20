@@ -8,6 +8,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 import * as ImagePicker from "expo-image-picker";
 
@@ -21,8 +22,34 @@ const AddTenants = () => {
     profileImage: null,
     rooms: "",
     totalRent: "",
+    startDate: new Date(),
+    emergencyName: "",
+    emergencyNumber: "",
   });
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [selectedDate, setSelectedDate] = useState("");
 
+  // Show the date picker
+  const showDatePicker = () => {
+    setDatePickerVisibility(true);
+  };
+
+  // Hide the date picker
+  const hideDatePicker = () => {
+    setDatePickerVisibility(false);
+  };
+
+  // Handle the date selection
+  const handleConfirm = (date) => {
+    setSelectedDate(
+      date.toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      })
+    );
+    hideDatePicker();
+  };
   // Handle input change
   const handleInputChange = (name, value) => {
     setFormData({
@@ -132,7 +159,46 @@ const AddTenants = () => {
             value={formData.totalRent}
             onChangeText={(value) => handleInputChange("totalRent", value)}
           />
+          <Text className="text-lg font-bold mb-2">Starting Date</Text>
 
+          {/* Date Input Field */}
+          <TouchableOpacity
+            onPress={showDatePicker}
+            className="border border-gray-300 rounded-lg p-3 mb-4 w-full bg-white"
+          >
+            <Text className="text-base text-gray-700">
+              {selectedDate || "Tap to select a date"}
+            </Text>
+          </TouchableOpacity>
+
+          {/* Date Picker Modal */}
+          <DateTimePickerModal
+            isVisible={isDatePickerVisible}
+            mode="date"
+            onConfirm={handleConfirm}
+            onCancel={hideDatePicker}
+          />
+
+          <Text className="text-lg font-bold mb-2">Emergency Contact Name</Text>
+          <TextInput
+            className="border border-gray-300 p-3 mb-4 rounded-lg"
+            placeholder="Emergency Contact Name"
+            value={formData.emergencyName}
+            onChangeText={(value) => handleInputChange("emergencyName", value)}
+          />
+          <Text className="text-lg font-bold mb-2">
+            Emergency Contact Number
+          </Text>
+          <TextInput
+            className="border border-gray-300 p-3 mb-4 rounded-lg"
+            placeholder="Emergency Contact Number "
+            keyboardType="numeric"
+            value={formData.emergencyNumber}
+            onChangeText={(value) =>
+              handleInputChange("emergencyNumber", value)
+            }
+            required
+          />
           <Text className="text-lg font-bold mb-2">Upload Profile Picture</Text>
           {formData.profileImage ? (
             <>

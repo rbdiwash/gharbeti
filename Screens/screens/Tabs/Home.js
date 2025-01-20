@@ -37,7 +37,11 @@ const HomeScreen = ({ username = "Divash" }) => {
         </View>
         <View className="flex flex-row gap-5 items-center mr-4">
           <Icon name="refresh" size={24} color="white" />
-          <Icon name="notifications" size={24} color="white" />
+          <TouchableOpacity
+            onPress={() => navigation.navigate("Notifications")}
+          >
+            <Icon name="notifications" size={24} color="white" />
+          </TouchableOpacity>
         </View>
       </View>
       <View className="p-4">
@@ -137,7 +141,7 @@ const HomeScreen = ({ username = "Divash" }) => {
           {renderActionBlock("group", "Tenants", "Tenants")}
           {renderActionBlock("person-add", "Add Tenants", "Add Tenants")}
           {renderActionBlock("build", "Maintenance", "Maintenance Requests")}
-          {renderActionBlock("account-balance", "Dues", "DuesScreen")}
+          {renderActionBlock("account-balance", "Dues", "Dues")}
           {renderActionBlock("campaign", "Notice", "Announcements")}
           {renderActionBlock("account-circle", "Profile", "Profile")}
           {/* Add more action blocks as needed */}

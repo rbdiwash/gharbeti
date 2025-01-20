@@ -1,22 +1,27 @@
 // import "react-native-gesture-handler";
 import { AntDesign } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useEffect, useRef } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import * as Animatable from "react-native-animatable";
+import { SafeAreaView } from "react-native-safe-area-context";
+import AddAnnouncementScreen from "../Screens/screens/Tabs/AnnouncementAddScreen";
+import AnnouncementList from "../Screens/screens/Tabs/AnnouncementList";
+import ChatScreen from "../Screens/screens/Tabs/ChatScreen";
+import Dues from "../Screens/screens/Tabs/Dues";
 import Home from "../Screens/screens/Tabs/Home";
+import LandlordProfile from "../Screens/screens/Tabs/LandlordProfile/Profile";
+import MaintenanceStack from "../Screens/screens/Tabs/Maintenance/MaintenanceStack";
+import Notifications from "../Screens/screens/Tabs/Notifications";
 import Reports from "../Screens/screens/Tabs/Reports";
 import Settings from "../Screens/screens/Tabs/Settings";
-import Tenants from "../Screens/screens/Tabs/Tenants/Tenants";
-import TenantStack from "../Screens/screens/Tabs/Tenants/TenantStack";
-import { SafeAreaView } from "react-native-safe-area-context";
-import Notifications from "../Screens/screens/Tabs/Notifications";
-import AddAnnouncementScreen from "../Screens/screens/Tabs/AnnouncementAddScreen";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import AnnouncementList from "../Screens/screens/Tabs/AnnouncementList";
-import MaintenanceScreen from "../Screens/screens/Tabs/Maintenance/MaintenanceScreen";
-import MaintenanceStack from "../Screens/screens/Tabs/Maintenance/MaintenanceStack";
-import LandlordProfile from "../Screens/screens/Tabs/LandlordProfile/Profile";
+import AddTenants from "../Screens/screens/Tabs/Tenants/AddTenants";
+import TenantDetails from "../Screens/screens/Tabs/Tenants/TenantDetails";
+import {
+  default as TenantList,
+  default as Tenants,
+} from "../Screens/screens/Tabs/Tenants/Tenants";
 
 const Tab = createBottomTabNavigator();
 
@@ -33,7 +38,7 @@ const TabArr = [
     route: "Tenants",
     label: "Tenants",
     activeIcon: "user",
-    component: TenantStack,
+    component: Tenants,
   },
   {
     route: "Report",
@@ -167,6 +172,11 @@ const LoggedInLandlordStack = () => {
           options={{ headerShown: false }}
         />
         <Stack.Screen
+          name="Notifications"
+          component={Notifications}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
           name="Announcements"
           component={AnnouncementStack}
           options={{ headerShown: false }}
@@ -181,6 +191,36 @@ const LoggedInLandlordStack = () => {
           component={LandlordProfile}
           options={{ headerShown: true }}
         />
+        <Stack.Screen
+          name="Dues"
+          component={Dues}
+          options={{
+            headerShown: true,
+          }}
+        />
+        <Stack.Screen
+          name="tenants"
+          component={TenantList}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="Add Tenants"
+          component={AddTenants}
+          options={{
+            headerShown: true,
+          }}
+        />
+        <Stack.Screen name="Tenant Details" component={TenantDetails} />
+        <Stack.Screen
+          name="Edit Tenant"
+          component={AddTenants}
+          options={{
+            headerShown: true,
+          }}
+        />
+        <Stack.Screen name="Chat" component={ChatScreen} />
       </Stack.Navigator>
     </SafeAreaView>
   );

@@ -35,7 +35,7 @@ const GetStarted = ({ navigation }) => {
     // navigation.navigate("home");
     if (data?.email === "admin" && data?.password === "password") {
       setIsLoggedIn(true);
-      navigation.navigate("home");
+      navigation.navigate("Home");
     } else {
       alert("Invalid credentials");
     }
