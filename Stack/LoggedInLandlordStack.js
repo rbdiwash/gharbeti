@@ -6,22 +6,23 @@ import { useEffect, useRef } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import * as Animatable from "react-native-animatable";
 import { SafeAreaView } from "react-native-safe-area-context";
-import AddAnnouncementScreen from "../Screens/screens/Tabs/AnnouncementAddScreen";
-import AnnouncementList from "../Screens/screens/Tabs/AnnouncementList";
-import ChatScreen from "../Screens/screens/Tabs/ChatScreen";
-import Dues from "../Screens/screens/Tabs/Dues";
-import Home from "../Screens/screens/Tabs/Home";
-import LandlordProfile from "../Screens/screens/Tabs/LandlordProfile/Profile";
-import MaintenanceStack from "../Screens/screens/Tabs/Maintenance/MaintenanceStack";
-import Notifications from "../Screens/screens/Tabs/Notifications";
-import Reports from "../Screens/screens/Tabs/Reports";
-import Settings from "../Screens/screens/Tabs/Settings";
-import AddTenants from "../Screens/screens/Tabs/Tenants/AddTenants";
-import TenantDetails from "../Screens/screens/Tabs/Tenants/TenantDetails";
+import AddAnnouncementScreen from "../Screens/screens/Landlord/AnnouncementAddScreen";
+import AnnouncementList from "../Screens/screens/Landlord/AnnouncementList";
+import ChatScreen from "../Screens/screens/Landlord/ChatScreen";
+import Dues from "../Screens/screens/Landlord/Dues";
+import Home from "../Screens/screens/Landlord/Home";
+import LandlordProfile from "../Screens/screens/Landlord/LandlordProfile/Profile";
+import MaintenanceStack from "../Screens/screens/Landlord/Maintenance/MaintenanceStack";
+import Notifications from "../Screens/screens/Landlord/Notifications";
+import Reports from "../Screens/screens/Landlord/Reports";
+import Settings from "../Screens/screens/Landlord/Settings";
+import AddTenants from "../Screens/screens/Landlord/Tenants/AddTenants";
+import TenantDetails from "../Screens/screens/Landlord/Tenants/TenantDetails";
 import {
   default as TenantList,
   default as Tenants,
-} from "../Screens/screens/Tabs/Tenants/Tenants";
+} from "../Screens/screens/Landlord/Tenants/Tenants";
+import LandlordCodeScreen from "../Screens/screens/Landlord/TenantScreens/MainScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -49,7 +50,7 @@ const TabArr = [
 
   {
     route: "Notification",
-    label: "Notifications",
+    label: "Notification",
     activeIcon: "notification",
     component: Notifications,
   },
@@ -216,6 +217,13 @@ const LoggedInLandlordStack = () => {
         <Stack.Screen
           name="Edit Tenant"
           component={AddTenants}
+          options={{
+            headerShown: true,
+          }}
+        />
+        <Stack.Screen
+          name="Tenant Invite"
+          component={LandlordCodeScreen}
           options={{
             headerShown: true,
           }}

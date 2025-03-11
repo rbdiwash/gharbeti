@@ -5,6 +5,7 @@ import GetStarted from "../Screens/AuthScreen/GetStarted";
 import ResetPassword from "../Screens/AuthScreen/ResetPassword";
 import SignupScreen from "../Screens/AuthScreen/SignupScreen";
 import SplashScreen from "../Screens/SplashScreen";
+import TenantLogin from "../Screens/AuthScreen/Tenant/TenantLogin";
 
 const Stack = createNativeStackNavigator();
 
@@ -27,7 +28,6 @@ const LoggedOutStack = () => {
           headerShown: false,
         }}
       />
-
       <Stack.Screen
         name="signup"
         component={SignupScreen}
@@ -49,6 +49,14 @@ const LoggedOutStack = () => {
         component={ResetPassword}
         options={{
           title: "Reset Password",
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="tenantLogin"
+        component={TenantLogin}
+        options={{
+          title: "Tenant Login",
           headerShown: false,
         }}
       />

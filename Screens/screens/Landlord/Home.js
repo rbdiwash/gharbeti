@@ -31,8 +31,8 @@ const HomeScreen = ({ username = "Divash" }) => {
   return (
     <ScrollView className="flex-1 bg-gray-100">
       <View className="w-full flex flex-row justify-between bg-primary items-center">
-        <View className="flex flex-row items-center p-4 text-white ">
-          <Image source={divash} className="h-12 w-12 rounded-full mr-4" />
+        <View className="flex flex-row items-center px-4 py-4 text-white ">
+          <Image source={divash} className="h-8 w-8 rounded-full mr-4" />
           <Text className="text-2xl font-bold text-white">Hi, {username}</Text>
         </View>
         <View className="flex flex-row gap-5 items-center mr-4">
@@ -51,14 +51,15 @@ const HomeScreen = ({ username = "Divash" }) => {
         <View className="bg-white p-4 rounded-lg shadow-md flex-row justify-between items-center">
           <View className="border-r pr-8">
             <Text className="text-gray-500">
-              Total Due <Text className="text-xs">this month</Text>
+              Total due
+              {/* <Text className="text-xs">this month</Text> */}
             </Text>
             <Text className="text-2xl font-bold text-gray-800">
               {isDueVisible ? "Rs. 25,000" : "****"}
             </Text>
           </View>
           <View>
-            <Text className="text-gray-500">Total Received</Text>
+            <Text className="text-gray-500">Total received</Text>
             <Text className="text-2xl font-bold text-gray-800">
               {isDueVisible ? "Rs. 12,000" : "****"}
             </Text>
@@ -74,7 +75,7 @@ const HomeScreen = ({ username = "Divash" }) => {
 
         <View className="flex-row justify-between mt-6">
           <View className="bg-primary p-4 rounded-lg shadow-md items-center flex-1 mr-2">
-            <Text className="text-white">Total Rooms</Text>
+            <Text className="text-white">Rooms</Text>
             <Text className="text-2xl font-bold text-white">12</Text>
           </View>
           <View className="bg-primary p-4 rounded-lg shadow-md items-center flex-1 ml-2">
@@ -183,12 +184,14 @@ const HomeScreen = ({ username = "Divash" }) => {
         </View>
 
         {/* Add Other Custom Sections */}
-        <View className="bg-white p-4 rounded-lg shadow-lg mt-6">
-          <Text className="text-lg font-bold text-gray-800">Summary</Text>
-          <Text className="text-sm text-gray-500 mt-2">
-            Quick summary of activities and updates.
-          </Text>
-        </View>
+        <TouchableOpacity onPress={() => navigation.navigate("Tenant Invite")}>
+          <View className="bg-white p-4 rounded-lg shadow-lg mt-6">
+            <Text className="text-lg font-bold text-gray-800">Summary</Text>
+            <Text className="text-sm text-gray-500 mt-2">
+              Quick summary of activities and updates.
+            </Text>
+          </View>
+        </TouchableOpacity>
         <View className="bg-white p-4 mt-6 rounded-lg shadow-lg">
           <Text className="font-bold text-base mb-2">
             We accept payments from

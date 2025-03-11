@@ -1,13 +1,13 @@
 // import "react-native-gesture-handler";
 import { NavigationContainer } from "@react-navigation/native";
-import Container from "./Container";
 import GharbetiProvider from "./context/provider";
+import CheckUser from "./CheckUser";
 
 export default function App() {
   return (
     <GharbetiProvider>
       <NavigationContainer>
-        <Container />
+        <CheckUser />
       </NavigationContainer>
     </GharbetiProvider>
   );

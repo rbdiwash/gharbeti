@@ -68,6 +68,9 @@ const Settings = ({}) => {
         {renderOption("fingerprint", "Setup Biometrics", () =>
           navigation.navigate("SetupBiometrics")
         )}
+        {renderOption("fingerprint", "Add Rules", () =>
+          navigation.navigate("SetupBiometrics")
+        )}
       </View>
 
       {/* Help & Support Section */}

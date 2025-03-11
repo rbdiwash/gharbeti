@@ -4,7 +4,6 @@ import LoggedInLandlordStack from "../../Stack/LoggedInLandlordStack";
 import LoggedInTenantStack from "../../Stack/LoggedInTenantStack";
 
 const CheckLandLordUser = ({ user }) => {
-  console.log(user);
   return (
     <>
       {user === "landlord" ? (

@@ -16,7 +16,7 @@ const ReportScreen = () => {
   ];
 
   return (
-    <ScrollView className="flex-1 bg-white p-6">
+    <ScrollView className="flex-1 bg-gray-100 p-6">
       {/* Header */}
       <View className="mb-6">
         <Text className="text-2xl font-bold text-gray-800">Reports</Text>
@@ -47,7 +47,7 @@ const ReportScreen = () => {
         />
       </View>
       {/* Invoice Section */}
-      <View className="mb-6">
+      <View className="mb-6 bg-white p-2 rounded">
         <Text className="text-xl font-semibold text-gray-700 mb-4">
           Invoices
         </Text>
@@ -61,7 +61,7 @@ const ReportScreen = () => {
           </View>
         ))}
         <TouchableOpacity
-          className="mt-3 bg-primary py-2 px-4 rounded-md"
+          className="mt-3 bg-primary py-2 px-4 p-4 rounded-md"
           onPress={() => Alert.alert("Invoice Generated!")}
         >
           <Text className="text-white text-center font-medium">
