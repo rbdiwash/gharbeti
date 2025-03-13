@@ -2,6 +2,7 @@ import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { styled } from "nativewind";
 import { Entypo, FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import useGharbeti from "../../../context/useGharbeti";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -9,6 +10,7 @@ const StyledTouchableOpacity = styled(TouchableOpacity);
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
+  const [{ isLoggedIn }, { setIsLoggedIn }] = useGharbeti();
 
   const profileSections = [
     {
@@ -60,13 +62,13 @@ const ProfileScreen = () => {
       <ScrollView className="flex-1 px-4 pt-4">
         {/* Profile Header */}
         <StyledView className="bg-white rounded-xl p-6 shadow-md mb-6 items-center">
-          <StyledView className="w-24 h-24 rounded-full bg-[#27ae60] justify-center items-center mb-4">
+          <StyledView className="w-24 h-24 rounded-full bg-secondary justify-center items-center mb-4">
             <StyledText className="text-white text-3xl font-bold">
               JD
             </StyledText>
           </StyledView>
           <StyledText className="text-[#1a2c4e] text-xl font-bold mb-1">
-            John Doe
+            Divash Ranabhat
           </StyledText>
           <StyledText className="text-[#8395a7] mb-4">
             Tenant since January 2023
@@ -116,7 +118,10 @@ const ProfileScreen = () => {
         ))}
 
         {/* Logout Button */}
-        <StyledTouchableOpacity className="bg-[#f8f9fa] border border-[#e74c3c] rounded-xl p-4 mb-8 items-center">
+        <StyledTouchableOpacity
+          className="bg-[#f8f9fa] border border-[#e74c3c] rounded-xl p-4 mb-8 items-center"
+          onPress={() => setIsLoggedIn(false)}
+        >
           <StyledText className="text-[#e74c3c] font-bold">Logout</StyledText>
         </StyledTouchableOpacity>
       </ScrollView>

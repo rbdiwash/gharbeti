@@ -54,7 +54,7 @@ const PaymentsScreen = () => {
               </StyledText>
             </StyledView>
             <StyledTouchableOpacity
-              className="bg-[#27ae60] px-6 py-3 rounded-xl"
+              className="bg-secondary px-6 py-3 rounded-xl"
               onPress={() => navigation.navigate("MakePayment")}
             >
               <StyledText className="text-white font-bold">Pay Now</StyledText>
@@ -87,7 +87,7 @@ const PaymentsScreen = () => {
             className="flex-row items-center"
             onPress={() => navigation.navigate("PaymentHistory")}
           >
-            <StyledText className="text-[#27ae60] mr-1">View All</StyledText>
+            <StyledText className="text-secondary mr-1">View All</StyledText>
             <FontAwesome5 name="chevron-right" size={12} color="#27ae60" />
           </StyledTouchableOpacity>
         </StyledView>

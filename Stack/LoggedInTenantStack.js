@@ -15,6 +15,7 @@ import PaymentHistory from "../Screens/screens/Tenant/PaymentHistory";
 import MakePayment from "../Screens/screens/Tenant/MakePayment";
 import ProfileScreen from "../Screens/screens/Tenant/ProfileScreen";
 import MaintenanceDetails from "../Screens/screens/Tenant/MaintenanceDetails";
+import NoticeDetails from "../Screens/screens/Tenant/NoticeDetails";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -30,7 +31,7 @@ const TabNavigator = () => {
           paddingTop: 5,
           height: 60,
         },
-        tabBarActiveTintColor: "#27ae60",
+        tabBarActiveTintColor: "#fff",
         tabBarInactiveTintColor: "#8395a7",
         headerShown: false,
       }}
@@ -85,6 +86,8 @@ const LoggedInTenantStack = () => {
       <Stack.Screen name="TenantTabs" component={TabNavigator} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name="Notices" component={NoticesScreen} />
+      <Stack.Screen name="NoticeDetails" component={NoticeDetails} />
+
       <Stack.Screen name="Notifications" component={NotificationsScreen} />
       <Stack.Screen name="NewMaintenance" component={NewMaintenanceRequest} />
       <Stack.Screen

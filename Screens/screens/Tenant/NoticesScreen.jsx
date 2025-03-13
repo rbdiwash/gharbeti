@@ -88,6 +88,11 @@ const NoticesScreen = () => {
     { id: "event", label: "Events" },
   ];
 
+  const navigateToNoticeDetails = (noticeId) => {
+    // @ts-ignore - Ignore type checking for navigation params
+    navigation.navigate("NoticeDetails", { noticeId });
+  };
+
   useEffect(() => {
     // Initialize filteredNotices with allNotices on first render
     setFilteredNotices(allNotices);
@@ -202,6 +207,7 @@ const NoticesScreen = () => {
             <StyledTouchableOpacity
               key={notice.id}
               className="bg-white p-4 rounded-xl mb-4 shadow-md"
+              onPress={() => navigateToNoticeDetails(notice.id)}
             >
               <StyledView className="flex-row items-start">
                 <StyledView className="bg-[#f8f9fa] p-3 rounded-full mr-3">

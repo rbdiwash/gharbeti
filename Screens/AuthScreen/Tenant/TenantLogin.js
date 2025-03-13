@@ -20,6 +20,7 @@ const TenantLogin = ({ navigation }) => {
     confirmPassword: "",
   });
   const [rulesModalVisible, setRulesModalVisible] = useState(false);
+  const [isInvitationOn, setIsInvitationOn] = useState(false);
 
   const handleInputChange = (text, name) => {
     setData({ ...data, [name]: text });
@@ -64,13 +65,15 @@ const TenantLogin = ({ navigation }) => {
 
   return (
     <ScrollView automaticallyAdjustKeyboardInsets={true}>
-      <StyledView className="flex-1 bg-[#2c3e50] justify-center items-center px-6 min-h-screen py-10">
+      <StyledView className="flex-1 bg-primary justify-center items-center px-6 min-h-screen py-10">
         {step === 1 ? (
           <InvitationStep
             data={data}
             handleInputChange={handleInputChange}
             validateInvitation={validateInvitation}
             navigation={navigation}
+            isInvitationOn={isInvitationOn}
+            setIsInvitationOn={setIsInvitationOn}
           />
         ) : (
           <PasswordStep

@@ -155,7 +155,7 @@ const MaintenanceScreen = () => {
             Maintenance Requests
           </StyledText>
           <StyledTouchableOpacity
-            className="bg-[#27ae60] p-3 rounded-full"
+            className="bg-secondary p-3 rounded-full"
             onPress={() => navigation.navigate("NewMaintenance")}
           >
             <Ionicons name="add" size={24} color="white" />
@@ -184,13 +184,13 @@ const MaintenanceScreen = () => {
       <StyledView className="flex-row px-4 mt-4">
         <StyledTouchableOpacity
           className={`flex-1 py-2 ${
-            activeTab === "active" ? "border-b-2 border-[#27ae60]" : ""
+            activeTab === "active" ? "border-b-2 border-secondary" : ""
           }`}
           onPress={() => setActiveTab("active")}
         >
           <StyledText
             className={`text-center font-bold ${
-              activeTab === "active" ? "text-[#27ae60]" : "text-[#8395a7]"
+              activeTab === "active" ? "text-secondary" : "text-[#8395a7]"
             }`}
           >
             Active ({filteredRequests.active.length})
@@ -198,13 +198,13 @@ const MaintenanceScreen = () => {
         </StyledTouchableOpacity>
         <StyledTouchableOpacity
           className={`flex-1 py-2 ${
-            activeTab === "completed" ? "border-b-2 border-[#27ae60]" : ""
+            activeTab === "completed" ? "border-b-2 border-secondary" : ""
           }`}
           onPress={() => setActiveTab("completed")}
         >
           <StyledText
             className={`text-center font-bold ${
-              activeTab === "completed" ? "text-[#27ae60]" : "text-[#8395a7]"
+              activeTab === "completed" ? "text-secondary" : "text-[#8395a7]"
             }`}
           >
             Completed ({filteredRequests.completed.length})

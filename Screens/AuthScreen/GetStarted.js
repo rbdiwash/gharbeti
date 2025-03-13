@@ -90,15 +90,18 @@ const GetStarted = ({ navigation }) => {
             Log In
           </StyledText>
         </StyledTouchableOpacity>
-        <Text className="my-4 text-white">
-          New here? Register as a LANDLORD
+        <Text
+          onPress={() => navigation.replace("tenantLogin")}
+          className="my-4 text-white underline"
+        >
+          Are you tenant? Login as Tenant
         </Text>
         <StyledTouchableOpacity
           className="bg-[#E0E0E0] w-full py-2 rounded-lg"
           onPress={() => navigation.replace("signup")}
         >
           <StyledText className="text-[#0e2f4f] text-center text-lg">
-            Register
+            Register as LANDLORD
           </StyledText>
         </StyledTouchableOpacity>
         <TouchableOpacity

@@ -1,14 +1,15 @@
-import { View, Text, ScrollView, TouchableOpacity } from "react-native"
-import { styled } from "nativewind"
-import { Entypo, FontAwesome5, Ionicons } from "@expo/vector-icons"
-import { useNavigation } from "@react-navigation/native"
+import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import { styled } from "nativewind";
+import { Entypo, FontAwesome5, Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { PrimaryButton } from "../../../components/Buttons";
 
-const StyledView = styled(View)
-const StyledText = styled(Text)
-const StyledTouchableOpacity = styled(TouchableOpacity)
+const StyledView = styled(View);
+const StyledText = styled(Text);
+const StyledTouchableOpacity = styled(TouchableOpacity);
 
 const LeaseDetails = () => {
-  const navigation = useNavigation()
+  const navigation = useNavigation();
 
   const leaseDetails = {
     propertyName: "Green Valley Apartments",
@@ -22,7 +23,7 @@ const LeaseDetails = () => {
     noticePeriod: "30 days",
     landlordName: "Raj Landlord",
     landlordContact: "+91 98765 12345",
-  }
+  };
 
   const leaseTerms = [
     "Rent must be paid on or before the 1st of each month.",
@@ -35,7 +36,7 @@ const LeaseDetails = () => {
     "Tenant must give 30 days notice before vacating the property.",
     "Security deposit will be refunded within 15 days of vacating, subject to deductions for damages.",
     "Subletting is not permitted without written consent from the landlord.",
-  ]
+  ];
 
   return (
     <StyledView className="flex-1 bg-[#f8f9fa]">
@@ -45,7 +46,9 @@ const LeaseDetails = () => {
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={24} color="white" />
           </TouchableOpacity>
-          <StyledText className="text-white text-xl font-bold">Lease Details</StyledText>
+          <StyledText className="text-white text-xl font-bold">
+            Lease Details
+          </StyledText>
           <TouchableOpacity>
             <Ionicons name="download-outline" size={24} color="white" />
           </TouchableOpacity>
@@ -57,22 +60,30 @@ const LeaseDetails = () => {
         <StyledView className="bg-white p-4 rounded-xl mb-4 shadow-md">
           <StyledView className="flex-row items-center mb-4">
             <Ionicons name="home" size={24} color="#27ae60" />
-            <StyledText className="text-[#1a2c4e] text-lg font-bold ml-2">Property Details</StyledText>
+            <StyledText className="text-[#1a2c4e] text-lg font-bold ml-2">
+              Property Details
+            </StyledText>
           </StyledView>
 
           <StyledView className="mb-2">
             <StyledText className="text-[#8395a7]">Property Name</StyledText>
-            <StyledText className="text-[#1a2c4e] font-bold">{leaseDetails.propertyName}</StyledText>
+            <StyledText className="text-[#1a2c4e] font-bold">
+              {leaseDetails.propertyName}
+            </StyledText>
           </StyledView>
 
           <StyledView className="mb-2">
             <StyledText className="text-[#8395a7]">Unit Number</StyledText>
-            <StyledText className="text-[#1a2c4e] font-bold">{leaseDetails.unitNumber}</StyledText>
+            <StyledText className="text-[#1a2c4e] font-bold">
+              {leaseDetails.unitNumber}
+            </StyledText>
           </StyledView>
 
           <StyledView>
             <StyledText className="text-[#8395a7]">Address</StyledText>
-            <StyledText className="text-[#1a2c4e] font-bold">{leaseDetails.address}</StyledText>
+            <StyledText className="text-[#1a2c4e] font-bold">
+              {leaseDetails.address}
+            </StyledText>
           </StyledView>
         </StyledView>
 
@@ -80,24 +91,32 @@ const LeaseDetails = () => {
         <StyledView className="bg-white p-4 rounded-xl mb-4 shadow-md">
           <StyledView className="flex-row items-center mb-4">
             <Ionicons name="calendar" size={24} color="#3498db" />
-            <StyledText className="text-[#1a2c4e] text-lg font-bold ml-2">Lease Period</StyledText>
+            <StyledText className="text-[#1a2c4e] text-lg font-bold ml-2">
+              Lease Period
+            </StyledText>
           </StyledView>
 
           <StyledView className="flex-row justify-between mb-2">
             <StyledView className="flex-1">
               <StyledText className="text-[#8395a7]">Start Date</StyledText>
-              <StyledText className="text-[#1a2c4e] font-bold">{leaseDetails.startDate}</StyledText>
+              <StyledText className="text-[#1a2c4e] font-bold">
+                {leaseDetails.startDate}
+              </StyledText>
             </StyledView>
 
             <StyledView className="flex-1">
               <StyledText className="text-[#8395a7]">End Date</StyledText>
-              <StyledText className="text-[#1a2c4e] font-bold">{leaseDetails.endDate}</StyledText>
+              <StyledText className="text-[#1a2c4e] font-bold">
+                {leaseDetails.endDate}
+              </StyledText>
             </StyledView>
           </StyledView>
 
           <StyledView>
             <StyledText className="text-[#8395a7]">Notice Period</StyledText>
-            <StyledText className="text-[#1a2c4e] font-bold">{leaseDetails.noticePeriod}</StyledText>
+            <StyledText className="text-[#1a2c4e] font-bold">
+              {leaseDetails.noticePeriod}
+            </StyledText>
           </StyledView>
         </StyledView>
 
@@ -105,22 +124,30 @@ const LeaseDetails = () => {
         <StyledView className="bg-white p-4 rounded-xl mb-4 shadow-md">
           <StyledView className="flex-row items-center mb-4">
             <FontAwesome5 name="money-bill-wave" size={20} color="#e74c3c" />
-            <StyledText className="text-[#1a2c4e] text-lg font-bold ml-2">Financial Details</StyledText>
+            <StyledText className="text-[#1a2c4e] text-lg font-bold ml-2">
+              Financial Details
+            </StyledText>
           </StyledView>
 
           <StyledView className="mb-2">
             <StyledText className="text-[#8395a7]">Monthly Rent</StyledText>
-            <StyledText className="text-[#1a2c4e] font-bold">{leaseDetails.monthlyRent}</StyledText>
+            <StyledText className="text-[#1a2c4e] font-bold">
+              {leaseDetails.monthlyRent}
+            </StyledText>
           </StyledView>
 
           <StyledView className="mb-2">
             <StyledText className="text-[#8395a7]">Security Deposit</StyledText>
-            <StyledText className="text-[#1a2c4e] font-bold">{leaseDetails.securityDeposit}</StyledText>
+            <StyledText className="text-[#1a2c4e] font-bold">
+              {leaseDetails.securityDeposit}
+            </StyledText>
           </StyledView>
 
           <StyledView>
             <StyledText className="text-[#8395a7]">Maintenance Fee</StyledText>
-            <StyledText className="text-[#1a2c4e] font-bold">{leaseDetails.maintenanceFee}</StyledText>
+            <StyledText className="text-[#1a2c4e] font-bold">
+              {leaseDetails.maintenanceFee}
+            </StyledText>
           </StyledView>
         </StyledView>
 
@@ -128,26 +155,31 @@ const LeaseDetails = () => {
         <StyledView className="bg-white p-4 rounded-xl mb-4 shadow-md">
           <StyledView className="flex-row items-center mb-4">
             <FontAwesome5 name="user" size={20} color="#9b59b6" />
-            <StyledText className="text-[#1a2c4e] text-lg font-bold ml-2">Landlord Details</StyledText>
+            <StyledText className="text-[#1a2c4e] text-lg font-bold ml-2">
+              Landlord Details
+            </StyledText>
           </StyledView>
 
           <StyledView className="mb-2">
             <StyledText className="text-[#8395a7]">Name</StyledText>
-            <StyledText className="text-[#1a2c4e] font-bold">{leaseDetails.landlordName}</StyledText>
+            <StyledText className="text-[#1a2c4e] font-bold">
+              {leaseDetails.landlordName}
+            </StyledText>
           </StyledView>
 
           <StyledView className="flex-row justify-between items-center">
             <StyledView>
               <StyledText className="text-[#8395a7]">Contact</StyledText>
-              <StyledText className="text-[#1a2c4e] font-bold">{leaseDetails.landlordContact}</StyledText>
+              <StyledText className="text-[#1a2c4e] font-bold">
+                {leaseDetails.landlordContact}
+              </StyledText>
             </StyledView>
 
-            <StyledTouchableOpacity
-              className="bg-[#27ae60] px-4 py-2 rounded-lg"
+            <PrimaryButton
+              text="Chat"
               onPress={() => navigation.navigate("Chat")}
-            >
-              <StyledText className="text-white font-bold">Chat</StyledText>
-            </StyledTouchableOpacity>
+              size="small"
+            />
           </StyledView>
         </StyledView>
 
@@ -155,7 +187,9 @@ const LeaseDetails = () => {
         <StyledView className="bg-white p-4 rounded-xl mb-8 shadow-md">
           <StyledView className="flex-row items-center mb-4">
             <Entypo name="text-document" size={24} color="#f1c40f" />
-            <StyledText className="text-[#1a2c4e] text-lg font-bold ml-2">Lease Terms</StyledText>
+            <StyledText className="text-[#1a2c4e] text-lg font-bold ml-2">
+              Lease Terms
+            </StyledText>
           </StyledView>
 
           {leaseTerms.map((term, index) => (
@@ -167,8 +201,7 @@ const LeaseDetails = () => {
         </StyledView>
       </ScrollView>
     </StyledView>
-  )
-}
+  );
+};
 
-export default LeaseDetails
-
+export default LeaseDetails;

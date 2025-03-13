@@ -8,10 +8,12 @@ import {
   TouchableOpacity,
   TextInput,
   Alert,
+  Image,
 } from "react-native";
 import { styled } from "nativewind";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import * as ImagePicker from "expo-image-picker";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -20,12 +22,15 @@ const StyledTextInput = styled(TextInput);
 
 const MakePayment = () => {
   const navigation = useNavigation();
-  const [paymentMethod, setPaymentMethod] = useState("upi");
+  const [paymentMethod, setPaymentMethod] = useState("digitalWallet");
   const [upiId, setUpiId] = useState("");
   const [cardNumber, setCardNumber] = useState("");
   const [cardExpiry, setCardExpiry] = useState("");
   const [cardCvv, setCardCvv] = useState("");
   const [cardName, setCardName] = useState("");
+  const [formData, setFormData] = useState({
+    images: [],
+  });
 
   const paymentDetails = {
     rent: 25000,
@@ -35,42 +40,32 @@ const MakePayment = () => {
     dueDate: "July 1, 2023",
   };
 
-  const formatCardNumber = (text) => {
-    const cleaned = text.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
-    const chunks = [];
+  const handleInputChange = (field, value) => {
+    setFormData({ ...formData, [field]: value });
+  };
 
-    for (let i = 0; i < cleaned.length && i < 16; i += 4) {
-      chunks.push(cleaned.substring(i, i + 4));
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [9, 16],
+      quality: 1,
+    });
+
+    if (!result.canceled && result.assets && result.assets.length > 0) {
+      setFormData({
+        ...formData,
+        images: [...formData.images, result.assets[0].uri],
+      });
     }
-
-    return chunks.join(" ");
   };
-
-  const formatExpiry = (text) => {
-    const cleaned = text.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
-
-    if (cleaned.length <= 2) {
-      return cleaned;
-    }
-
-    return `${cleaned.substring(0, 2)}/${cleaned.substring(2, 4)}`;
-  };
-
-  const handleCardNumberChange = (text) => {
-    setCardNumber(formatCardNumber(text));
-  };
-
-  const handleExpiryChange = (text) => {
-    setCardExpiry(formatExpiry(text));
-  };
-
   const handlePayment = () => {
-    if (paymentMethod === "upi" && !upiId) {
+    if (paymentMethod === "digitalWallet" && !upiId) {
       Alert.alert("Error", "Please enter your UPI ID");
       return;
     }
 
-    if (paymentMethod === "card") {
+    if (paymentMethod === "receipt") {
       if (!cardNumber || cardNumber.replace(/\s+/g, "").length < 16) {
         Alert.alert("Error", "Please enter a valid card number");
         return;
@@ -98,6 +93,10 @@ const MakePayment = () => {
       `Your payment of Rs ${paymentDetails.total} has been processed successfully.`,
       [{ text: "OK", onPress: () => navigation.navigate("Payments") }]
     );
+  };
+
+  const handleSubmit = () => {
+    Alert.alert("Submit");
   };
 
   return (
@@ -170,134 +169,134 @@ const MakePayment = () => {
           <StyledView className="flex-row mb-4">
             <StyledTouchableOpacity
               className={`flex-1 p-3 rounded-lg mr-2 flex-row items-center justify-center ${
-                paymentMethod === "upi"
+                paymentMethod === "digitalWallet"
                   ? "bg-[#27ae60]"
                   : "bg-[#f8f9fa] border border-[#e9ecef]"
               }`}
-              onPress={() => setPaymentMethod("upi")}
+              onPress={() => setPaymentMethod("digitalWallet")}
             >
               <FontAwesome5
                 name="mobile-alt"
                 size={16}
-                color={paymentMethod === "upi" ? "white" : "#8395a7"}
+                color={paymentMethod === "digitalWallet" ? "white" : "#8395a7"}
                 style={{ marginRight: 8 }}
               />
               <StyledText
                 className={`${
-                  paymentMethod === "upi" ? "text-white" : "text-[#1a2c4e]"
+                  paymentMethod === "digitalWallet"
+                    ? "text-white"
+                    : "text-[#1a2c4e]"
                 } font-bold`}
               >
-                UPI
+                Digital Wallet
               </StyledText>
             </StyledTouchableOpacity>
 
             <StyledTouchableOpacity
               className={`flex-1 p-3 rounded-lg ml-2 flex-row items-center justify-center ${
-                paymentMethod === "card"
+                paymentMethod === "receipt"
                   ? "bg-[#27ae60]"
                   : "bg-[#f8f9fa] border border-[#e9ecef]"
               }`}
-              onPress={() => setPaymentMethod("card")}
+              onPress={() => setPaymentMethod("receipt")}
             >
               <FontAwesome5
                 name="credit-card"
                 size={16}
-                color={paymentMethod === "card" ? "white" : "#8395a7"}
+                color={paymentMethod === "receipt" ? "white" : "#8395a7"}
                 style={{ marginRight: 8 }}
               />
               <StyledText
                 className={`${
-                  paymentMethod === "card" ? "text-white" : "text-[#1a2c4e]"
+                  paymentMethod === "receipt" ? "text-white" : "text-[#1a2c4e]"
                 } font-bold`}
               >
-                Card
+                Upload Receipt
               </StyledText>
             </StyledTouchableOpacity>
           </StyledView>
 
-          {paymentMethod === "upi" ? (
-            <StyledView>
-              <StyledText className="text-[#1a2c4e] font-medium mb-2">
-                Enter UPI ID
-              </StyledText>
-              <StyledTextInput
-                className="border border-[#e9ecef] rounded-lg p-3 mb-2"
-                placeholder="yourname@upi"
-                value={upiId}
-                onChangeText={setUpiId}
-                autoCapitalize="none"
-              />
-              <StyledText className="text-[#8395a7] text-sm">
-                Example: yourname@okhdfcbank, yourname@ybl
-              </StyledText>
-            </StyledView>
+          {paymentMethod === "digitalWallet" ? (
+            <>
+              <StyledView>
+                <StyledText className="text-[#1a2c4e] font-medium mb-2">
+                  Enter Amount
+                </StyledText>
+                <StyledTextInput
+                  className="border border-[#e9ecef] rounded-lg p-3 mb-2"
+                  placeholder="Amount in Rs if you want to pay partially..."
+                  onChangeText={(text) =>
+                    handleInputChange("partialAmount", text)
+                  }
+                  autoCapitalize="none"
+                  keyboardType="numeric"
+                  value={formData?.partialAmount}
+                />
+              </StyledView>
+              <StyledView>
+                <StyledText className="text-[#1a2c4e] font-medium mb-2">
+                  Enter ID
+                </StyledText>
+                <StyledTextInput
+                  className="border border-[#e9ecef] rounded-lg p-3 mb-2"
+                  placeholder="yourname@email.com"
+                  value={upiId}
+                  onChangeText={setUpiId}
+                  autoCapitalize="none"
+                />
+              </StyledView>
+            </>
           ) : (
             <StyledView>
               <StyledText className="text-[#1a2c4e] font-medium mb-2">
-                Card Number
+                Upload Receipt Image of Payment
               </StyledText>
-              <StyledTextInput
-                className="border border-[#e9ecef] rounded-lg p-3 mb-3"
-                placeholder="1234 5678 9012 3456"
-                value={cardNumber}
-                onChangeText={handleCardNumberChange}
-                keyboardType="numeric"
-                maxLength={19}
-              />
-
-              <StyledView className="flex-row mb-3">
-                <StyledView className="flex-1 mr-2">
-                  <StyledText className="text-[#1a2c4e] font-medium mb-2">
-                    Expiry Date
-                  </StyledText>
-                  <StyledTextInput
-                    className="border border-[#e9ecef] rounded-lg p-3"
-                    placeholder="MM/YY"
-                    value={cardExpiry}
-                    onChangeText={handleExpiryChange}
-                    keyboardType="numeric"
-                    maxLength={5}
-                  />
-                </StyledView>
-
-                <StyledView className="flex-1 ml-2">
-                  <StyledText className="text-[#1a2c4e] font-medium mb-2">
-                    CVV
-                  </StyledText>
-                  <StyledTextInput
-                    className="border border-[#e9ecef] rounded-lg p-3"
-                    placeholder="123"
-                    value={cardCvv}
-                    onChangeText={setCardCvv}
-                    keyboardType="numeric"
-                    maxLength={3}
-                    secureTextEntry
-                  />
-                </StyledView>
+              <StyledView className="flex-row flex-wrap">
+                {formData.images.map((image, index) => (
+                  <StyledView key={index} className="w-24 h-24 m-1 relative">
+                    <Image
+                      source={{ uri: image }}
+                      className="w-full h-full rounded-lg"
+                    />
+                    <TouchableOpacity
+                      className="absolute top-1 right-1 bg-[#e74c3c] rounded-full p-1"
+                      onPress={() => removeImage(index)}
+                    >
+                      <Ionicons name="close" size={16} color="white" />
+                    </TouchableOpacity>
+                  </StyledView>
+                ))}
+                <StyledTouchableOpacity
+                  className="w-24 h-24 border-2 border-dashed border-[#e9ecef] rounded-lg m-1 justify-center items-center"
+                  onPress={pickImage}
+                >
+                  <Ionicons name="add" size={32} color="#8395a7" />
+                </StyledTouchableOpacity>
               </StyledView>
-
-              <StyledText className="text-[#1a2c4e] font-medium mb-2">
-                Name on Card
-              </StyledText>
-              <StyledTextInput
-                className="border border-[#e9ecef] rounded-lg p-3"
-                placeholder="John Doe"
-                value={cardName}
-                onChangeText={setCardName}
-              />
             </StyledView>
           )}
         </StyledView>
 
         {/* Pay Button */}
-        <StyledTouchableOpacity
-          className="bg-[#27ae60] p-4 rounded-xl mb-8 items-center"
-          onPress={handlePayment}
-        >
-          <StyledText className="text-white font-bold text-lg">
-            Pay Rs {paymentDetails.total}
-          </StyledText>
-        </StyledTouchableOpacity>
+        {paymentMethod === "digitalWallet" ? (
+          <StyledTouchableOpacity
+            className="bg-[#27ae60] p-4 rounded-xl mb-8 items-center"
+            onPress={handlePayment}
+          >
+            <StyledText className="text-white font-bold text-lg">
+              Pay Rs {paymentDetails.total}
+            </StyledText>
+          </StyledTouchableOpacity>
+        ) : (
+          <StyledTouchableOpacity
+            className="bg-[#27ae60] p-4 rounded-xl mb-8 items-center"
+            onPress={handleSubmit}
+          >
+            <StyledText className="text-white font-bold text-lg">
+              Submit
+            </StyledText>
+          </StyledTouchableOpacity>
+        )}
       </ScrollView>
     </StyledView>
   );

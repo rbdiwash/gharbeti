@@ -11,6 +11,15 @@ import {
 import { styled } from "nativewind";
 import { Entypo, FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import {
+  PrimaryButton,
+  OutlinedButton,
+  TextButton,
+  IconButton,
+  FloatingActionButton,
+  ButtonGroup,
+  SecondaryButton,
+} from "../../../components/Buttons";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -48,8 +57,8 @@ const HomeScreen = () => {
               onPress={() => navigation.navigate("Profile")}
               className="mr-3"
             >
-              <StyledView className="w-12 h-12 rounded-full bg-[#27ae60] justify-center items-center">
-                <Text className="text-white text-lg font-bold">DR</Text>
+              <StyledView className="w-12 h-12 rounded-full bg-white justify-center items-center">
+                <Text className="text-primary text-lg font-bold">DR</Text>
               </StyledView>
             </TouchableOpacity>
             <StyledView>
@@ -83,7 +92,7 @@ const HomeScreen = () => {
             <TouchableOpacity
               onPress={() => navigation.navigate("PaymentHistory")}
             >
-              <StyledText className="text-[#27ae60]">View History</StyledText>
+              <StyledText className="text-primary">View History</StyledText>
             </TouchableOpacity>
           </StyledView>
           <StyledView className="flex-row justify-between items-center">
@@ -94,16 +103,13 @@ const HomeScreen = () => {
               <StyledText className="text-[#1a2c4e] text-2xl font-bold">
                 ₹25,000
               </StyledText>
-              <StyledText className="text-[#e74c3c]">
-                Due on July 1st
-              </StyledText>
+              <StyledText className="text-red">Due on July 1st</StyledText>
             </StyledView>
-            <TouchableOpacity
-              className="bg-[#27ae60] px-6 py-3 rounded-xl"
+
+            <PrimaryButton
+              text="Pay Now"
               onPress={() => navigation.navigate("MakePayment")}
-            >
-              <StyledText className="text-white font-bold">Pay Now</StyledText>
-            </TouchableOpacity>
+            />
           </StyledView>
         </AnimatedView>
       </StyledView>
@@ -159,7 +165,6 @@ const HomeScreen = () => {
           ))}
         </StyledView>
       </StyledView>
-
       {/* Recent Activity */}
       <StyledView className="px-4 pb-6">
         <StyledText className="text-[#1a2c4e] text-lg font-bold mb-4">
