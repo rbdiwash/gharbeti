@@ -182,9 +182,9 @@ const NoticesScreen = () => {
           {filterTypes.map((type) => (
             <StyledTouchableOpacity
               key={type.id}
-              className={`mr-2 px-4 py-2 rounded-full ${
+              className={`mr-2 px-4 py-1 rounded-full ${
                 filterType === type.id
-                  ? "bg-[#27ae60]"
+                  ? "bg-secondary"
                   : "bg-[#f0f2f5] border border-[#e9ecef]"
               }`}
               onPress={() => setFilterType(type.id)}

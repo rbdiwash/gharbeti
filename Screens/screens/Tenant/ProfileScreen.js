@@ -3,6 +3,7 @@ import { styled } from "nativewind";
 import { Entypo, FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import useGharbeti from "../../../context/useGharbeti";
+import { OutlinedButton } from "../../../components/Buttons";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -118,12 +119,12 @@ const ProfileScreen = () => {
         ))}
 
         {/* Logout Button */}
-        <StyledTouchableOpacity
-          className="bg-[#f8f9fa] border border-[#e74c3c] rounded-xl p-4 mb-8 items-center"
+
+        <OutlinedButton
+          text="Logout"
+          parentClass={"mb-8"}
           onPress={() => setIsLoggedIn(false)}
-        >
-          <StyledText className="text-[#e74c3c] font-bold">Logout</StyledText>
-        </StyledTouchableOpacity>
+        />
       </ScrollView>
     </StyledView>
   );

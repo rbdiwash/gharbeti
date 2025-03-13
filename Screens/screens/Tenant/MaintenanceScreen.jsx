@@ -155,10 +155,10 @@ const MaintenanceScreen = () => {
             Maintenance Requests
           </StyledText>
           <StyledTouchableOpacity
-            className="bg-secondary p-3 rounded-full"
+            className="bg-white p-2 rounded-full"
             onPress={() => navigation.navigate("NewMaintenance")}
           >
-            <Ionicons name="add" size={24} color="white" />
+            <Ionicons name="add" size={24} color="black" />
           </StyledTouchableOpacity>
         </StyledView>
 

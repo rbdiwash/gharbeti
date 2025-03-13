@@ -1,6 +1,7 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Entypo, FontAwesome5, Ionicons } from "@expo/vector-icons";
+import Feather from "@expo/vector-icons/Feather";
 
 // Screens
 import HomeScreen from "../Screens/screens/Tenant/HomeScreen";
@@ -16,6 +17,9 @@ import MakePayment from "../Screens/screens/Tenant/MakePayment";
 import ProfileScreen from "../Screens/screens/Tenant/ProfileScreen";
 import MaintenanceDetails from "../Screens/screens/Tenant/MaintenanceDetails";
 import NoticeDetails from "../Screens/screens/Tenant/NoticeDetails";
+import EditProfileScreen from "../Screens/screens/Tenant/EditProfileScreen";
+import SettingsScreen from "../Screens/screens/Tenant/SettingsScreen";
+import { Settings } from "react-native";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -64,11 +68,11 @@ const TabNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="Chat"
-        component={ChatScreen}
+        name="More"
+        component={SettingsScreen}
         options={{
           tabBarIcon: ({ color }) => (
-            <Ionicons name="chatbubble-ellipses" size={24} color={color} />
+            <Feather name="more-vertical" size={24} color={color} />
           ),
         }}
       />
@@ -100,6 +104,8 @@ const LoggedInTenantStack = () => {
       <Stack.Screen name="LeaseDetails" component={LeaseDetails} />
       <Stack.Screen name="PaymentHistory" component={PaymentHistory} />
       <Stack.Screen name="MakePayment" component={MakePayment} />
+      <Stack.Screen name="Settings" component={SettingsScreen} />
+      <Stack.Screen name="EditProfile" component={EditProfileScreen} />
     </Stack.Navigator>
   );
 };

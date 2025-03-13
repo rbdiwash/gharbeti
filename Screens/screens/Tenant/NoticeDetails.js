@@ -12,6 +12,7 @@ import {
 import { styled } from "nativewind";
 import { Entypo, Ionicons, FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import { OutlinedButton, PrimaryButton } from "../../../components/Buttons";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -301,7 +302,7 @@ const NoticeDetails = () => {
                 />
                 <StyledText
                   className={`ml-1 ${
-                    isRead ? "text-[#27ae60]" : "text-[#8395a7]"
+                    isRead ? "text-primary" : "text-[#8395a7]"
                   }`}
                 >
                   {isRead ? "Read" : "Mark as read"}
@@ -371,7 +372,7 @@ const NoticeDetails = () => {
                   {notice.contactNumber}
                 </StyledText>
               </StyledView>
-              <StyledTouchableOpacity className="bg-[#27ae60] p-3 rounded-full">
+              <StyledTouchableOpacity className="bg-primary p-3 rounded-full">
                 <Ionicons name="call" size={20} color="white" />
               </StyledTouchableOpacity>
             </StyledView>
@@ -380,22 +381,11 @@ const NoticeDetails = () => {
 
         {/* Action Buttons */}
         <StyledView className="px-4 py-6 flex-row justify-between">
-          <StyledTouchableOpacity
-            className="flex-1 bg-[#f8f9fa] py-3 rounded-lg border border-[#e9ecef] mr-2 items-center"
+          <OutlinedButton
+            text="Back to Notices"
             onPress={() => navigation.goBack()}
-          >
-            <StyledText className="text-[#1a2c4e] font-bold">
-              Back to Notices
-            </StyledText>
-          </StyledTouchableOpacity>
-          <StyledTouchableOpacity
-            className="flex-1 bg-[#27ae60] py-3 rounded-lg ml-2 items-center"
-            onPress={shareNotice}
-          >
-            <StyledText className="text-white font-bold">
-              Share Notice
-            </StyledText>
-          </StyledTouchableOpacity>
+          />
+          <PrimaryButton text="Share Notice" onPress={shareNotice} />
         </StyledView>
       </ScrollView>
     </StyledView>

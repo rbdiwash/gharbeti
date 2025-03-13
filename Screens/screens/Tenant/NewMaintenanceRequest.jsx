@@ -238,7 +238,11 @@ const NewMaintenanceRequest = () => {
 
         {/* Submit Button */}
 
-        <PrimaryButton text="Submit Request" onPress={submitRequest} />
+        <PrimaryButton
+          text="Submit Request"
+          onPress={submitRequest}
+          parentClass={"mb-8"}
+        />
       </ScrollView>
     </StyledView>
   );

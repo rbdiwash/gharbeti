@@ -19,7 +19,7 @@ export const PrimaryButton = ({
   textStyle = {},
   leftIcon,
   rightIcon,
-  className = "",
+  parentClass,
   ...props
 }) => {
   // Size variants
@@ -40,7 +40,7 @@ export const PrimaryButton = ({
     <View
       className={`rounded-lg ${sizeStyles[size]} ${
         fullWidth ? "w-full" : ""
-      } items-center justify-center flex-row ${className}`}
+      } items-center justify-center flex-row ${parentClass}`}
       style={{
         backgroundColor: disabled ? "#a0aec0" : bgColor,
         opacity: disabled ? 0.7 : 1,
@@ -56,7 +56,7 @@ export const PrimaryButton = ({
         <>
           {leftIcon && <StyledView className="mr-2">{leftIcon}</StyledView>}
           <StyledText
-            className={`font-bold ${textSizeStyles[size]} ${className}`}
+            className={`font-bold ${textSizeStyles[size]} `}
             style={{ color: textColor, ...textStyle }}
           >
             {text}
@@ -136,12 +136,13 @@ export const OutlinedButton = ({
   size = "medium",
   loading = false,
   disabled = false,
-  borderColor = "#27ae60",
-  textColor = "#27ae60",
+  borderColor = "#0e2f4f",
+  textColor = "#0e2f4f",
   style = {},
   textStyle = {},
   leftIcon,
   rightIcon,
+  parentClass,
   ...props
 }) => {
   // Size variants
@@ -162,7 +163,7 @@ export const OutlinedButton = ({
     <StyledTouchableOpacity
       className={`rounded-lg ${sizeStyles[size]} ${
         fullWidth ? "w-full" : ""
-      } items-center justify-center flex-row`}
+      } items-center justify-center flex-row ${parentClass}`}
       style={{
         backgroundColor: "transparent",
         borderWidth: 1,

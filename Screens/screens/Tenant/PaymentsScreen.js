@@ -2,6 +2,7 @@ import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { styled } from "nativewind";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { PrimaryButton } from "../../../components/Buttons";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -53,12 +54,11 @@ const PaymentsScreen = () => {
                 Rs 25,000
               </StyledText>
             </StyledView>
-            <StyledTouchableOpacity
-              className="bg-secondary px-6 py-3 rounded-xl"
+
+            <PrimaryButton
+              text="Pay Now"
               onPress={() => navigation.navigate("MakePayment")}
-            >
-              <StyledText className="text-white font-bold">Pay Now</StyledText>
-            </StyledTouchableOpacity>
+            />
           </StyledView>
           <StyledView className="flex-row justify-between">
             <StyledView>
