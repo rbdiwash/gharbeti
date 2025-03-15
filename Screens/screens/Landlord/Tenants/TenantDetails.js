@@ -1,149 +1,705 @@
-import React, { useState } from "react";
-import { View, Text, Image, TouchableOpacity, ScrollView } from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons"; // For the action button icon
+"use client";
+
+import { useState } from "react";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+  StatusBar,
+  Linking,
+} from "react-native";
+import { styled } from "nativewind";
+import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+const StyledView = styled(View);
+const StyledText = styled(Text);
+const StyledTouchableOpacity = styled(TouchableOpacity);
+const StyledImage = styled(Image);
+const StyledScrollView = styled(ScrollView);
+const StyledSafeAreaView = styled(SafeAreaView);
 
 // Mock Tenant Data
 const tenantData = {
   id: "1",
-  name: "Luke Findel",
+  name: "Divash Ranabhat",
   address: "Bhaktapur, Kathmandu",
   phone: "9876543210",
-  email: "ram.sharma@example.com",
+  email: "luke.findel@example.com",
   imageUrl: "https://randomuser.me/api/portraits/men/1.jpg",
   dueAmount: 3200,
   totalPaid: 15000,
   totalRooms: 3,
   monthlyRent: 5000,
   isActive: true,
-  rentToDate: "15th Oct 2024",
+  rentDueDate: "15th Oct 2024",
+  leaseStartDate: "15th Jan 2024",
+  leaseEndDate: "15th Jan 2025",
+  securityDeposit: 10000,
+  documents: [
+    { type: "Citizenship", verified: true },
+    { type: "Rental Agreement", verified: true },
+  ],
+  emergencyContact: {
+    name: "Sarah Findel",
+    relation: "Wife",
+    phone: "9876543211",
+  },
   maintenanceRequests: [
-    { title: "Leaky Tap", date: "10th Oct 2024", isFixed: false },
-    { title: "Broken Light", date: "12th Oct 2024", isFixed: true },
+    {
+      id: 1,
+      title: "Leaky Tap",
+      description: "Kitchen sink tap is leaking",
+      date: "10th Oct 2024",
+      status: "Pending",
+      priority: "Medium",
+    },
+    {
+      id: 2,
+      title: "Broken Light",
+      description: "Bedroom light not working",
+      date: "12th Oct 2024",
+      status: "Completed",
+      priority: "Low",
+    },
+    {
+      id: 3,
+      title: "Water Heater Issue",
+      description: "Water heater not heating properly",
+      date: "5th Oct 2024",
+      status: "In Progress",
+      priority: "High",
+    },
+  ],
+  paymentHistory: [
+    {
+      id: 1,
+      amount: 5000,
+      date: "15th Sep 2024",
+      status: "Paid",
+      method: "Bank Transfer",
+    },
+    {
+      id: 2,
+      amount: 5000,
+      date: "15th Aug 2024",
+      status: "Paid",
+      method: "Cash",
+    },
+    {
+      id: 3,
+      amount: 5000,
+      date: "15th Jul 2024",
+      status: "Paid",
+      method: "UPI",
+    },
   ],
 };
 
-const TenantDetails = ({ tenant = tenantData, navigation }) => {
-  const navigateToPersonalDetails = () => {
-    // Mock navigation to personal details page
-    alert("Navigating to Personal Details Page");
+const TenantDetailsScreen = () => {
+  const navigation = useNavigation();
+  const [activeTab, setActiveTab] = useState("overview");
+
+  // Function to handle phone call
+  const handleCall = () => {
+    Linking.openURL(`tel:${tenantData.phone}`);
+  };
+
+  // Function to handle email
+  const handleEmail = () => {
+    Linking.openURL(`mailto:${tenantData.email}`);
+  };
+
+  // Function to get status color
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "Pending":
+        return "bg-[#f1c40f]";
+      case "In Progress":
+        return "bg-[#3498db]";
+      case "Completed":
+        return "bg-[#27ae60]";
+      default:
+        return "bg-[#8395a7]";
+    }
+  };
+
+  // Function to get priority color
+  const getPriorityColor = (priority) => {
+    switch (priority) {
+      case "High":
+        return "text-[#e74c3c]";
+      case "Medium":
+        return "text-[#f1c40f]";
+      case "Low":
+        return "text-[#27ae60]";
+      default:
+        return "text-[#8395a7]";
+    }
   };
 
   return (
-    <ScrollView className="flex-1 bg-gray-100 p-6">
-      {/* Profile Section */}
-      <View className="flex items-center">
-        <Image
-          source={{ uri: tenant.imageUrl }}
-          className="w-32 h-32 rounded-full border-4 border-indigo-500 shadow-lg"
-        />
-        <Text className="mt-4 text-2xl font-bold text-gray-800">
-          {tenant.name}
-        </Text>
-        <Text className="text-gray-500">{tenant.address}</Text>
-      </View>
+    <StyledSafeAreaView className="flex-1 bg-[#f8f9fa]">
+      <StatusBar barStyle="dark-content" backgroundColor="transparent" />
 
-      {/* Rent Information */}
-      <View className="bg-white p-4 mt-6 rounded-lg shadow-sm">
-        <View className="flex-row justify-between">
-          <Text className="text-lg font-semibold text-gray-800">
-            Rent Due Date
-          </Text>
-          <Text className="text-lg text-indigo-600">{tenant.rentToDate}</Text>
-        </View>
-        <View className="flex-row justify-between mt-4">
-          <Text className="text-lg font-semibold text-gray-800">
-            Total Rent per Month
-          </Text>
-          <Text className="text-lg text-indigo-600">
-            Rs. {tenant.monthlyRent}
-          </Text>
-        </View>
-      </View>
+      {/* Header */}
+      <StyledView className="px-4 py-4 flex-row justify-between items-center">
+        <StyledTouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back" size={24} color="#1a2c4e" />
+        </StyledTouchableOpacity>
+        <StyledText className="text-[#1a2c4e] text-xl font-bold">
+          Tenant Details
+        </StyledText>
+        <StyledTouchableOpacity
+          onPress={() => navigation.navigate("Edit Tenant")}
+        >
+          <Ionicons name="create-outline" size={24} color="#1a2c4e" />
+        </StyledTouchableOpacity>
+      </StyledView>
 
-      {/* Financial Summary */}
-      <View className="mt-8 bg-white p-4 rounded-lg shadow-sm">
-        <Text className="text-2xl font-bold text-gray-800 mb-4">
-          Financial Details
-        </Text>
+      <StyledScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        {/* Profile Section */}
+        <StyledView className="px-4 pb-6 items-center">
+          {tenantData.imageUrl ? (
+            <StyledImage
+              source={{ uri: tenantData.imageUrl }}
+              className="w-24 h-24 rounded-full border-4 border-white shadow-md"
+            />
+          ) : (
+            <StyledView className="w-24 h-24 rounded-full bg-[#27ae60] items-center justify-center border-4 border-white shadow-md">
+              <StyledText className="text-white text-2xl font-bold">
+                {tenantData.name.charAt(0)}
+              </StyledText>
+            </StyledView>
+          )}
 
-        <View className="flex-row justify-between mb-4">
-          <Text className="text-lg text-gray-700">Total Dues</Text>
-          <Text className="text-lg font-semibold text-red-600">
-            Rs. {tenant.dueAmount}
-          </Text>
-        </View>
+          <StyledText className="mt-3 text-[#1a2c4e] text-xl font-bold">
+            {tenantData.name}
+          </StyledText>
+          <StyledText className="text-[#8395a7]">
+            {tenantData.address}
+          </StyledText>
 
-        <View className="flex-row justify-between mb-4">
-          <Text className="text-lg text-gray-700">Total Paid</Text>
-          <Text className="text-lg font-semibold text-green-600">
-            Rs. {tenant.totalPaid}
-          </Text>
-        </View>
-
-        <View className="flex-row justify-between">
-          <Text className="text-lg text-gray-700">Rooms Rented</Text>
-          <Text className="text-lg font-semibold text-gray-800">
-            {tenant.totalRooms}
-          </Text>
-        </View>
-      </View>
-
-      {/* Maintenance Requests */}
-      <View className="mt-8 bg-white p-4 rounded-lg shadow-sm">
-        <Text className="text-2xl font-bold text-gray-800 mb-4">
-          Maintenance Requests
-        </Text>
-        {tenant.maintenanceRequests.map((request, index) => (
-          <View
-            key={index}
-            className="flex-row justify-between items-center mb-3 p-3 bg-gray-100 rounded-lg"
-          >
-            <Text className="text-gray-800">{request.title}</Text>
-            <View className="flex-row items-center">
-              <Text
-                className={`text-sm mr-2 ${
-                  request.isFixed ? "text-green-600" : "text-red-600"
-                }`}
+          <StyledView className="flex-row mt-4">
+            <StyledView
+              className={`px-3 py-1 rounded-full ${
+                tenantData.isActive ? "bg-[#e8f5e9]" : "bg-[#ffebee]"
+              }`}
+            >
+              <StyledText
+                className={
+                  tenantData.isActive
+                    ? "text-[#27ae60] font-medium"
+                    : "text-[#e74c3c] font-medium"
+                }
               >
-                {request.isFixed ? "Fixed" : "Not Fixed"}
-              </Text>
-              <Text className="text-gray-400">{request.date}</Text>
-            </View>
-          </View>
-        ))}
-      </View>
+                {tenantData.isActive ? "Active" : "Inactive"}
+              </StyledText>
+            </StyledView>
+          </StyledView>
+
+          {/* Quick Actions */}
+          <StyledView className="flex-row mt-4 w-full justify-center">
+            <StyledTouchableOpacity
+              className="bg-[#e8f5e9] p-3 rounded-full mr-4"
+              onPress={handleCall}
+            >
+              <Ionicons name="call" size={22} color="#27ae60" />
+            </StyledTouchableOpacity>
+
+            <StyledTouchableOpacity
+              className="bg-[#e3f2fd] p-3 rounded-full mr-4"
+              onPress={handleEmail}
+            >
+              <Ionicons name="mail" size={22} color="#3498db" />
+            </StyledTouchableOpacity>
+
+            <StyledTouchableOpacity
+              className="bg-[#e8f5e9] p-3 rounded-full"
+              onPress={() => navigation.navigate("Chat")}
+            >
+              <Ionicons name="chatbubble" size={22} color="#27ae60" />
+            </StyledTouchableOpacity>
+          </StyledView>
+        </StyledView>
+
+        {/* Tabs */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          className="flex-row px-4 border-b border-[#e9ecef]"
+        >
+          <StyledTouchableOpacity
+            className={`py-3 px-3 ${
+              activeTab === "overview" ? "border-b-2 border-[#27ae60]" : ""
+            }`}
+            onPress={() => setActiveTab("overview")}
+          >
+            <StyledText
+              className={
+                activeTab === "overview"
+                  ? "text-[#27ae60] font-bold"
+                  : "text-[#8395a7]"
+              }
+            >
+              Overview
+            </StyledText>
+          </StyledTouchableOpacity>
+
+          <StyledTouchableOpacity
+            className={`py-3 px-4 ${
+              activeTab === "maintenance" ? "border-b-2 border-[#27ae60]" : ""
+            }`}
+            onPress={() => setActiveTab("maintenance")}
+          >
+            <StyledText
+              className={
+                activeTab === "maintenance"
+                  ? "text-[#27ae60] font-bold"
+                  : "text-[#8395a7]"
+              }
+            >
+              Maintenance
+            </StyledText>
+          </StyledTouchableOpacity>
+
+          <StyledTouchableOpacity
+            className={`py-3 px-4 ${
+              activeTab === "payments" ? "border-b-2 border-[#27ae60]" : ""
+            }`}
+            onPress={() => setActiveTab("payments")}
+          >
+            <StyledText
+              className={
+                activeTab === "payments"
+                  ? "text-[#27ae60] font-bold"
+                  : "text-[#8395a7]"
+              }
+            >
+              Payments
+            </StyledText>
+          </StyledTouchableOpacity>
+
+          <StyledTouchableOpacity
+            className={`py-3 px-4 ${
+              activeTab === "documents" ? "border-b-2 border-[#27ae60]" : ""
+            }`}
+            onPress={() => setActiveTab("documents")}
+          >
+            <StyledText
+              className={
+                activeTab === "documents"
+                  ? "text-[#27ae60] font-bold"
+                  : "text-[#8395a7]"
+              }
+            >
+              Documents
+            </StyledText>
+          </StyledTouchableOpacity>
+        </ScrollView>
+
+        {/* Tab Content */}
+        <StyledView className="p-4">
+          {/* Overview Tab */}
+          {activeTab === "overview" && (
+            <>
+              {/* Contact Information */}
+              <StyledView className="bg-white p-4 rounded-xl shadow-sm mb-4">
+                <StyledText className="text-[#1a2c4e] text-lg font-bold mb-4">
+                  Contact Information
+                </StyledText>
+
+                <StyledView className="flex-row justify-between mb-3">
+                  <StyledView className="flex-row items-center">
+                    <Ionicons name="call-outline" size={18} color="#8395a7" />
+                    <StyledText className="text-[#8395a7] ml-2">
+                      Phone
+                    </StyledText>
+                  </StyledView>
+                  <StyledText className="text-[#1a2c4e] font-medium">
+                    {tenantData.phone}
+                  </StyledText>
+                </StyledView>
+
+                <StyledView className="flex-row justify-between mb-3">
+                  <StyledView className="flex-row items-center">
+                    <Ionicons name="mail-outline" size={18} color="#8395a7" />
+                    <StyledText className="text-[#8395a7] ml-2">
+                      Email
+                    </StyledText>
+                  </StyledView>
+                  <StyledText className="text-[#1a2c4e] font-medium">
+                    {tenantData.email}
+                  </StyledText>
+                </StyledView>
+
+                <StyledView className="flex-row justify-between">
+                  <StyledView className="flex-row items-center">
+                    <Ionicons name="home-outline" size={18} color="#8395a7" />
+                    <StyledText className="text-[#8395a7] ml-2">
+                      Address
+                    </StyledText>
+                  </StyledView>
+                  <StyledText className="text-[#1a2c4e] font-medium text-right flex-1 ml-4">
+                    {tenantData.address}
+                  </StyledText>
+                </StyledView>
+              </StyledView>
+
+              {/* Rental Information */}
+              <StyledView className="bg-white p-4 rounded-xl shadow-sm mb-4">
+                <StyledText className="text-[#1a2c4e] text-lg font-bold mb-4">
+                  Rental Information
+                </StyledText>
+
+                <StyledView className="flex-row justify-between mb-3">
+                  <StyledText className="text-[#8395a7]">
+                    Monthly Rent
+                  </StyledText>
+                  <StyledText className="text-[#1a2c4e] font-bold">
+                    ₹{tenantData.monthlyRent}
+                  </StyledText>
+                </StyledView>
+
+                <StyledView className="flex-row justify-between mb-3">
+                  <StyledText className="text-[#8395a7]">
+                    Rooms Rented
+                  </StyledText>
+                  <StyledText className="text-[#1a2c4e] font-medium">
+                    {tenantData.totalRooms}
+                  </StyledText>
+                </StyledView>
+
+                <StyledView className="flex-row justify-between mb-3">
+                  <StyledText className="text-[#8395a7]">
+                    Security Deposit
+                  </StyledText>
+                  <StyledText className="text-[#1a2c4e] font-medium">
+                    ₹{tenantData.securityDeposit}
+                  </StyledText>
+                </StyledView>
+
+                <StyledView className="flex-row justify-between mb-3">
+                  <StyledText className="text-[#8395a7]">
+                    Lease Start Date
+                  </StyledText>
+                  <StyledText className="text-[#1a2c4e] font-medium">
+                    {tenantData.leaseStartDate}
+                  </StyledText>
+                </StyledView>
+
+                <StyledView className="flex-row justify-between">
+                  <StyledText className="text-[#8395a7]">
+                    Lease End Date
+                  </StyledText>
+                  <StyledText className="text-[#1a2c4e] font-medium">
+                    {tenantData.leaseEndDate}
+                  </StyledText>
+                </StyledView>
+              </StyledView>
+
+              {/* Financial Summary */}
+              <StyledView className="bg-white p-4 rounded-xl shadow-sm mb-4">
+                <StyledText className="text-[#1a2c4e] text-lg font-bold mb-4">
+                  Financial Summary
+                </StyledText>
+
+                <StyledView className="flex-row justify-between mb-3">
+                  <StyledText className="text-[#8395a7]">
+                    Current Due
+                  </StyledText>
+                  <StyledText className="text-[#e74c3c] font-bold">
+                    ₹{tenantData.dueAmount}
+                  </StyledText>
+                </StyledView>
+
+                <StyledView className="flex-row justify-between mb-3">
+                  <StyledText className="text-[#8395a7]">
+                    Next Due Date
+                  </StyledText>
+                  <StyledText className="text-[#1a2c4e] font-medium">
+                    {tenantData.rentDueDate}
+                  </StyledText>
+                </StyledView>
+
+                <StyledView className="flex-row justify-between">
+                  <StyledText className="text-[#8395a7]">
+                    Total Paid (Till Date)
+                  </StyledText>
+                  <StyledText className="text-[#27ae60] font-bold">
+                    ₹{tenantData.totalPaid}
+                  </StyledText>
+                </StyledView>
+              </StyledView>
+
+              {/* Emergency Contact */}
+              <StyledView className="bg-white p-4 rounded-xl shadow-sm mb-4">
+                <StyledText className="text-[#1a2c4e] text-lg font-bold mb-4">
+                  Emergency Contact
+                </StyledText>
+
+                <StyledView className="flex-row justify-between mb-3">
+                  <StyledText className="text-[#8395a7]">Name</StyledText>
+                  <StyledText className="text-[#1a2c4e] font-medium">
+                    {tenantData.emergencyContact.name}
+                  </StyledText>
+                </StyledView>
+
+                <StyledView className="flex-row justify-between mb-3">
+                  <StyledText className="text-[#8395a7]">Relation</StyledText>
+                  <StyledText className="text-[#1a2c4e] font-medium">
+                    {tenantData.emergencyContact.relation}
+                  </StyledText>
+                </StyledView>
+
+                <StyledView className="flex-row justify-between">
+                  <StyledText className="text-[#8395a7]">Phone</StyledText>
+                  <StyledText className="text-[#1a2c4e] font-medium">
+                    {tenantData.emergencyContact.phone}
+                  </StyledText>
+                </StyledView>
+              </StyledView>
+            </>
+          )}
+
+          {/* Maintenance Tab */}
+          {activeTab === "maintenance" && (
+            <>
+              <StyledView className="flex-row justify-between items-center mb-4">
+                <StyledText className="text-[#1a2c4e] text-lg font-bold">
+                  Maintenance Requests
+                </StyledText>
+              </StyledView>
+
+              {tenantData.maintenanceRequests.map((request) => (
+                <StyledTouchableOpacity
+                  key={request.id}
+                  className="bg-white p-4 rounded-xl shadow-sm mb-4"
+                  onPress={() =>
+                    navigation.navigate("MaintenanceDetails", {
+                      requestId: request.id,
+                    })
+                  }
+                >
+                  <StyledView className="flex-row justify-between items-start mb-2">
+                    <StyledView className="flex-1">
+                      <StyledText className="text-[#1a2c4e] text-lg font-bold">
+                        {request.title}
+                      </StyledText>
+                      <StyledText className="text-[#8395a7]">
+                        {request.description}
+                      </StyledText>
+                    </StyledView>
+                    <StyledView
+                      className={`${getStatusColor(
+                        request.status
+                      )} px-3 py-1 rounded-full ml-2`}
+                    >
+                      <StyledText className="text-white text-xs font-medium">
+                        {request.status}
+                      </StyledText>
+                    </StyledView>
+                  </StyledView>
+
+                  <StyledView className="flex-row justify-between items-center mt-2">
+                    <StyledText className="text-[#8395a7] text-sm">
+                      {request.date}
+                    </StyledText>
+                    <StyledText
+                      className={`font-medium ${getPriorityColor(
+                        request.priority
+                      )}`}
+                    >
+                      {request.priority} Priority
+                    </StyledText>
+                  </StyledView>
+                </StyledTouchableOpacity>
+              ))}
+
+              {tenantData.maintenanceRequests.length === 0 && (
+                <StyledView className="bg-white p-6 rounded-xl shadow-sm items-center justify-center">
+                  <Ionicons
+                    name="construct-outline"
+                    size={50}
+                    color="#e9ecef"
+                  />
+                  <StyledText className="text-[#8395a7] mt-2">
+                    No maintenance requests found
+                  </StyledText>
+                </StyledView>
+              )}
+            </>
+          )}
+
+          {/* Payments Tab */}
+          {activeTab === "payments" && (
+            <>
+              <StyledView className="flex-row justify-between items-center mb-4">
+                <StyledText className="text-[#1a2c4e] text-lg font-bold">
+                  Payment History
+                </StyledText>
+                <StyledTouchableOpacity
+                  className="bg-[#27ae60] px-3 py-1 rounded-lg flex-row items-center"
+                  onPress={() => navigation.navigate("MakePayment")}
+                >
+                  <FontAwesome5
+                    name="money-bill-wave"
+                    size={14}
+                    color="white"
+                  />
+                  <StyledText className="text-white ml-1">Collect</StyledText>
+                </StyledTouchableOpacity>
+              </StyledView>
+
+              {tenantData.paymentHistory.map((payment) => (
+                <StyledView
+                  key={payment.id}
+                  className="bg-white p-4 rounded-xl shadow-sm mb-4"
+                >
+                  <StyledView className="flex-row justify-between items-start mb-2">
+                    <StyledView>
+                      <StyledText className="text-[#1a2c4e] text-lg font-bold">
+                        ₹{payment.amount}
+                      </StyledText>
+                      <StyledText className="text-[#8395a7]">
+                        {payment.date}
+                      </StyledText>
+                    </StyledView>
+                    <StyledView className="bg-[#e8f5e9] px-3 py-1 rounded-full">
+                      <StyledText className="text-[#27ae60] text-xs font-medium">
+                        {payment.status}
+                      </StyledText>
+                    </StyledView>
+                  </StyledView>
+
+                  <StyledView className="flex-row justify-between items-center mt-2">
+                    <StyledText className="text-[#8395a7]">
+                      Payment Method
+                    </StyledText>
+                    <StyledText className="text-[#1a2c4e] font-medium">
+                      {payment.method}
+                    </StyledText>
+                  </StyledView>
+                </StyledView>
+              ))}
+
+              {tenantData.paymentHistory.length === 0 && (
+                <StyledView className="bg-white p-6 rounded-xl shadow-sm items-center justify-center">
+                  <FontAwesome5
+                    name="money-bill-wave"
+                    size={40}
+                    color="#e9ecef"
+                  />
+                  <StyledText className="text-[#8395a7] mt-2">
+                    No payment history found
+                  </StyledText>
+                </StyledView>
+              )}
+            </>
+          )}
+
+          {/* Documents Tab */}
+          {activeTab === "documents" && (
+            <>
+              <StyledView className="flex-row justify-between items-center mb-4">
+                <StyledText className="text-[#1a2c4e] text-lg font-bold">
+                  Documents
+                </StyledText>
+                <StyledTouchableOpacity
+                  className="bg-[#27ae60] px-3 py-1 rounded-lg flex-row items-center"
+                  onPress={() => alert("Upload document")}
+                >
+                  <Ionicons
+                    name="cloud-upload-outline"
+                    size={18}
+                    color="white"
+                  />
+                  <StyledText className="text-white ml-1">Upload</StyledText>
+                </StyledTouchableOpacity>
+              </StyledView>
+
+              {tenantData.documents.map((document, index) => (
+                <StyledTouchableOpacity
+                  key={index}
+                  className="bg-white p-4 rounded-xl shadow-sm mb-4 flex-row items-center"
+                  onPress={() => alert("View document")}
+                >
+                  <StyledView className="bg-[#e3f2fd] p-3 rounded-lg mr-3">
+                    <Ionicons
+                      name="document-text-outline"
+                      size={24}
+                      color="#3498db"
+                    />
+                  </StyledView>
+
+                  <StyledView className="flex-1">
+                    <StyledText className="text-[#1a2c4e] font-bold">
+                      {document.type}
+                    </StyledText>
+                    <StyledText className="text-[#8395a7] text-sm">
+                      Tap to view document
+                    </StyledText>
+                  </StyledView>
+
+                  {document.verified && (
+                    <StyledView className="bg-[#e8f5e9] px-2 py-1 rounded-full flex-row items-center">
+                      <Ionicons
+                        name="checkmark-circle"
+                        size={14}
+                        color="#27ae60"
+                      />
+                      <StyledText className="text-[#27ae60] text-xs ml-1">
+                        Verified
+                      </StyledText>
+                    </StyledView>
+                  )}
+                </StyledTouchableOpacity>
+              ))}
+
+              {tenantData.documents.length === 0 && (
+                <StyledView className="bg-white p-6 rounded-xl shadow-sm items-center justify-center">
+                  <Ionicons
+                    name="document-text-outline"
+                    size={50}
+                    color="#e9ecef"
+                  />
+                  <StyledText className="text-[#8395a7] mt-2">
+                    No documents found
+                  </StyledText>
+                </StyledView>
+              )}
+            </>
+          )}
+        </StyledView>
+      </StyledScrollView>
 
       {/* Action Buttons */}
-      <View className="mt-8 flex-row justify-between">
-        <TouchableOpacity
-          onPress={() => navigation.navigate("chatScreen")}
-          className="flex-1 bg-indigo-500 p-4 rounded-lg mr-2 shadow-sm flex-row justify-center items-center"
-        >
-          <Icon name="chat" size={20} className="text-primary" />
-          <Text className="text-white font-bold ml-2">Chat</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={navigateToPersonalDetails}
-          className="flex-1 bg-gray-800 p-4 rounded-lg ml-2 shadow-sm flex-row justify-center items-center"
-        >
-          <Text className="text-white font-bold">Personal Details</Text>
-          <Icon name="chat" size={20} className="text-primary" />
-        </TouchableOpacity>
-      </View>
+      <StyledView className="p-4 border-t border-[#e9ecef] bg-white">
+        <StyledView className="flex-row">
+          <StyledTouchableOpacity
+            className="flex-1 bg-[#e74c3c] py-3 rounded-lg mr-2 items-center justify-center"
+            onPress={() =>
+              alert("Are you sure you want to deactivate this tenant?")
+            }
+          >
+            <StyledText className="text-white font-bold">Deactivate</StyledText>
+          </StyledTouchableOpacity>
 
-      {/* Tenant Status */}
-      <View className="mt-8 bg-white p-4 rounded-lg shadow-sm flex-row justify-between items-center mb-10">
-        <Text className="text-lg font-semibold text-gray-700">Status</Text>
-        <Text
-          className={`text-lg font-bold ${
-            tenant.isActive ? "text-green-600" : "text-red-600"
-          }`}
-        >
-          {tenant.isActive ? "Active" : "Inactive"}
-        </Text>
-      </View>
-    </ScrollView>
+          <StyledTouchableOpacity
+            className="flex-1 bg-[#27ae60] py-3 rounded-lg ml-2 items-center justify-center"
+            onPress={() => navigation.navigate("Edit Tenant")}
+          >
+            <StyledText className="text-white font-bold">
+              Edit Details
+            </StyledText>
+          </StyledTouchableOpacity>
+        </StyledView>
+      </StyledView>
+    </StyledSafeAreaView>
   );
 };
 
-export default TenantDetails;
+export default TenantDetailsScreen;

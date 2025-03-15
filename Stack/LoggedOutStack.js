@@ -1,7 +1,7 @@
 // import "react-native-gesture-handler";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import ForgotPassword from "../Screens/AuthScreen/ForgotPassword";
-import GetStarted from "../Screens/AuthScreen/GetStarted";
+import login from "../Screens/AuthScreen/LoginScreen";
 import ResetPassword from "../Screens/AuthScreen/ResetPassword";
 import SignupScreen from "../Screens/AuthScreen/SignupScreen";
 import SplashScreen from "../Screens/SplashScreen";
@@ -13,6 +13,14 @@ const LoggedOutStack = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen
+        name="tenantLogin"
+        component={TenantLogin}
+        options={{
+          title: "Tenant Login",
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
         name="splash"
         component={SplashScreen}
         options={{
@@ -21,8 +29,8 @@ const LoggedOutStack = () => {
         }}
       />
       <Stack.Screen
-        name="getStarted"
-        component={GetStarted}
+        name="login"
+        component={login}
         options={{
           title: "Auth",
           headerShown: false,
@@ -49,14 +57,6 @@ const LoggedOutStack = () => {
         component={ResetPassword}
         options={{
           title: "Reset Password",
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="tenantLogin"
-        component={TenantLogin}
-        options={{
-          title: "Tenant Login",
           headerShown: false,
         }}
       />

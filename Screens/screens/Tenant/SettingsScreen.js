@@ -15,6 +15,7 @@ import { Ionicons, Entypo } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { PrimaryButton, OutlinedButton } from "../../../components/Buttons";
 import BottomSheet from "../../../components/Bottomsheet";
+import useGharbeti from "../../../context/useGharbeti";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -33,6 +34,7 @@ const SettingsScreen = () => {
     useState(false);
   const [passwordBottomSheetVisible, setPasswordBottomSheetVisible] =
     useState(false);
+  const [{}, { logoutUser }] = useGharbeti();
 
   // Current language
   const [currentLanguage, setCurrentLanguage] = useState("English");
@@ -40,10 +42,7 @@ const SettingsScreen = () => {
   // Available languages
   const languages = [
     { id: "en", name: "English" },
-    { id: "hi", name: "हिंदी (Hindi)" },
-    { id: "kn", name: "ಕನ್ನಡ (Kannada)" },
-    { id: "ta", name: "தமிழ் (Tamil)" },
-    { id: "te", name: "తెలుగు (Telugu)" },
+    { id: "hi", name: "हिंदी (Nepali)" },
   ];
 
   // Update the Change Password Bottom Sheet to have actual input fields
@@ -91,11 +90,6 @@ const SettingsScreen = () => {
   };
 
   // Handle logout
-  const handleLogout = () => {
-    // Implement logout logic here
-    setLogoutModalVisible(false);
-    navigation.replace("splash"); // Navigate to splash screen after logout
-  };
 
   // Handle language change
   const handleLanguageChange = (language) => {
@@ -213,7 +207,7 @@ const SettingsScreen = () => {
   return (
     <StyledView className="flex-1 bg-[#f8f9fa]">
       {/* Header */}
-      <StyledView className="bg-[#1a2c4e] pt-12 pb-6 px-4">
+      <StyledView className="bg-[#1a2c4e] pt-4 pb-4 px-4">
         <StyledView className="flex-row justify-between items-center">
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={24} color="white" />
@@ -227,15 +221,15 @@ const SettingsScreen = () => {
 
       {/* Profile Summary */}
       <StyledView className="bg-white mx-4 mt-4 p-4 rounded-xl shadow-sm flex-row items-center">
-        <StyledView className="w-16 h-16 rounded-full bg-[#27ae60] justify-center items-center">
+        <StyledView className="w-16 h-16 rounded-full bg-primary justify-center items-center">
           <StyledText className="text-white text-2xl font-bold">JD</StyledText>
         </StyledView>
         <StyledView className="ml-4 flex-1">
           <StyledText className="text-[#1a2c4e] text-lg font-bold">
-            John Doe
+            Divash Ranabhat
           </StyledText>
           <StyledText className="text-[#8395a7]">
-            john.doe@example.com
+            rbdiwash@gmail.com{" "}
           </StyledText>
           <StyledText className="text-[#8395a7]">+91 98765 43210</StyledText>
         </StyledView>
@@ -337,7 +331,7 @@ const SettingsScreen = () => {
                 text="Logout"
                 bgColor="#e74c3c"
                 style={{ flex: 1, marginLeft: 8 }}
-                onPress={handleLogout}
+                onPress={logoutUser}
               />
             </StyledView>
           </StyledView>

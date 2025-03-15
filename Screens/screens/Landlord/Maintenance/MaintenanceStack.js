@@ -8,10 +8,15 @@ const Stack = createNativeStackNavigator();
 const MaintenanceStack = () => {
   return (
     <Stack.Navigator initialRouteName="Maintenance Requests">
-      <Stack.Screen name="Maintenance Requests" component={MaintenanceScreen} />
+      <Stack.Screen
+        name="Maintenance Requests"
+        component={MaintenanceScreen}
+        options={{ headerShown: false }}
+      />
       <Stack.Screen
         name="Maintenance Request Details"
         component={ViewMaaintenance}
+        options={{ headerShown: false }}
       />
     </Stack.Navigator>
   );

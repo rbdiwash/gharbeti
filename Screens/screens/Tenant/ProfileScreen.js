@@ -46,7 +46,7 @@ const ProfileScreen = () => {
   return (
     <StyledView className="flex-1 bg-[#f8f9fa]">
       {/* Header */}
-      <StyledView className="bg-[#1a2c4e] pt-12 pb-6 px-4">
+      <StyledView className="bg-[#1a2c4e] pt-4 pb-4 px-4">
         <StyledView className="flex-row justify-between items-center mb-2">
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={24} color="white" />

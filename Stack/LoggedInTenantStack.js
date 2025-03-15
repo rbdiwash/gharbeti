@@ -1,25 +1,24 @@
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Entypo, FontAwesome5, Ionicons } from "@expo/vector-icons";
+import { Entypo, FontAwesome5 } from "@expo/vector-icons";
 import Feather from "@expo/vector-icons/Feather";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 // Screens
+import EditProfileScreen from "../Screens/screens/Tenant/EditProfileScreen";
 import HomeScreen from "../Screens/screens/Tenant/HomeScreen";
+import LeaseDetails from "../Screens/screens/Tenant/LeaseDetails";
+import MaintenanceDetails from "../Screens/screens/Tenant/MaintenanceDetails";
 import MaintenanceScreen from "../Screens/screens/Tenant/MaintenanceScreen";
-import PaymentsScreen from "../Screens/screens/Tenant/PaymentsScreen";
-import ChatScreen from "../Screens/screens/Tenant/ChatScreen";
+import MakePayment from "../Screens/screens/Tenant/MakePayment";
+import NewMaintenanceRequest from "../Screens/screens/Tenant/NewMaintenanceRequest";
+import NoticeDetails from "../Screens/screens/Tenant/NoticeDetails";
 import NoticesScreen from "../Screens/screens/Tenant/NoticesScreen";
 import NotificationsScreen from "../Screens/screens/Tenant/NotificationsScreen";
-import NewMaintenanceRequest from "../Screens/screens/Tenant/NewMaintenanceRequest";
-import LeaseDetails from "../Screens/screens/Tenant/LeaseDetails";
 import PaymentHistory from "../Screens/screens/Tenant/PaymentHistory";
-import MakePayment from "../Screens/screens/Tenant/MakePayment";
+import PaymentsScreen from "../Screens/screens/Tenant/PaymentsScreen";
 import ProfileScreen from "../Screens/screens/Tenant/ProfileScreen";
-import MaintenanceDetails from "../Screens/screens/Tenant/MaintenanceDetails";
-import NoticeDetails from "../Screens/screens/Tenant/NoticeDetails";
-import EditProfileScreen from "../Screens/screens/Tenant/EditProfileScreen";
 import SettingsScreen from "../Screens/screens/Tenant/SettingsScreen";
-import { Settings } from "react-native";
+import UnderConstructionScreen from "../Screens/screens/Tenant/UnderConstruction";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -41,7 +40,7 @@ const TabNavigator = () => {
       }}
     >
       <Tab.Screen
-        name="TenantHome"
+        name="tenantHome"
         component={HomeScreen}
         options={{
           tabBarIcon: ({ color }) => (
@@ -106,8 +105,13 @@ const LoggedInTenantStack = () => {
       <Stack.Screen name="MakePayment" component={MakePayment} />
       <Stack.Screen name="Settings" component={SettingsScreen} />
       <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+      <Stack.Screen
+        name="UnderConstruction"
+        component={UnderConstructionScreen}
+      />
     </Stack.Navigator>
   );
 };
 
+// Export the AppNavigator instead of AppStack
 export default LoggedInTenantStack;

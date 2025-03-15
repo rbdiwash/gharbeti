@@ -7,12 +7,15 @@ import useGharbeti from "../../../context/useGharbeti";
 import PasswordStep from "./PasswordStep";
 import RulesModal from "./RulesModal";
 import InvitationStep from "./InvitationStep";
+import { useNavigation } from "@react-navigation/native";
 
 const StyledView = styled(View);
 
-const TenantLogin = ({ navigation }) => {
-  const [{ loggedIn }, { setIsLoggedIn }] = useGharbeti();
+const TenantLogin = ({}) => {
+  const [{ loggedIn }, { setIsLoggedIn, setUserType, loginUser }] =
+    useGharbeti();
   const [step, setStep] = useState(1); // 1: Invitation code, 2: Set password
+  const navigation = useNavigation();
   const [data, setData] = useState({
     invitationCode: "",
     email: "",
@@ -42,6 +45,14 @@ const TenantLogin = ({ navigation }) => {
     // }
   };
 
+  const handleLogin = () => {
+    const success = loginUser("tenant", "admin");
+    if (!success) {
+      throw new Error("Failed to save login state");
+    }
+    // navigation.navigate("TenantTabs", { screen: "tenantHome" });
+  };
+
   const validatePassword = () => {
     // if (data.password.trim() === "") {
     //   alert("Please enter a password");
@@ -60,7 +71,8 @@ const TenantLogin = ({ navigation }) => {
   const acceptRules = () => {
     setRulesModalVisible(false);
     setIsLoggedIn(true);
-    navigation.navigate("TenantHome");
+    setUserType("tenant");
+    navigation.navigate("tenantHome");
   };
 
   return (
@@ -74,6 +86,7 @@ const TenantLogin = ({ navigation }) => {
             navigation={navigation}
             isInvitationOn={isInvitationOn}
             setIsInvitationOn={setIsInvitationOn}
+            handleLogin={handleLogin}
           />
         ) : (
           <PasswordStep

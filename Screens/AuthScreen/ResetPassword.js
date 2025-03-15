@@ -69,7 +69,7 @@ const ResetPassword = ({ navigation }) => {
           </View>
           <StyledTouchableOpacity
             className="bg-[#F59A73] w-full py-2 rounded-lg mt-4"
-            onPress={() => navigation.replace("getStarted")}
+            onPress={() => navigation.replace("login")}
           >
             <StyledText className="text-white text-center text-lg">
               Reset Password

@@ -18,7 +18,7 @@ const StyledView = styled(View);
 const StyledText = styled(Text);
 const StyledTouchableOpacity = styled(TouchableOpacity);
 
-const NoticeDetails = () => {
+const AnnouncementDetails = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const { noticeId } = route.params || { noticeId: 1 };
@@ -392,4 +392,4 @@ const NoticeDetails = () => {
   );
 };
 
-export default NoticeDetails;
+export default AnnouncementDetails;

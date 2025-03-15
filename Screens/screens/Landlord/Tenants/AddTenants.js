@@ -1,18 +1,35 @@
-import React, { useEffect, useState } from "react";
+"use client";
+
+import { useState, useEffect } from "react";
 import {
-  Image,
-  ScrollView,
+  View,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  Image,
+  ScrollView,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
+import { styled } from "nativewind";
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-
 import * as ImagePicker from "expo-image-picker";
 
-const AddTenants = () => {
+const StyledView = styled(View);
+const StyledText = styled(Text);
+const StyledTextInput = styled(TextInput);
+const StyledTouchableOpacity = styled(TouchableOpacity);
+const StyledImage = styled(Image);
+const StyledScrollView = styled(ScrollView);
+const StyledSafeAreaView = styled(SafeAreaView);
+
+const AddTenantsScreen = () => {
+  const navigation = useNavigation();
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     address: "",
@@ -26,8 +43,19 @@ const AddTenants = () => {
     emergencyName: "",
     emergencyNumber: "",
   });
+
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
+  const [hasGalleryPermission, setHasGalleryPermission] = useState(null);
+
+  // Request gallery permissions on component mount
+  useEffect(() => {
+    (async () => {
+      const galleryStatus =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      setHasGalleryPermission(galleryStatus.status === "granted");
+    })();
+  }, []);
 
   // Show the date picker
   const showDatePicker = () => {
@@ -48,8 +76,13 @@ const AddTenants = () => {
         year: "numeric",
       })
     );
+    setFormData({
+      ...formData,
+      startDate: date,
+    });
     hideDatePicker();
   };
+
   // Handle input change
   const handleInputChange = (name, value) => {
     setFormData({
@@ -58,201 +91,304 @@ const AddTenants = () => {
     });
   };
 
-  const [hasGalleryPermission, setHasGalleryPermission] = useState(null);
-  useEffect(() => {
-    (async () => {
-      const galleryStatus =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-      setHasGalleryPermission(galleryStatus.status === "granted");
-    })();
-  }, []);
-  console.log(formData);
+  // Handle profile image upload
+  const handleProfileImageUpload = async () => {
+    if (!hasGalleryPermission) {
+      alert("Permission to access gallery was denied");
+      return;
+    }
 
-  const handleProfileImageUpload = async (index) => {
-    let result = await ImagePicker.launchImageLibraryAsync({
+    const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      // aspect: [4, 4],
       quality: 1,
     });
-    if (!result.canceled) {
+
+    if (!result.canceled && result.assets && result.assets.length > 0) {
       setFormData({
         ...formData,
         profileImage: result.assets[0].uri,
       });
     }
-    if (hasGalleryPermission === false) {
-      alert("Permission to access galery was denied");
-    }
   };
 
   // Handle document upload
   const handleDocumentUpload = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
+    if (!hasGalleryPermission) {
+      alert("Permission to access gallery was denied");
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      // aspect: [4, 3],
       quality: 1,
     });
-    if (!result.canceled) {
+
+    if (!result.canceled && result.assets && result.assets.length > 0) {
       setFormData({
         ...formData,
         document: result.assets[0].uri,
       });
     }
-    if (hasGalleryPermission === false) {
-      alert("Permission to access galery was denied");
-    }
   };
 
+  // Handle form submission
+  const handleSubmit = () => {
+    // Validate form
+    if (!formData.name || !formData.phone) {
+      alert("Please fill in all required fields");
+      return;
+    }
+
+    setIsLoading(true);
+
+    // Simulate API call
+    setTimeout(() => {
+      setIsLoading(false);
+      alert("Tenant added successfully!");
+      navigation.goBack();
+    }, 1500);
+  };
+
+  // Render form field
+  const renderFormField = (
+    label,
+    placeholder,
+    name,
+    value,
+    keyboardType = "default",
+    required = false
+  ) => (
+    <StyledView className="mb-4">
+      <StyledView className="flex-row items-center mb-2">
+        <StyledText className="text-primary font-bold">{label}</StyledText>
+        {required && <StyledText className="text-[#e74c3c] ml-1">*</StyledText>}
+      </StyledView>
+      <StyledTextInput
+        className="border border-[#e9ecef] bg-white p-3 rounded-lg text-[#1a2c4e]"
+        placeholder={placeholder}
+        placeholderTextColor="#8395a7"
+        value={value}
+        onChangeText={(text) => handleInputChange(name, text)}
+        keyboardType={keyboardType}
+      />
+    </StyledView>
+  );
+
   return (
-    <SafeAreaView>
-      <ScrollView automaticallyAdjustKeyboardInsets={true}>
-        <View className="flex-1 bg-white p-4">
-          {/* <Text className="my-4 text-2xl font-bold">Add Tenants</Text> */}
-          {/* Name Input */}
-          <Text className="text-lg font-bold mb-2">Name</Text>
-          <TextInput
-            className="border border-gray-300 p-3 mb-4 rounded-lg"
-            placeholder="Enter name"
-            value={formData.name}
-            onChangeText={(value) => handleInputChange("name", value)}
-          />
-          <Text className="text-lg font-bold mb-2">Original Address</Text>
-          <TextInput
-            className="border border-gray-300 p-3 mb-4 rounded-lg"
-            placeholder="Enter original address"
-            value={formData.address}
-            onChangeText={(value) => handleInputChange("address", value)}
-          />
-          <Text className="text-lg font-bold mb-2">Phone Number</Text>
-          <TextInput
-            className="border border-gray-300 p-3 mb-4 rounded-lg"
-            placeholder="Enter phone number"
-            keyboardType="phone-pad"
-            value={formData.phone}
-            onChangeText={(value) => handleInputChange("phone", value)}
-          />
-          <Text className="text-lg font-bold mb-2">Email</Text>
-          <TextInput
-            className="border border-gray-300 p-3 mb-4 rounded-lg"
-            placeholder="Enter email"
-            keyboardType="email-address"
-            value={formData.email}
-            onChangeText={(value) => handleInputChange("email", value)}
-          />
-          <Text className="text-lg font-bold mb-2">
-            Number of Rooms Renting
-          </Text>
-          <TextInput
-            className="border border-gray-300 p-3 mb-4 rounded-lg"
-            placeholder="Enter number of rooms"
-            keyboardType="numeric"
-            value={formData.rooms}
-            onChangeText={(value) => handleInputChange("rooms", value)}
-          />
-          <Text className="text-lg font-bold mb-2">Total Rent</Text>
-          <TextInput
-            className="border border-gray-300 p-3 mb-4 rounded-lg"
-            placeholder="Enter Total rent"
-            keyboardType="numeric"
-            value={formData.totalRent}
-            onChangeText={(value) => handleInputChange("totalRent", value)}
-          />
-          <Text className="text-lg font-bold mb-2">Starting Date</Text>
+    <StyledSafeAreaView className="flex-1 bg-[#f8f9fa]">
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        className="flex-1"
+      >
+        {/* Header */}
+        <StyledView className="bg-primary flex-row items-center justify-between px-4 py-4">
+          <StyledTouchableOpacity onPress={() => navigation.goBack()}>
+            <Ionicons name="arrow-back" size={24} color="#fff" />
+          </StyledTouchableOpacity>
+          <StyledText className="text-white text-xl font-bold">
+            Add Tenant
+          </StyledText>
+          <StyledView style={{ width: 24 }} />
+        </StyledView>
 
-          {/* Date Input Field */}
-          <TouchableOpacity
-            onPress={showDatePicker}
-            className="border border-gray-300 rounded-lg p-3 mb-4 w-full bg-white"
-          >
-            <Text className="text-base text-gray-700">
-              {selectedDate || "Tap to select a date"}
-            </Text>
-          </TouchableOpacity>
-
-          {/* Date Picker Modal */}
-          <DateTimePickerModal
-            isVisible={isDatePickerVisible}
-            mode="date"
-            onConfirm={handleConfirm}
-            onCancel={hideDatePicker}
-          />
-
-          <Text className="text-lg font-bold mb-2">Emergency Contact Name</Text>
-          <TextInput
-            className="border border-gray-300 p-3 mb-4 rounded-lg"
-            placeholder="Emergency Contact Name"
-            value={formData.emergencyName}
-            onChangeText={(value) => handleInputChange("emergencyName", value)}
-          />
-          <Text className="text-lg font-bold mb-2">
-            Emergency Contact Number
-          </Text>
-          <TextInput
-            className="border border-gray-300 p-3 mb-4 rounded-lg"
-            placeholder="Emergency Contact Number "
-            keyboardType="numeric"
-            value={formData.emergencyNumber}
-            onChangeText={(value) =>
-              handleInputChange("emergencyNumber", value)
-            }
-            required
-          />
-          <Text className="text-lg font-bold mb-2">Upload Profile Picture</Text>
-          {formData.profileImage ? (
-            <>
-              <Image
-                source={{ uri: formData.profileImage }}
-                className="w-40 h-40 mb-4 mx-auto"
-              />
-              <TouchableOpacity
-                className="bg-primary p-3 mb-4 rounded-lg flex items-center justify-center"
+        <StyledScrollView
+          className="flex-1 px-4"
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Profile Image Upload */}
+          <StyledView className="items-center my-4">
+            {formData.profileImage ? (
+              <StyledTouchableOpacity onPress={handleProfileImageUpload}>
+                <StyledImage
+                  source={{ uri: formData.profileImage }}
+                  className="w-24 h-24 rounded-full"
+                />
+                <StyledView className="absolute bottom-0 right-0 bg-[#27ae60] p-2 rounded-full border-2 border-white">
+                  <Ionicons name="camera" size={14} color="white" />
+                </StyledView>
+              </StyledTouchableOpacity>
+            ) : (
+              <StyledTouchableOpacity
+                className="w-24 h-24 rounded-full bg-[#e9ecef] items-center justify-center"
                 onPress={handleProfileImageUpload}
               >
-                <Text className="text-white">Change Profile Picture</Text>
-              </TouchableOpacity>
-            </>
-          ) : (
-            <TouchableOpacity
-              className="bg-primary p-3 mb-4 rounded-lg flex items-center justify-center"
-              onPress={handleProfileImageUpload}
-            >
-              <Text className="text-white">Upload Profile Picture</Text>
-            </TouchableOpacity>
-          )}
-          <Text className="text-lg font-bold mb-2">
-            Upload Citizenship/Licence/Passport
-          </Text>
-          {formData.document ? (
-            <>
-              <Image
-                source={{ uri: formData.document }}
-                className="w-40 h-40 mb-4 mx-auto"
-              />
-              <TouchableOpacity
-                className="bg-primary p-3 mb-4 rounded-lg flex items-center justify-center"
+                <Ionicons name="person" size={40} color="#8395a7" />
+                <StyledView className="absolute bottom-0 right-0 bg-[#27ae60] p-2 rounded-full border-2 border-white">
+                  <Ionicons name="camera" size={14} color="white" />
+                </StyledView>
+              </StyledTouchableOpacity>
+            )}
+            <StyledText className="text-[#8395a7] mt-2">
+              Tap to upload profile picture
+            </StyledText>
+          </StyledView>
+
+          {/* Personal Information Section */}
+          <StyledView className="bg-white p-4 rounded-xl shadow-sm mb-4">
+            <StyledText className="text-primary text-lg font-bold mb-4">
+              Personal Information
+            </StyledText>
+
+            {renderFormField(
+              "Name",
+              "Enter tenant name",
+              "name",
+              formData.name,
+              "default",
+              true
+            )}
+            {renderFormField(
+              "Original Address",
+              "Enter original address",
+              "address",
+              formData.address
+            )}
+            {renderFormField(
+              "Phone Number",
+              "Enter phone number",
+              "phone",
+              formData.phone,
+              "phone-pad",
+              true
+            )}
+            {renderFormField(
+              "Email",
+              "Enter email address",
+              "email",
+              formData.email,
+              "email-address"
+            )}
+          </StyledView>
+
+          {/* Rental Details Section */}
+          <StyledView className="bg-white p-4 rounded-xl shadow-sm mb-4">
+            <StyledText className="text-primary text-lg font-bold mb-4">
+              Rental Details
+            </StyledText>
+
+            {renderFormField(
+              "Number of Rooms",
+              "Enter number of rooms",
+              "rooms",
+              formData.rooms,
+              "numeric"
+            )}
+            {renderFormField(
+              "Total Rent (₹)",
+              "Enter total rent amount",
+              "totalRent",
+              formData.totalRent,
+              "numeric"
+            )}
+
+            {/* Date Picker */}
+            <StyledView className="mb-4">
+              <StyledText className="text-primary font-bold mb-2">
+                Starting Date
+              </StyledText>
+              <StyledTouchableOpacity
+                className="border border-[#e9ecef] bg-white p-3 rounded-lg flex-row justify-between items-center"
+                onPress={showDatePicker}
+              >
+                <StyledText
+                  className={selectedDate ? "text-primary" : "text-[#8395a7]"}
+                >
+                  {selectedDate || "Select starting date"}
+                </StyledText>
+                <Ionicons name="calendar" size={20} color="#8395a7" />
+              </StyledTouchableOpacity>
+            </StyledView>
+
+            <DateTimePickerModal
+              isVisible={isDatePickerVisible}
+              mode="date"
+              onConfirm={handleConfirm}
+              onCancel={hideDatePicker}
+            />
+          </StyledView>
+
+          {/* Emergency Contact Section */}
+          <StyledView className="bg-white p-4 rounded-xl shadow-sm mb-4">
+            <StyledText className="text-primary text-lg font-bold mb-4">
+              Emergency Contact
+            </StyledText>
+
+            {renderFormField(
+              "Name",
+              "Enter emergency contact name",
+              "emergencyName",
+              formData.emergencyName
+            )}
+            {renderFormField(
+              "Phone Number",
+              "Enter emergency contact number",
+              "emergencyNumber",
+              formData.emergencyNumber,
+              "phone-pad"
+            )}
+          </StyledView>
+
+          {/* Document Upload Section */}
+          <StyledView className="bg-white p-4 rounded-xl shadow-sm mb-6">
+            <StyledText className="text-primary text-lg font-bold mb-4">
+              Document Upload
+            </StyledText>
+
+            <StyledText className="text-primary font-bold mb-2">
+              ID Proof (Citizenship/License/Passport)
+            </StyledText>
+
+            {formData.document ? (
+              <StyledView className="mb-4">
+                <StyledImage
+                  source={{ uri: formData.document }}
+                  className="w-full h-48 rounded-lg"
+                  resizeMode="cover"
+                />
+                <StyledTouchableOpacity
+                  className="absolute top-2 right-2 bg-primary p-2 rounded-full opacity-80"
+                  onPress={handleDocumentUpload}
+                >
+                  <Ionicons name="camera" size={16} color="white" />
+                </StyledTouchableOpacity>
+              </StyledView>
+            ) : (
+              <StyledTouchableOpacity
+                className="border-2 border-dashed border-[#e9ecef] p-6 rounded-lg items-center justify-center mb-4"
                 onPress={handleDocumentUpload}
               >
-                <Text className="text-white">Change Document</Text>
-              </TouchableOpacity>
-            </>
-          ) : (
-            <TouchableOpacity
-              className="bg-primary p-3 mb-4 rounded-lg flex items-center justify-center"
-              onPress={handleDocumentUpload}
-            >
-              <Text className="text-white">Upload Document</Text>
-            </TouchableOpacity>
-          )}
+                <Ionicons
+                  name="cloud-upload-outline"
+                  size={40}
+                  color="#8395a7"
+                />
+                <StyledText className="text-[#8395a7] mt-2">
+                  Tap to upload document
+                </StyledText>
+              </StyledTouchableOpacity>
+            )}
+          </StyledView>
+
           {/* Submit Button */}
-          <TouchableOpacity className="bg-secondary p-3 rounded-lg">
-            <Text className="text-white text-center">Submit</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+          <StyledTouchableOpacity
+            className="bg-[#27ae60] p-4 rounded-lg items-center mb-8"
+            onPress={handleSubmit}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <ActivityIndicator color="white" />
+            ) : (
+              <StyledText className="text-white font-bold text-lg">
+                Add Tenant
+              </StyledText>
+            )}
+          </StyledTouchableOpacity>
+        </StyledScrollView>
+      </KeyboardAvoidingView>
+    </StyledSafeAreaView>
   );
 };
 
-export default AddTenants;
+export default AddTenantsScreen;

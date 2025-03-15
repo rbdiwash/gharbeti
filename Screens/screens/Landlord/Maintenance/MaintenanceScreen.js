@@ -1,166 +1,271 @@
-import React, { useState } from "react";
+"use client";
+
+import { useState, useEffect } from "react";
 import {
   View,
   Text,
-  FlatList,
+  ScrollView,
   TouchableOpacity,
-  Image,
-  Modal,
   TextInput,
 } from "react-native";
-import { AntDesign } from "@expo/vector-icons";
-import Icon from "react-native-vector-icons/MaterialIcons"; // For the action button icon
-import StatusModal from "./StatusModal";
+import { styled } from "nativewind";
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 
-const maintenanceRequests = [
-  {
-    id: "1",
-    tenantName: "Ram Sharma",
-    request: "Leaking pipe in the kitchen",
-    date: "2025-01-18",
-    time: "10:00 AM",
-    status: "Pending",
-    image: "https://randomuser.me/api/portraits/men/2.jpg",
-  },
-  {
-    id: "2",
-    tenantName: "Sita Gurung",
-    request: "Broken window in the living room",
-    date: "2025-01-17",
-    time: "2:00 PM",
-    status: "Ongoing",
-    image: "https://randomuser.me/api/portraits/women/3.jpg",
-  },
-  {
-    id: "3",
-    tenantName: "Krishna Bhattarai",
-    request: "Clogged drain in the bathroom",
-    date: "2025-01-16",
-    time: "5:30 PM",
-    status: "Fixed",
-    image: "https://randomuser.me/api/portraits/men/4.jpg",
-  },
-];
+const StyledView = styled(View);
+const StyledText = styled(Text);
+const StyledTouchableOpacity = styled(TouchableOpacity);
+const StyledTextInput = styled(TextInput);
 
-const MaintenanceScreen = ({ navigation }) => {
-  const [requests, setRequests] = useState(maintenanceRequests);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [selectedRequest, setSelectedRequest] = useState(null);
-  const [selectedStatus, setSelectedStatus] = useState("");
+const MaintenanceScreen = () => {
+  const navigation = useNavigation();
+  const [activeTab, setActiveTab] = useState("active");
   const [searchQuery, setSearchQuery] = useState("");
+  const [filteredRequests, setFilteredRequests] = useState({
+    active: [],
+    completed: [],
+  });
 
-  const openModal = (request) => {
-    setSelectedRequest(request);
-    setSelectedStatus(request.status);
-    setModalVisible(true);
+  useEffect(() => {
+    // Initialize filteredRequests with allRequests on first render
+    setFilteredRequests(allRequests);
+  }, []);
+
+  const allRequests = {
+    active: [
+      {
+        id: 1,
+        title: "Plumbing Issue",
+        description: "Leaking tap in kitchen sink",
+        status: "In Progress",
+        date: "June 15, 2023",
+        priority: "High",
+      },
+      {
+        id: 2,
+        title: "Electrical Issue",
+        description: "Power fluctuation in bedroom",
+        status: "Pending",
+        date: "June 14, 2023",
+        priority: "Medium",
+      },
+      {
+        id: 3,
+        title: "Door Lock Problem",
+        description: "Main door lock is not working properly",
+        status: "Pending",
+        date: "June 12, 2023",
+        priority: "High",
+      },
+    ],
+    completed: [
+      {
+        id: 4,
+        title: "AC Repair",
+        description: "AC not cooling properly",
+        status: "Completed",
+        date: "June 10, 2023",
+        priority: "High",
+        completedDate: "June 11, 2023",
+      },
+      {
+        id: 5,
+        title: "Bathroom Tiles",
+        description: "Loose tiles in bathroom floor",
+        status: "Completed",
+        date: "May 25, 2023",
+        priority: "Medium",
+        completedDate: "May 28, 2023",
+      },
+      {
+        id: 6,
+        title: "Window Repair",
+        description: "Bedroom window not closing properly",
+        status: "Completed",
+        date: "May 20, 2023",
+        priority: "Low",
+        completedDate: "May 22, 2023",
+      },
+    ],
   };
 
-  const closeModal = () => {
-    setModalVisible(false);
-    setSelectedRequest(null);
-  };
-  const handleSearchChange = (text) => {
-    setSearchQuery(text);
-  };
-  const saveStatus = () => {
-    const updatedRequests = requests.map((request) =>
-      request.id === selectedRequest.id
-        ? { ...request, status: selectedStatus }
-        : request
-    );
-    setRequests(updatedRequests);
-    closeModal();
-  };
+  useEffect(() => {
+    filterRequests();
+  }, [searchQuery, activeTab]);
 
-  const filteredData = maintenanceRequests.filter(
-    (notification) =>
-      notification.tenantName
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase()) ||
-      notification.request.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      notification.status.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filterRequests = () => {
+    if (!searchQuery.trim()) {
+      setFilteredRequests(allRequests);
+      return;
+    }
 
-  const renderRequest = ({ item }) => (
-    <View className="flex-row items-center bg-white shadow-sm rounded-lg p-4 mb-4">
-      <Image
-        source={{ uri: item.image }}
-        className="w-12 h-12 rounded-full mr-4"
-      />
-      <View className="flex-1">
-        <Text className="text-lg font-bold text-gray-800">
-          {item.tenantName}
-        </Text>
-        <Text className="text-sm text-gray-600">{item.request}</Text>
-        <Text className="text-xs text-gray-400 mt-1">
-          {item.date} - {item.time}
-        </Text>
-        {renderStatusButton(item.status, item.id)}
-      </View>
-      <View className="gap-2">
-        <TouchableOpacity
-          className="px-4 w-max py-1 rounded-full"
-          onPress={() => openModal(item)}
-        >
-          <Icon name="edit" size={20} className="text-primary" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          className="px-4 w-max py-1 rounded-full "
-          onPress={() =>
-            navigation.navigate("Maintenance Request Details", {
-              request: item,
-            })
-          }
-        >
-          <Icon name="visibility" size={20} className="text-primary" />
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-  const renderStatusButton = (status, id) => {
-    const getStatusColor = (status) => {
-      if (status === "Fixed") return "bg-green-500";
-      if (status === "Ongoing") return "bg-orange-400";
-      return "bg-red-600";
+    const query = searchQuery.toLowerCase();
+    const filtered = {
+      active: allRequests.active.filter(
+        (request) =>
+          request.title.toLowerCase().includes(query) ||
+          request.description.toLowerCase().includes(query) ||
+          request.status.toLowerCase().includes(query) ||
+          request.priority.toLowerCase().includes(query)
+      ),
+      completed: allRequests.completed.filter(
+        (request) =>
+          request.title.toLowerCase().includes(query) ||
+          request.description.toLowerCase().includes(query) ||
+          request.status.toLowerCase().includes(query) ||
+          request.priority.toLowerCase().includes(query)
+      ),
     };
 
-    return (
-      <View className={`flex flex-row items-center w-full gap-2`}>
-        <View
-          className={`h-4 w-4 rounded-full ${getStatusColor(status)}`}
-        ></View>
-        <Text className="text-primary text-sm">{status}</Text>
-      </View>
-    );
+    setFilteredRequests(filtered);
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "In Progress":
+        return "bg-[#3498db]";
+      case "Pending":
+        return "bg-[#f1c40f]";
+      case "Completed":
+        return "bg-[#27ae60]";
+      default:
+        return "bg-[#8395a7]";
+    }
+  };
+
+  const getPriorityColor = (priority) => {
+    switch (priority) {
+      case "High":
+        return "text-[#e74c3c]";
+      case "Medium":
+        return "text-[#f1c40f]";
+      case "Low":
+        return "text-[#27ae60]";
+      default:
+        return "text-[#8395a7]";
+    }
   };
 
   return (
-    <View className="flex-1 bg-gray-100 px-4 pt-4">
-      <View className="bg-white p-3 mb-4 rounded-lg shadow-md flex-row items-center">
-        <Icon name="search" size={24} color="gray" />
-        <TextInput
-          className="ml-2 flex-1"
-          placeholder="Search maintenance requests..."
-          value={searchQuery}
-          onChangeText={handleSearchChange}
-        />
-      </View>
-      <FlatList
-        data={filteredData}
-        keyExtractor={(item) => item.id}
-        renderItem={renderRequest}
-        contentContainerStyle={{ paddingBottom: 20 }}
-      />
+    <StyledView className="flex-1 bg-[#f8f9fa]">
+      {/* Header */}
+      <StyledView className="bg-[#1a2c4e] pt-4 pb-4 px-4">
+        <StyledView className="flex-row justify-between items-center mb-4">
+          <StyledText className="text-white text-xl font-bold">
+            Maintenance Requests
+          </StyledText>
+        </StyledView>
 
-      <StatusModal
-        selectedRequest={selectedRequest}
-        modalVisible={modalVisible}
-        saveStatus={saveStatus}
-        selectedStatus={selectedStatus}
-        setSelectedStatus={setSelectedStatus}
-        closeModal={closeModal}
-      />
-    </View>
+        {/* Search Bar */}
+        <StyledView className="flex-row items-center bg-white rounded-lg px-3 py-2">
+          <Ionicons name="search" size={20} color="#8395a7" />
+          <StyledTextInput
+            className="flex-1 ml-2 text-[#1a2c4e]"
+            placeholder="Search requests..."
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            clearButtonMode="while-editing"
+          />
+          {searchQuery.length > 0 && (
+            <TouchableOpacity onPress={() => setSearchQuery("")}>
+              <Ionicons name="close-circle" size={20} color="#8395a7" />
+            </TouchableOpacity>
+          )}
+        </StyledView>
+      </StyledView>
+
+      {/* Tabs */}
+      <StyledView className="flex-row px-4 mt-4">
+        <StyledTouchableOpacity
+          className={`flex-1 py-2 ${
+            activeTab === "active" ? "border-b-2 border-secondary" : ""
+          }`}
+          onPress={() => setActiveTab("active")}
+        >
+          <StyledText
+            className={`text-center font-bold ${
+              activeTab === "active" ? "text-secondary" : "text-[#8395a7]"
+            }`}
+          >
+            Active ({filteredRequests.active.length})
+          </StyledText>
+        </StyledTouchableOpacity>
+        <StyledTouchableOpacity
+          className={`flex-1 py-2 ${
+            activeTab === "completed" ? "border-b-2 border-secondary" : ""
+          }`}
+          onPress={() => setActiveTab("completed")}
+        >
+          <StyledText
+            className={`text-center font-bold ${
+              activeTab === "completed" ? "text-secondary" : "text-[#8395a7]"
+            }`}
+          >
+            Completed ({filteredRequests.completed.length})
+          </StyledText>
+        </StyledTouchableOpacity>
+      </StyledView>
+
+      {/* Request List */}
+      <ScrollView className="flex-1 px-4 pt-4">
+        {filteredRequests[activeTab] &&
+        filteredRequests[activeTab].length > 0 ? (
+          filteredRequests[activeTab].map((request) => (
+            <StyledTouchableOpacity
+              key={request.id}
+              className="bg-white p-4 rounded-xl mb-4 shadow"
+              onPress={() => {
+                // @ts-ignore - Ignore type checking for navigation params
+                navigation.navigate("Maintenance Request Details", {
+                  requestId: request.id,
+                });
+              }}
+            >
+              <StyledView className="flex-row justify-between items-start mb-2">
+                <StyledView className="flex-1">
+                  <StyledText className="text-[#1a2c4e] text-lg font-bold mb-1">
+                    {request.title}
+                  </StyledText>
+                  <StyledText className="text-[#8395a7]">
+                    {request.description}
+                  </StyledText>
+                </StyledView>
+                <StyledView
+                  className={`${getStatusColor(
+                    request.status
+                  )} px-3 py-1 rounded-full ml-2`}
+                >
+                  <StyledText className="text-white text-sm">
+                    {request.status}
+                  </StyledText>
+                </StyledView>
+              </StyledView>
+              <StyledView className="flex-row justify-between items-center mt-3">
+                <StyledText className="text-[#8395a7]">
+                  {activeTab === "completed" && request.completedDate
+                    ? `Completed: ${request.completedDate}`
+                    : `Reported: ${request.date}`}
+                </StyledText>
+                <StyledText
+                  className={`font-bold ${getPriorityColor(request.priority)}`}
+                >
+                  {request.priority} Priority
+                </StyledText>
+              </StyledView>
+            </StyledTouchableOpacity>
+          ))
+        ) : (
+          <StyledView className="items-center justify-center py-10">
+            <Ionicons name="search" size={50} color="#e9ecef" />
+            <StyledText className="text-[#8395a7] mt-2 text-center">
+              {searchQuery
+                ? "No maintenance requests found matching your search"
+                : `No ${activeTab} maintenance requests`}
+            </StyledText>
+          </StyledView>
+        )}
+      </ScrollView>
+    </StyledView>
   );
 };
 

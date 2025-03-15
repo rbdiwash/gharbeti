@@ -96,7 +96,7 @@ const ChatScreen = () => {
       className="flex-1 bg-[#f8f9fa]"
     >
       {/* Header */}
-      <StyledView className="bg-[#1a2c4e] pt-12 pb-4 px-4">
+      <StyledView className="bg-[#1a2c4e] pt-4 pb-4 px-4">
         <StyledView className="flex-row items-center">
           <StyledView className="w-10 h-10 rounded-full bg-white justify-center items-center mr-3">
             <StyledText className="text-primary font-bold">RL</StyledText>

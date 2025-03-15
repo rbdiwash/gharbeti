@@ -30,7 +30,7 @@ const PaymentHistory = () => {
   const [customEndDate, setCustomEndDate] = useState("");
 
   const payments = {
-    "2023": [
+    2023: [
       {
         id: 1,
         month: "June",
@@ -84,7 +84,7 @@ const PaymentHistory = () => {
         paymentMethod: "UPI",
       },
     ],
-    "2022": [
+    2022: [
       {
         id: 7,
         month: "December",
@@ -181,7 +181,7 @@ const PaymentHistory = () => {
   return (
     <StyledView className="flex-1 bg-[#f8f9fa]">
       {/* Header */}
-      <StyledView className="bg-[#1a2c4e] pt-12 pb-6 px-4">
+      <StyledView className="bg-[#1a2c4e] pt-4 pb-4 px-4">
         <StyledView className="flex-row justify-between items-center">
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={24} color="white" />

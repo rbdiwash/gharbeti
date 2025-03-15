@@ -37,7 +37,7 @@ export const PrimaryButton = ({
   };
 
   return (
-    <View
+    <StyledTouchableOpacity
       className={`rounded-lg ${sizeStyles[size]} ${
         fullWidth ? "w-full" : ""
       } items-center justify-center flex-row ${parentClass}`}
@@ -64,7 +64,7 @@ export const PrimaryButton = ({
           {rightIcon && <StyledView className="ml-2">{rightIcon}</StyledView>}
         </>
       )}
-    </View>
+    </StyledTouchableOpacity>
   );
 };
 

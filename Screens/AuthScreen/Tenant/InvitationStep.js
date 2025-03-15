@@ -16,6 +16,7 @@ const InvitationStep = ({
   navigation,
   isInvitationOn,
   setIsInvitationOn,
+  handleLogin,
 }) => {
   const [isPasswordSecure, setIsPasswordSecure] = useState(true);
 
@@ -117,7 +118,7 @@ const InvitationStep = ({
           </View>
           <StyledTouchableOpacity
             className="bg-secondary w-full py-3 rounded-lg"
-            onPress={validateInvitation}
+            onPress={handleLogin}
           >
             <StyledText className="text-white text-center text-lg font-bold">
               Login
@@ -138,7 +139,7 @@ const InvitationStep = ({
 
         <StyledTouchableOpacity
           className="bg-secondary w-full py-3 rounded-lg mb-3"
-          onPress={() => navigation.replace("getStarted")}
+          onPress={() => navigation.replace("login")}
         >
           <StyledText className="text-white text-center text-base font-bold">
             Login as Landlord

@@ -1,235 +1,333 @@
-import React, { useState } from "react";
+"use client";
+
+import { useState } from "react";
 import {
   View,
   Text,
-  TextInput,
-  FlatList,
+  ScrollView,
   TouchableOpacity,
   Modal,
-  Pressable,
-  Image,
-  TouchableWithoutFeedback,
+  TextInput,
 } from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons";
+import { styled } from "nativewind";
+import { Entypo, FontAwesome5, Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+
+const StyledView = styled(View);
+const StyledText = styled(Text);
+const StyledTouchableOpacity = styled(TouchableOpacity);
+const StyledScrollView = styled(ScrollView);
 
 const NotificationsScreen = () => {
-  // State for search query and notifications list
-  const [searchQuery, setSearchQuery] = useState("");
+  const navigation = useNavigation();
+  const [selectedNotification, setSelectedNotification] = useState(null);
+  const [actionModalVisible, setActionModalVisible] = useState(false);
   const [notifications, setNotifications] = useState([
     {
-      id: "1",
-      title: "New Message from Ram",
-      isRead: false,
-      dateTime: "2024-09-24 10:15 AM",
-      imageUrl: "https://randomuser.me/api/portraits/men/1.jpg",
+      id: 1,
+      title: "Rent Due Reminder",
+      message: "Your rent of ₹25,000 is due in 3 days.",
+      time: "2 hours ago",
+      type: "payment",
+      read: false,
     },
     {
-      id: "2",
-      title: "Your Rent is Due",
-      isRead: false,
-      dateTime: "2024-09-23 08:30 AM",
-      imageUrl: "https://randomuser.me/api/portraits/men/2.jpg",
+      id: 2,
+      title: "Maintenance Update",
+      message:
+        "Your maintenance request for plumbing issue has been scheduled for tomorrow.",
+      time: "5 hours ago",
+      type: "maintenance",
+      read: false,
     },
     {
-      id: "3",
-      title: "Meeting Reminder with Owner",
-      isRead: true,
-      dateTime: "2024-09-22 02:45 PM",
-      imageUrl: "https://randomuser.me/api/portraits/men/3.jpg",
+      id: 3,
+      title: "New Notice",
+      message: "A new notice about water supply interruption has been posted.",
+      time: "1 day ago",
+      type: "notice",
+      read: true,
     },
     {
-      id: "4",
-      title: "Payment Received",
-      isRead: true,
-      dateTime: "2024-09-21 09:00 AM",
-      imageUrl: "https://randomuser.me/api/portraits/men/7.jpg",
+      id: 4,
+      title: "Message from Landlord",
+      message: "You have a new message from your landlord.",
+      time: "2 days ago",
+      type: "message",
+      read: true,
     },
     {
-      id: "5",
-      title: "Maintenance Request Submitted",
-      isRead: false,
-      dateTime: "2024-09-20 11:20 AM",
-      imageUrl: "https://randomuser.me/api/portraits/men/8.jpg",
+      id: 5,
+      title: "Payment Confirmation",
+      message: "Your rent payment of ₹25,000 for May has been received.",
+      time: "1 month ago",
+      type: "payment",
+      read: true,
     },
     {
-      id: "6",
-      title: "Maintenance Request Submitted",
-      isRead: false,
-      dateTime: "2024-09-19 04:50 PM",
-      imageUrl: "https://randomuser.me/api/portraits/men/9.jpg",
-    },
-    {
-      id: "7",
-      title: "Maintenance Request Submitted",
-      isRead: false,
-      dateTime: "2024-09-18 07:30 AM",
-      imageUrl: "https://randomuser.me/api/portraits/men/23.jpg",
-    },
-    {
-      id: "8",
-      title: "Maintenance Request Submitted",
-      isRead: false,
-      dateTime: "2024-09-17 03:10 PM",
-      imageUrl: "https://randomuser.me/api/portraits/men/44.jpg",
-    },
-    {
-      id: "9",
-      title: "Maintenance Request Submitted",
-      isRead: false,
-      dateTime: "2024-09-16 06:45 PM",
-      imageUrl: "https://randomuser.me/api/portraits/men/8.jpg",
-    },
-    {
-      id: "10",
-      title: "Maintenance Request Submitted",
-      isRead: false,
-      dateTime: "2024-09-15 12:05 PM",
-      imageUrl: "https://randomuser.me/api/portraits/men/37.jpg",
-    },
-    {
-      id: "11",
-      title: "Maintenance Request Submitted",
-      isRead: false,
-      dateTime: "2024-09-15 12:05 PM",
-      imageUrl: "https://randomuser.me/api/portraits/men/27.jpg",
-    },
-    {
-      id: "12",
-      title: "Maintenance Request Submitted",
-      isRead: false,
-      dateTime: "2024-09-15 12:05 PM",
-      imageUrl: "https://randomuser.me/api/portraits/men/17.jpg",
+      id: 6,
+      title: "Payment Confirmation",
+      message: "Your rent payment of ₹25,000 for May has been received.",
+      time: "1 month ago",
+      type: "payment",
+      read: true,
     },
   ]);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [selectedNotification, setSelectedNotification] = useState(null);
 
-  // Handle search query change
-  const handleSearchChange = (text) => {
-    setSearchQuery(text);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredNotifications = notifications.filter((notification) => {
+    if (!searchQuery.trim()) return true;
+
+    const query = searchQuery.toLowerCase();
+    return (
+      notification.title.toLowerCase().includes(query) ||
+      notification.message.toLowerCase().includes(query)
+    );
+  });
+
+  const getNotificationIcon = (type) => {
+    switch (type) {
+      case "payment":
+        return (
+          <FontAwesome5 name="money-bill-wave" size={20} color="#e74c3c" />
+        );
+      case "maintenance":
+        return <FontAwesome5 name="tools" size={20} color="#3498db" />;
+      case "notice":
+        return <Entypo name="notification" size={20} color="#9b59b6" />;
+      case "message":
+        return (
+          <Ionicons name="chatbubble-ellipses" size={20} color="#27ae60" />
+        );
+      default:
+        return <Ionicons name="notifications" size={20} color="#8395a7" />;
+    }
   };
 
-  // Handle more options button (open modal)
-  const handleMoreOptions = (notification) => {
+  const getNavigationTarget = (type) => {
+    switch (type) {
+      case "payment":
+        return "Payments";
+      case "maintenance":
+        return "Maintenance";
+      case "notice":
+        return "Notices";
+      case "message":
+        return "Chat";
+      default:
+        return "Home";
+    }
+  };
+
+  const handleNotificationPress = (notification) => {
     setSelectedNotification(notification);
-    setModalVisible(true);
+    setActionModalVisible(true);
   };
 
-  // Handle actions like "Mark as Read" or "Delete"
   const handleMarkAsRead = () => {
-    setNotifications((prev) =>
-      prev.map((n) =>
-        n.id === selectedNotification.id ? { ...n, isRead: true } : n
+    if (!selectedNotification) return;
+
+    setNotifications(
+      notifications.map((notification) =>
+        notification.id === selectedNotification.id
+          ? { ...notification, read: true }
+          : notification
       )
     );
-    setModalVisible(false);
+
+    setActionModalVisible(false);
+    setSelectedNotification(null);
   };
 
   const handleDelete = () => {
-    setNotifications((prev) =>
-      prev.filter((n) => n.id !== selectedNotification.id)
+    if (!selectedNotification) return;
+
+    setNotifications(
+      notifications.filter(
+        (notification) => notification.id !== selectedNotification.id
+      )
     );
-    setModalVisible(false);
+
+    setActionModalVisible(false);
+    setSelectedNotification(null);
   };
 
-  // Filter notifications based on search query
-  const filteredNotifications = notifications.filter((notification) =>
-    notification.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const handleNavigate = () => {
+    if (!selectedNotification) return;
 
-  // Render each notification item
-  const renderItem = ({ item }) => (
-    <View
-      className={
-        "py-3 pb-4 mx-0  flex-row justify-between items-center border-b border-gray-200 " +
-        (item?.isRead ? "bg-white" : "bg-gray-100")
-      }
-    >
-      <View className="flex flex-row gap-4 item-center px-4">
-        <Image
-          source={{ uri: item.imageUrl }}
-          className="w-12 h-12 rounded-full"
-        />
+    // Mark as read when navigating
+    setNotifications(
+      notifications.map((notification) =>
+        notification.id === selectedNotification.id
+          ? { ...notification, read: true }
+          : notification
+      )
+    );
 
-        <View>
-          <Text>{item.title}</Text>
-          <Text className={"text-gray-500"}>{item.dateTime}</Text>
-        </View>
-      </View>
-      <TouchableOpacity className="p-2" onPress={() => handleMoreOptions(item)}>
-        <Icon name="more-horiz" size={24} color="gray" />
-      </TouchableOpacity>
-    </View>
-  );
+    setActionModalVisible(false);
+    navigation.navigate(getNavigationTarget(selectedNotification.type));
+    setSelectedNotification(null);
+  };
+
+  const markAllAsRead = () => {
+    setNotifications(
+      notifications.map((notification) => ({ ...notification, read: true }))
+    );
+  };
 
   return (
-    <View className="flex-1 bg-gray-100 p-">
-      {/* Search Bar */}
-      <View className="px-4">
-        <Text className="my-4 text-2xl font-bold">Notifications</Text>
-        <View className="bg-white p-3 mb-4 rounded-lg shadow-md flex-row items-center">
-          <Icon name="search" size={24} color="gray" />
+    <StyledView className="flex-1 bg-[#f8f9fa]">
+      {/* Header */}
+      <StyledView className="bg-[#1a2c4e] pt-4 pb-4 px-4">
+        <StyledView className="flex-row justify-between items-center mb-4">
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Ionicons name="arrow-back" size={24} color="white" />
+          </TouchableOpacity>
+          <StyledText className="text-white text-xl font-bold">
+            Notifications
+          </StyledText>
+          <TouchableOpacity onPress={markAllAsRead}>
+            <Ionicons name="checkmark-done" size={24} color="white" />
+          </TouchableOpacity>
+        </StyledView>
+
+        {/* Search Bar */}
+        <StyledView className="flex-row items-center bg-white rounded-lg px-3 py-2">
+          <Ionicons name="search" size={20} color="#8395a7" />
           <TextInput
-            className="ml-2 flex-1"
+            className="flex-1 ml-2 text-[#1a2c4e]"
             placeholder="Search notifications..."
             value={searchQuery}
-            onChangeText={handleSearchChange}
+            onChangeText={setSearchQuery}
+            clearButtonMode="while-editing"
           />
-        </View>
-      </View>
-      {/* Notifications List */}
-      <FlatList
-        data={filteredNotifications}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-      />
+          {searchQuery.length > 0 && (
+            <TouchableOpacity onPress={() => setSearchQuery("")}>
+              <Ionicons name="close-circle" size={20} color="#8395a7" />
+            </TouchableOpacity>
+          )}
+        </StyledView>
+      </StyledView>
 
-      {/* Modal for More Options */}
+      <StyledScrollView className="flex-1 px-4 pt-6">
+        {filteredNotifications.length > 0 ? (
+          filteredNotifications.map((notification) => (
+            <StyledTouchableOpacity
+              key={notification.id}
+              className={`bg-white p-4 rounded-xl mb-4 shadow-md ${
+                !notification.read ? "border-l-4 border-[#27ae60]" : ""
+              }`}
+              onPress={() => handleNotificationPress(notification)}
+            >
+              <StyledView className="flex-row">
+                <StyledView className="bg-[#f8f9fa] p-3 rounded-full mr-3">
+                  {getNotificationIcon(notification.type)}
+                </StyledView>
+                <StyledView className="flex-1">
+                  <StyledView className="flex-row justify-between items-center mb-1">
+                    <StyledText
+                      className={`text-[#1a2c4e] text-base ${
+                        !notification.read ? "font-bold" : "font-medium"
+                      }`}
+                    >
+                      {notification.title}
+                    </StyledText>
+                    <StyledText className="text-[#8395a7] text-xs">
+                      {notification.time}
+                    </StyledText>
+                  </StyledView>
+                  <StyledText
+                    className={`text-[#8395a7] ${
+                      !notification.read ? "font-medium" : "font-normal"
+                    }`}
+                  >
+                    {notification.message}
+                  </StyledText>
+                </StyledView>
+              </StyledView>
+            </StyledTouchableOpacity>
+          ))
+        ) : (
+          <StyledView className="items-center justify-center py-10">
+            <Ionicons name="notifications-off" size={50} color="#e9ecef" />
+            <StyledText className="text-[#8395a7] mt-2 text-center">
+              {searchQuery
+                ? "No notifications found matching your search"
+                : "No notifications found"}
+            </StyledText>
+          </StyledView>
+        )}
+      </StyledScrollView>
+
+      {/* Action Modal */}
       <Modal
-        animationType="slide"
+        animationType="fade"
         transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
+        visible={actionModalVisible}
+        onRequestClose={() => setActionModalVisible(false)}
       >
-        <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
-          <View
-            className="flex-1 justify-end rounded-t-2xl"
-            style={{ backgroundColor: "rgba(0, 0, 0, 0.3)" }}
-          >
-            <View className="bg-white p-4 rounded-t-xl text-left">
-              <Text className="text-lg font-bold mb-4">More Options</Text>
+        <StyledView className="flex-1 justify-end bg-black/50">
+          <StyledView className="bg-white rounded-t-xl overflow-hidden">
+            {/* Notification Preview */}
+            {selectedNotification && (
+              <StyledView className="p-4 border-b border-[#f0f2f5]">
+                <StyledText className="text-[#1a2c4e] text-lg font-bold mb-1">
+                  {selectedNotification.title}
+                </StyledText>
+                <StyledText className="text-[#8395a7]">
+                  {selectedNotification.message}
+                </StyledText>
+              </StyledView>
+            )}
 
-              <Pressable
-                className="flex-row  gap-4 items-center p-3"
-                onPress={handleMarkAsRead}
-              >
-                <Icon name="message" size={24} />
-                <Text className="text-primary text-left">Mark as Read</Text>
-              </Pressable>
+            {/* Action Options */}
+            <StyledTouchableOpacity
+              className="flex-row items-center p-4 border-b border-[#f0f2f5]"
+              onPress={handleNavigate}
+            >
+              <Ionicons name="open-outline" size={22} color="#3498db" />
+              <StyledText className="text-[#1a2c4e] font-medium ml-3">
+                View Details
+              </StyledText>
+            </StyledTouchableOpacity>
 
-              <Pressable
-                className="flex-row  gap-4 items-center p-3  rounded-lg"
-                onPress={handleDelete}
-              >
-                <Icon name="delete" size={24} />
+            <StyledTouchableOpacity
+              className="flex-row items-center p-4 border-b border-[#f0f2f5]"
+              onPress={handleMarkAsRead}
+            >
+              <Ionicons
+                name="checkmark-circle-outline"
+                size={22}
+                color="#27ae60"
+              />
+              <StyledText className="text-[#1a2c4e] font-medium ml-3">
+                {selectedNotification?.read ? "Mark as unread" : "Mark as read"}
+              </StyledText>
+            </StyledTouchableOpacity>
 
-                <Text className="text-primary text-left">
-                  Delete this Notification
-                </Text>
-              </Pressable>
+            <StyledTouchableOpacity
+              className="flex-row items-center p-4 border-b border-[#f0f2f5]"
+              onPress={handleDelete}
+            >
+              <Ionicons name="trash-outline" size={22} color="#e74c3c" />
+              <StyledText className="text-[#1a2c4e] font-medium ml-3">
+                Delete notification
+              </StyledText>
+            </StyledTouchableOpacity>
 
-              <Pressable
-                className="flex-row  gap-4 items-center p-3 mb-4"
-                onPress={() => setModalVisible(false)}
-              >
-                <Icon name="cancel" size={24} />
-                <Text className="text-left text-gray-700">Cancel</Text>
-              </Pressable>
-            </View>
-          </View>
-        </TouchableWithoutFeedback>
+            <StyledTouchableOpacity
+              className="p-4 items-center"
+              onPress={() => setActionModalVisible(false)}
+            >
+              <StyledText className="text-[#8395a7] font-bold">
+                Cancel
+              </StyledText>
+            </StyledTouchableOpacity>
+          </StyledView>
+        </StyledView>
       </Modal>
-    </View>
+    </StyledView>
   );
 };
 

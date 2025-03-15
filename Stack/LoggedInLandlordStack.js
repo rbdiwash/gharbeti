@@ -23,6 +23,9 @@ import {
   default as Tenants,
 } from "../Screens/screens/Landlord/Tenants/Tenants";
 import LandlordCodeScreen from "../Screens/screens/Landlord/TenantScreens/MainScreen";
+import HomeScreen from "../Screens/screens/Landlord/OldHome";
+import TenantListScreen from "../Screens/screens/Landlord/Tenants/TenantsNew";
+import AnnouncementDetails from "../Screens/screens/Landlord/AnnouncementDetails";
 
 const Tab = createBottomTabNavigator();
 
@@ -35,6 +38,7 @@ const TabArr = [
     activeIcon: "home",
     component: Home,
   },
+
   {
     route: "Tenants",
     label: "Tenants",
@@ -105,12 +109,17 @@ function AnnouncementStack() {
       <Stack.Screen
         name="AnnouncementList"
         component={AnnouncementList}
-        options={{ title: "Announcements" }}
+        options={{ title: "Announcements", headerShown: false }}
       />
       <Stack.Screen
         name="AddAnnouncement"
         component={AddAnnouncementScreen}
-        options={{ title: "Add Announcement" }}
+        options={{ title: "Add Announcement", headerShown: false }}
+      />
+      <Stack.Screen
+        name="AnnouncementDetails"
+        component={AnnouncementDetails}
+        options={{ title: "Add Announcement", headerShown: false }}
       />
     </Stack.Navigator>
   );
@@ -173,6 +182,11 @@ const LoggedInLandlordStack = () => {
           options={{ headerShown: false }}
         />
         <Stack.Screen
+          name="OldHome"
+          component={HomeScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
           name="Notifications"
           component={Notifications}
           options={{ headerShown: false }}
@@ -190,18 +204,18 @@ const LoggedInLandlordStack = () => {
         <Stack.Screen
           name="Profile"
           component={LandlordProfile}
-          options={{ headerShown: true }}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="Dues"
           component={Dues}
           options={{
-            headerShown: true,
+            headerShown: false,
           }}
         />
         <Stack.Screen
           name="tenants"
-          component={TenantList}
+          component={TenantListScreen}
           options={{
             headerShown: false,
           }}
@@ -210,25 +224,37 @@ const LoggedInLandlordStack = () => {
           name="Add Tenants"
           component={AddTenants}
           options={{
-            headerShown: true,
+            headerShown: false,
           }}
         />
-        <Stack.Screen name="Tenant Details" component={TenantDetails} />
+        <Stack.Screen
+          name="Tenant Details"
+          component={TenantDetails}
+          options={{
+            headerShown: false,
+          }}
+        />
         <Stack.Screen
           name="Edit Tenant"
           component={AddTenants}
           options={{
-            headerShown: true,
+            headerShown: false,
           }}
         />
         <Stack.Screen
           name="Tenant Invite"
           component={LandlordCodeScreen}
           options={{
-            headerShown: true,
+            headerShown: false,
           }}
         />
-        <Stack.Screen name="Chat" component={ChatScreen} />
+        <Stack.Screen
+          name="Chat"
+          component={ChatScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
       </Stack.Navigator>
     </SafeAreaView>
   );

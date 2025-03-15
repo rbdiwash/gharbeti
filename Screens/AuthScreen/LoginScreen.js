@@ -17,8 +17,8 @@ const StyledText = styled(Text);
 const StyledTouchableOpacity = styled(TouchableOpacity);
 const StyledTextInput = styled(TextInput);
 
-const GetStarted = ({ navigation }) => {
-  const [{ loggedIn }, { setIsLoggedIn }] = useGharbeti();
+const LoginScreen = ({ navigation }) => {
+  const [{ loggedIn }, { setIsLoggedIn, loginUser }] = useGharbeti();
   const [data, setData] = useState({ email: "", password: "" });
   const [isPasswordSecure, setIsPasswordSecure] = useState(false);
 
@@ -32,13 +32,20 @@ const GetStarted = ({ navigation }) => {
 
   const handleLogin = () => {
     setIsLoggedIn(true);
-    // navigation.navigate("home");
-    if (data?.email === "admin" && data?.password === "password") {
-      setIsLoggedIn(true);
-      navigation.navigate("Home");
-    } else {
-      alert("Invalid credentials");
+
+    const success = loginUser("landlord", "admin");
+    if (!success) {
+      throw new Error("Failed to save login state");
     }
+
+    // setUserType("landlord");
+    // // navigation.navigate("home");
+    // if (data?.email === "admin" && data?.password === "password") {
+    //   setIsLoggedIn(true);
+    //   navigation.navigate("Home");
+    // } else {
+    //   alert("Invalid credentials");
+    // }
   };
 
   return (
@@ -116,4 +123,4 @@ const GetStarted = ({ navigation }) => {
   );
 };
 
-export default GetStarted;
+export default LoginScreen;

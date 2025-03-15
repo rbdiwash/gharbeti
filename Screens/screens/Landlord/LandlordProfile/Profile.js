@@ -1,211 +1,124 @@
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  ScrollView,
-  Image,
-  Switch,
-} from "react-native";
-import { AntDesign, Feather } from "@expo/vector-icons";
-import Divash from "../../../../assets/divash.jpeg";
-import Icon from "react-native-vector-icons/MaterialIcons";
+import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import { styled } from "nativewind";
+import { Entypo, FontAwesome5, Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { OutlinedButton } from "../../../../components/Buttons";
+import useGharbeti from "../../../../context/useGharbeti";
+
+const StyledView = styled(View);
+const StyledText = styled(Text);
+const StyledTouchableOpacity = styled(TouchableOpacity);
 
 const ProfileScreen = () => {
-  const [landlordDetails, setLandlordDetails] = useState({
-    name: "Divash Ranabhat",
-    email: "rbdiwash@gmail.com",
-    phone: "+123456789",
-    address: "123 Main Street, City, Country",
-  });
-  const [passwordVisibility, setPasswordVisibility] = useState({
-    current: true,
-    new: true,
-    confirm: true,
-  });
-  const [selectedLanguage, setSelectedLanguage] = useState("English");
+  const navigation = useNavigation();
+  const [{ isLoggedIn }, { setIsLoggedIn }] = useGharbeti();
 
-  const togglePasswordVisibility = (field) => {
-    setPasswordVisibility((prev) => ({
-      ...prev,
-      [field]: !prev[field],
-    }));
-  };
-  const [expandedSections, setExpandedSections] = useState({
-    changePassword: false,
-    changeLanguage: false,
-    biometric: false,
-  });
-
-  const handleInputChange = (key, value) => {
-    setLandlordDetails((prev) => ({ ...prev, [key]: value }));
-  };
-
-  const toggleSection = (section) => {
-    setExpandedSections((prev) => ({
-      ...prev,
-      [section]: !prev[section],
-    }));
-  };
+  const profileSections = [
+    {
+      title: "Personal Information",
+      icon: <FontAwesome5 name="user" size={20} color="#3498db" />,
+      items: [
+        { label: "Name", value: "Divash Ranabhat" },
+        { label: "Email", value: "rbdiwash@gmail.com" },
+        { label: "Phone", value: "+91 98765 43210" },
+      ],
+    },
+    {
+      title: "Lease & Rooms Information",
+      icon: <Entypo name="documents" size={20} color="#9b59b6" />,
+      items: [
+        { label: "Property", value: "Apartment 303, Green Valley" },
+        { label: "Rooms", value: "4" },
+        { label: "Vacant", value: "3" },
+        { label: "Occupied", value: "1" },
+      ],
+    },
+  ];
 
   return (
-    <ScrollView className="flex-1 bg-white p-4">
-      {/* Profile Picture */}
-      <View className="items-center mb-6">
-        <Image
-          source={
-            Divash // Replace with actual profile picture URL
-          }
-          className="w-24 h-24 rounded-full"
-        />
-        <Text className="text-xl font-bold mt-4">{landlordDetails.name}</Text>
-      </View>
+    <StyledView className="flex-1 bg-[#f8f9fa]">
+      {/* Header */}
+      <StyledView className="bg-[#1a2c4e] pt-4 pb-4 px-4">
+        <StyledView className="flex-row justify-between items-center mb-2">
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Ionicons name="arrow-back" size={24} color="white" />
+          </TouchableOpacity>
+          <StyledText className="text-white text-xl font-bold">
+            Profile
+          </StyledText>
+          <TouchableOpacity>
+            <Ionicons name="settings-outline" size={24} color="white" />
+          </TouchableOpacity>
+        </StyledView>
+      </StyledView>
 
-      {/* Editable Personal Information */}
-      <View className="mb-6 border rounded-lg p-4 bg-gray-100">
-        <Text className="text-lg font-bold mb-4">Personal Information</Text>
-        {Object.keys(landlordDetails).map((key) => (
-          <View key={key} className="mb-4">
-            <Text className="text-sm font-semibold capitalize">{key}</Text>
-            <TextInput
-              value={landlordDetails[key]}
-              onChangeText={(value) => handleInputChange(key, value)}
-              className="border border-gray-300 rounded-lg p-2 mt-1"
-            />
-          </View>
-        ))}
-      </View>
-      <View className="mb-6 border rounded-lg p-4 bg-gray-100">
-        <Text className="text-lg font-bold mb-4">Room Information</Text>
+      <ScrollView className="flex-1 px-4 pt-4">
+        {/* Profile Header */}
+        <StyledView className="bg-white rounded-xl p-6 shadow-md mb-6 items-center">
+          <StyledView className="w-24 h-24 rounded-full bg-secondary justify-center items-center mb-4">
+            <StyledText className="text-white text-3xl font-bold">
+              JD
+            </StyledText>
+          </StyledView>
+          <StyledText className="text-[#1a2c4e] text-xl font-bold mb-1">
+            Divash Ranabhat
+          </StyledText>
+          <StyledText className="text-[#8395a7] mb-4">
+            Tenant since January 2023
+          </StyledText>
+          <StyledTouchableOpacity
+            className="bg-[#f8f9fa] px-4 py-2 rounded-lg border border-[#e9ecef]"
+            onPress={() => navigation.navigate("LeaseDetails")}
+          >
+            <StyledText className="text-[#1a2c4e]">
+              View Lease Agreement
+            </StyledText>
+          </StyledTouchableOpacity>
+        </StyledView>
 
-        <View className="mb-4">
-          <Text className="text-sm font-semibold capitalize">Total Rooms</Text>
-          <TextInput className="border border-gray-300 rounded-lg p-2 mt-1" />
-        </View>
-        <View className="mb-4">
-          <Text className="text-sm font-semibold capitalize">Vacant Rooms</Text>
-          <TextInput className="border border-gray-300 rounded-lg p-2 mt-1" />
-        </View>
-      </View>
+        {/* Profile Sections */}
+        {profileSections.map((section, index) => (
+          <StyledView
+            key={index}
+            className="bg-white rounded-xl p-4 shadow-md mb-6"
+          >
+            <StyledView className="flex-row items-center mb-4">
+              <StyledView className="w-10 h-10 rounded-full bg-[#f8f9fa] justify-center items-center mr-3">
+                {section.icon}
+              </StyledView>
+              <StyledText className="text-[#1a2c4e] text-lg font-bold">
+                {section.title}
+              </StyledText>
+            </StyledView>
 
-      {/* Change Password Section */}
-      <View className="mb-4">
-        <TouchableOpacity
-          onPress={() => toggleSection("changePassword")}
-          className="flex-row justify-between items-center py-3"
-        >
-          <Text className="text-lg font-semibold">Change Password</Text>
-          <Icon
-            name={
-              expandedSections.changePassword
-                ? "keyboard-arrow-up"
-                : "keyboard-arrow-down"
-            }
-            size={30}
-            color="black"
-          />
-        </TouchableOpacity>
-        {expandedSections.changePassword && (
-          <View className="border-t border-gray-300 pt-4">
-            {["current", "new", "confirm"].map((field, index) => (
-              <View key={index} className="relative mb-4">
-                <TextInput
-                  placeholder={`Enter ${
-                    field.charAt(0).toUpperCase() + field.slice(1)
-                  } Password`}
-                  secureTextEntry={passwordVisibility[field]}
-                  className="border border-gray-300 rounded-lg p-2 pr-10"
-                />
-                <TouchableOpacity
-                  onPress={() => togglePasswordVisibility(field)}
-                  className="absolute right-3 top-2.5"
-                >
-                  <Feather
-                    name={passwordVisibility[field] ? "eye-off" : "eye"}
-                    size={20}
-                    color="gray"
-                  />
-                </TouchableOpacity>
-              </View>
-            ))}
-          </View>
-        )}
-      </View>
-
-      {/* Change Language Section */}
-      <View className="mb-4">
-        <TouchableOpacity
-          onPress={() => toggleSection("changeLanguage")}
-          className="flex-row justify-between items-center py-3"
-        >
-          <Text className="text-lg font-semibold">Change Language</Text>
-          <Icon
-            name={
-              expandedSections.changeLanguage
-                ? "keyboard-arrow-up"
-                : "keyboard-arrow-down"
-            }
-            size={30}
-            color="black"
-          />
-        </TouchableOpacity>
-        {expandedSections.changeLanguage && (
-          <View className="border-t border-gray-300 pt-4">
-            {[
-              { language: "English", flag: "🇺🇸" },
-              { language: "Nepali", flag: "🇳🇵" },
-            ].map((item, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => setSelectedLanguage(item.language)}
-                className="flex-row items-center mb-4"
+            {section.items.map((item, itemIndex) => (
+              <StyledView
+                key={itemIndex}
+                className="flex-row justify-between py-3"
+                style={{
+                  borderBottomWidth:
+                    itemIndex < section.items.length - 1 ? 1 : 0,
+                  borderBottomColor: "#e9ecef",
+                }}
               >
-                <Text className="mr-4 text-lg">{item.flag}</Text>
-                <Text className="text-base">{item.language}</Text>
-                <View className="ml-auto">
-                  {selectedLanguage === item.language && (
-                    <Icon name="checkcircle" size={20} color="green" />
-                  )}
-                </View>
-              </TouchableOpacity>
+                <StyledText className="text-[#8395a7]">{item.label}</StyledText>
+                <StyledText className="text-[#1a2c4e] font-medium">
+                  {item.value}
+                </StyledText>
+              </StyledView>
             ))}
-          </View>
-        )}
-      </View>
+          </StyledView>
+        ))}
 
-      {/* Turn on Biometric Section */}
-      <View className="mb-6">
-        <TouchableOpacity
-          onPress={() => toggleSection("biometric")}
-          className="flex-row justify-between items-center py-3"
-        >
-          <Text className="text-lg font-semibold">Turn on Biometric</Text>
-          <Icon
-            name={
-              expandedSections.biometric
-                ? "keyboard-arrow-up"
-                : "keyboard-arrow-down"
-            }
-            size={30}
-            color="black"
-          />
-        </TouchableOpacity>
-        {expandedSections.biometric && (
-          <View className="border-t border-gray-300 pt-4">
-            <View className="flex-row justify-between items-center">
-              <Text className="text-base">Enable Biometric Login</Text>
-              <Switch />
-            </View>
-          </View>
-        )}
-      </View>
+        {/* Logout Button */}
 
-      {/* Save Button */}
-      <TouchableOpacity className="bg-blue-500 py-3 rounded-lg mb-10">
-        <Text className="text-center text-white font-bold">Save Changes</Text>
-      </TouchableOpacity>
-    </ScrollView>
+        <OutlinedButton
+          text="Logout"
+          parentClass={"mb-8"}
+          onPress={() => setIsLoggedIn(false)}
+        />
+      </ScrollView>
+    </StyledView>
   );
 };
 
