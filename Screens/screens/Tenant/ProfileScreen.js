@@ -11,7 +11,7 @@ const StyledTouchableOpacity = styled(TouchableOpacity);
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
-  const [{ isLoggedIn }, { setIsLoggedIn }] = useGharbeti();
+  const [{}, { logoutUser }] = useGharbeti();
 
   const profileSections = [
     {
@@ -30,7 +30,7 @@ const ProfileScreen = () => {
         { label: "Property", value: "Apartment 303, Green Valley" },
         { label: "Lease Start", value: "January 1, 2023" },
         { label: "Lease End", value: "December 31, 2023" },
-        { label: "Monthly Rent", value: "₹25,000" },
+        { label: "Monthly Rent", value: "Rs 25,000" },
       ],
     },
     {
@@ -123,7 +123,7 @@ const ProfileScreen = () => {
         <OutlinedButton
           text="Logout"
           parentClass={"mb-8"}
-          onPress={() => setIsLoggedIn(false)}
+          onPress={() => logoutUser()}
         />
       </ScrollView>
     </StyledView>

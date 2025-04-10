@@ -20,16 +20,32 @@ import {
   ButtonGroup,
   SecondaryButton,
 } from "../../../components/Buttons";
+import AutoScroll from "@homielab/react-native-auto-scroll";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
 const StyledTouchableOpacity = styled(TouchableOpacity);
+const StyledScrollView = styled(ScrollView);
 
 const HomeScreen = () => {
   const navigation = useNavigation();
   const translateY = new Animated.Value(50);
   const opacity = new Animated.Value(0);
 
+  // Mock data for tenant
+  const tenantData = {
+    name: "Divash Ranabhat",
+    profileImage: "https://i.pravatar.cc/150?img=8",
+    property: "Apartment 303, Green Valley",
+    rentDue: 25000,
+    dueDate: "July 1, 2023",
+    lastPayment: 25000,
+    lastPaymentDate: "June 1, 2023",
+    leaseEndDate: "December 31, 2023",
+    maintenanceRequests: 2,
+    unreadNotices: 3,
+    unreadMessages: 1,
+  };
   useEffect(() => {
     Animated.parallel([
       Animated.timing(translateY, {
@@ -101,7 +117,7 @@ const HomeScreen = () => {
                 Due Amount
               </StyledText>
               <StyledText className="text-[#1a2c4e] text-2xl font-bold">
-                ₹25,000
+                Rs 25,000
               </StyledText>
               <StyledText className="text-red">Due on July 1st</StyledText>
             </StyledView>
@@ -112,6 +128,29 @@ const HomeScreen = () => {
             />
           </StyledView>
         </AnimatedView>
+      </StyledView>
+
+      {/* Notices/Announcements */}
+      <StyledView className="mt-4">
+        <AutoScroll duration={10000} endPaddingWidth={10}>
+          <StyledScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <StyledView className="bg-[#fff8e1] p-3 rounded-lg mr-2 border-l-4 border-[#ffc107]">
+              <StyledText className="text-[#1a2c4e] font-medium">
+                Reminder: Rent due on {tenantData.dueDate}
+              </StyledText>
+            </StyledView>
+            <StyledView className="bg-[#e1f5fe] p-3 rounded-lg mr-2 border-l-4 border-[#03a9f4]">
+              <StyledText className="text-[#1a2c4e] font-medium">
+                Water supply maintenance on July 5th, 10AM-2PM
+              </StyledText>
+            </StyledView>
+            <StyledView className="bg-[#e8f5e9] p-3 rounded-lg mr-2 border-l-4 border-[#4caf50]">
+              <StyledText className="text-[#1a2c4e] font-medium">
+                Community event this weekend in the common area
+              </StyledText>
+            </StyledView>
+          </StyledScrollView>
+        </AutoScroll>
       </StyledView>
 
       {/* Quick Actions */}

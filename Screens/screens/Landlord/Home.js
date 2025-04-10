@@ -37,7 +37,7 @@ const HomeScreen = () => {
 
   // Mock data for tenant
   const tenantData = {
-    name: "John Doe",
+    name: "Divash Ranabhat",
     profileImage: "https://i.pravatar.cc/150?img=8",
     property: "Apartment 303, Green Valley",
     rentDue: 25000,
@@ -292,6 +292,13 @@ const HomeScreen = () => {
               "chatbubble-ellipses",
               "Chat",
               "Chat",
+              "Ionicons",
+              "#9b59b6"
+            )}
+            {renderQuickAction(
+              "cash-outline",
+              "Dues",
+              "Dues",
               "Ionicons",
               "#9b59b6"
             )}

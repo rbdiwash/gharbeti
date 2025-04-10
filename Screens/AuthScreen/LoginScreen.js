@@ -29,6 +29,7 @@ const LoginScreen = ({ navigation }) => {
   const toggleVisibility = () => {
     setIsPasswordSecure(!isPasswordSecure);
   };
+  ``;
 
   const handleLogin = () => {
     setIsLoggedIn(true);

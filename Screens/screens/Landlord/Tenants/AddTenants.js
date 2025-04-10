@@ -276,7 +276,7 @@ const AddTenantsScreen = () => {
               "numeric"
             )}
             {renderFormField(
-              "Total Rent (₹)",
+              "Total Rent (Rs )",
               "Enter total rent amount",
               "totalRent",
               formData.totalRent,

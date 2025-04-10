@@ -74,7 +74,7 @@ const TenantListScreen = () => {
               <>
                 <StyledView className="w-1 h-1 rounded-full bg-[#8395a7] mx-2" />
                 <StyledText className="text-[#e74c3c] text-sm font-medium">
-                  Due: ₹{item.dueAmount}
+                  Due: Rs {item.dueAmount}
                 </StyledText>
               </>
             )}

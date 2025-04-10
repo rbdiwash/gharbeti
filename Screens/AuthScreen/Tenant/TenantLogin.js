@@ -50,7 +50,7 @@ const TenantLogin = ({}) => {
     if (!success) {
       throw new Error("Failed to save login state");
     }
-    // navigation.navigate("TenantTabs", { screen: "tenantHome" });
+    // navigation.navigate("TenantTabs", { screen: "Tenant Home" });
   };
 
   const validatePassword = () => {
@@ -72,7 +72,7 @@ const TenantLogin = ({}) => {
     setRulesModalVisible(false);
     setIsLoggedIn(true);
     setUserType("tenant");
-    navigation.navigate("tenantHome");
+    navigation.navigate("Tenant Home");
   };
 
   return (

@@ -14,7 +14,7 @@ const NotificationsScreen = () => {
     {
       id: 1,
       title: "Rent Due Reminder",
-      message: "Your rent of ₹25,000 is due in 3 days.",
+      message: "Your rent of Rs 25,000 is due in 3 days.",
       time: "2 hours ago",
       type: "payment",
       read: false,
@@ -47,7 +47,7 @@ const NotificationsScreen = () => {
     {
       id: 5,
       title: "Payment Confirmation",
-      message: "Your rent payment of ₹25,000 for May has been received.",
+      message: "Your rent payment of Rs 25,000 for May has been received.",
       time: "1 month ago",
       type: "payment",
       read: true,

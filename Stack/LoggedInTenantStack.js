@@ -19,6 +19,7 @@ import PaymentsScreen from "../Screens/screens/Tenant/PaymentsScreen";
 import ProfileScreen from "../Screens/screens/Tenant/ProfileScreen";
 import SettingsScreen from "../Screens/screens/Tenant/SettingsScreen";
 import UnderConstructionScreen from "../Screens/screens/Tenant/UnderConstruction";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -40,7 +41,7 @@ const TabNavigator = () => {
       }}
     >
       <Tab.Screen
-        name="tenantHome"
+        name="Tenant Home"
         component={HomeScreen}
         options={{
           tabBarIcon: ({ color }) => (
@@ -81,35 +82,37 @@ const TabNavigator = () => {
 
 const LoggedInTenantStack = () => {
   return (
-    <Stack.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}
-    >
-      <Stack.Screen name="TenantTabs" component={TabNavigator} />
-      <Stack.Screen name="Profile" component={ProfileScreen} />
-      <Stack.Screen name="Notices" component={NoticesScreen} />
-      <Stack.Screen name="NoticeDetails" component={NoticeDetails} />
-
-      <Stack.Screen name="Notifications" component={NotificationsScreen} />
-      <Stack.Screen name="NewMaintenance" component={NewMaintenanceRequest} />
-      <Stack.Screen
-        name="MaintenanceDetails"
-        component={MaintenanceDetails}
-        options={{
+    <SafeAreaView style={{ flex: 1 }}>
+      <Stack.Navigator
+        screenOptions={{
           headerShown: false,
         }}
-      />
-      <Stack.Screen name="LeaseDetails" component={LeaseDetails} />
-      <Stack.Screen name="PaymentHistory" component={PaymentHistory} />
-      <Stack.Screen name="MakePayment" component={MakePayment} />
-      <Stack.Screen name="Settings" component={SettingsScreen} />
-      <Stack.Screen name="EditProfile" component={EditProfileScreen} />
-      <Stack.Screen
-        name="UnderConstruction"
-        component={UnderConstructionScreen}
-      />
-    </Stack.Navigator>
+      >
+        <Stack.Screen name="TenantTabs" component={TabNavigator} />
+        <Stack.Screen name="Profile" component={ProfileScreen} />
+        <Stack.Screen name="Notices" component={NoticesScreen} />
+        <Stack.Screen name="NoticeDetails" component={NoticeDetails} />
+
+        <Stack.Screen name="Notifications" component={NotificationsScreen} />
+        <Stack.Screen name="NewMaintenance" component={NewMaintenanceRequest} />
+        <Stack.Screen
+          name="MaintenanceDetails"
+          component={MaintenanceDetails}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen name="LeaseDetails" component={LeaseDetails} />
+        <Stack.Screen name="PaymentHistory" component={PaymentHistory} />
+        <Stack.Screen name="MakePayment" component={MakePayment} />
+        <Stack.Screen name="Settings" component={SettingsScreen} />
+        <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+        <Stack.Screen
+          name="UnderConstruction"
+          component={UnderConstructionScreen}
+        />
+      </Stack.Navigator>
+    </SafeAreaView>
   );
 };
 

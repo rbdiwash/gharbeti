@@ -6,8 +6,8 @@ import LoggedInLandlordStack from "./Stack/LoggedInLandlordStack";
 import LoggedInTenantStack from "./Stack/LoggedInTenantStack";
 import LoggedOutStack from "./Stack/LoggedOutStack";
 
-const CheckUser = ({ user }) => {
-  const [{ isLoggedIn, userType, userState }, {}] = useGharbeti();
+const CheckUser = () => {
+  const [{ userState }, {}] = useGharbeti();
 
   return (
     <>

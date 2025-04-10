@@ -360,7 +360,7 @@ const TenantDetailsScreen = () => {
                     Monthly Rent
                   </StyledText>
                   <StyledText className="text-[#1a2c4e] font-bold">
-                    ₹{tenantData.monthlyRent}
+                    Rs {tenantData.monthlyRent}
                   </StyledText>
                 </StyledView>
 
@@ -378,7 +378,7 @@ const TenantDetailsScreen = () => {
                     Security Deposit
                   </StyledText>
                   <StyledText className="text-[#1a2c4e] font-medium">
-                    ₹{tenantData.securityDeposit}
+                    Rs {tenantData.securityDeposit}
                   </StyledText>
                 </StyledView>
 
@@ -412,7 +412,7 @@ const TenantDetailsScreen = () => {
                     Current Due
                   </StyledText>
                   <StyledText className="text-[#e74c3c] font-bold">
-                    ₹{tenantData.dueAmount}
+                    Rs {tenantData.dueAmount}
                   </StyledText>
                 </StyledView>
 
@@ -430,7 +430,7 @@ const TenantDetailsScreen = () => {
                     Total Paid (Till Date)
                   </StyledText>
                   <StyledText className="text-[#27ae60] font-bold">
-                    ₹{tenantData.totalPaid}
+                    Rs {tenantData.totalPaid}
                   </StyledText>
                 </StyledView>
               </StyledView>
@@ -562,7 +562,7 @@ const TenantDetailsScreen = () => {
                   <StyledView className="flex-row justify-between items-start mb-2">
                     <StyledView>
                       <StyledText className="text-[#1a2c4e] text-lg font-bold">
-                        ₹{payment.amount}
+                        Rs {payment.amount}
                       </StyledText>
                       <StyledText className="text-[#8395a7]">
                         {payment.date}

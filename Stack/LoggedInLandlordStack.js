@@ -2,11 +2,10 @@
 import { AntDesign } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { useEffect, useRef } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import * as Animatable from "react-native-animatable";
+import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AddAnnouncementScreen from "../Screens/screens/Landlord/AnnouncementAddScreen";
+import AnnouncementDetails from "../Screens/screens/Landlord/AnnouncementDetails";
 import AnnouncementList from "../Screens/screens/Landlord/AnnouncementList";
 import ChatScreen from "../Screens/screens/Landlord/ChatScreen";
 import Dues from "../Screens/screens/Landlord/Dues";
@@ -14,18 +13,16 @@ import Home from "../Screens/screens/Landlord/Home";
 import LandlordProfile from "../Screens/screens/Landlord/LandlordProfile/Profile";
 import MaintenanceStack from "../Screens/screens/Landlord/Maintenance/MaintenanceStack";
 import Notifications from "../Screens/screens/Landlord/Notifications";
+import HomeScreen from "../Screens/screens/Landlord/OldHome";
+import RecordPaymentScreen from "../Screens/screens/Landlord/RecordPaymentScreen";
 import Reports from "../Screens/screens/Landlord/Reports";
 import Settings from "../Screens/screens/Landlord/Settings";
+import TenantPaymentDetailsScreen from "../Screens/screens/Landlord/TenantPaymentDetailsScreen";
 import AddTenants from "../Screens/screens/Landlord/Tenants/AddTenants";
 import TenantDetails from "../Screens/screens/Landlord/Tenants/TenantDetails";
-import {
-  default as TenantList,
-  default as Tenants,
-} from "../Screens/screens/Landlord/Tenants/Tenants";
-import LandlordCodeScreen from "../Screens/screens/Landlord/TenantScreens/MainScreen";
-import HomeScreen from "../Screens/screens/Landlord/OldHome";
+import { default as Tenants } from "../Screens/screens/Landlord/Tenants/Tenants";
 import TenantListScreen from "../Screens/screens/Landlord/Tenants/TenantsNew";
-import AnnouncementDetails from "../Screens/screens/Landlord/AnnouncementDetails";
+import LandlordCodeScreen from "../Screens/screens/Landlord/TenantScreens/MainScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -66,43 +63,6 @@ const TabArr = [
   },
 ];
 
-const TabButton = (props) => {
-  const { item, onPress, accessibilityState } = props;
-  const focused = accessibilityState.selected;
-  const viewRef = useRef(null);
-
-  useEffect(() => {
-    if (focused) {
-      viewRef.current.animate({
-        0: { scale: 0.5, rotate: "0deg" },
-        1: { scale: 1.2, rotate: "0deg" },
-      });
-    } else {
-      viewRef.current.animate({
-        0: { scale: 1.5, rotate: "0deg" },
-        1: { scale: 1, rotate: "0deg" },
-      });
-    }
-  }, [focused]);
-
-  return (
-    <TouchableOpacity
-      onPress={onPress}
-      activeOpacity={1}
-      style={[styles.container, { top: 0 }]}
-    >
-      <Animatable.View ref={viewRef} duration={1000}>
-        <AntDesign
-          name={item?.activeIcon}
-          size={24}
-          color={focused ? "#F59A73" : "black"}
-        />
-      </Animatable.View>
-      <Text className={"text-[#F59A73] font-bold"}>{item?.label}</Text>
-    </TouchableOpacity>
-  );
-};
-
 function AnnouncementStack() {
   return (
     <Stack.Navigator>
@@ -128,26 +88,16 @@ function MainTabs() {
   return (
     <Tab.Navigator
       screenOptions={{
-        headerShown: false,
         tabBarStyle: {
+          backgroundColor: "#1a2c4e",
+          borderTopWidth: 0,
+          paddingBottom: 5,
+          paddingTop: 5,
           height: 60,
-          position: "absolute",
-          margin: 0,
-          borderRadius: 0,
-          justifyContent: "center",
-          alignItems: "center",
         },
-
-        tabBarLabelStyle: {
-          fontSize: 22,
-          fontFamily: "Georgia",
-          fontWeight: 300,
-        },
-        tabBarActiveTintColor: "#F59A73",
-        tabBarInactiveTintColor: "#fff",
-
-        tabBarHideOnKeyboard: true,
-        animation: "fade",
+        tabBarActiveTintColor: "#fff",
+        tabBarInactiveTintColor: "#8395a7",
+        headerShown: false,
       }}
     >
       {TabArr.map((item, index) => {
@@ -155,14 +105,14 @@ function MainTabs() {
           <Tab.Screen
             key={index}
             name={item.route}
-            // component={item?.component}
             options={{
-              tabBarShowLabel: false,
-              tabBarButton: (props) => <TabButton {...props} item={item} />,
+              tabBarIcon: ({ color }) => (
+                <AntDesign name={item?.activeIcon} size={24} color={color} />
+              ),
             }}
           >
             {() => (
-              <View style={{ flex: 1, paddingBottom: 60 }}>
+              <View style={{ flex: 1 }}>
                 <item.component />
               </View>
             )}
@@ -209,6 +159,20 @@ const LoggedInLandlordStack = () => {
         <Stack.Screen
           name="Dues"
           component={Dues}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="TenantPaymentDetails"
+          component={TenantPaymentDetailsScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="RecordPayment"
+          component={RecordPaymentScreen}
           options={{
             headerShown: false,
           }}
@@ -261,12 +225,3 @@ const LoggedInLandlordStack = () => {
 };
 
 export default LoggedInLandlordStack;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    height: 60,
-  },
-});
