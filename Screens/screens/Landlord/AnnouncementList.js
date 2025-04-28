@@ -1,130 +1,80 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import {
   View,
   Text,
   ScrollView,
   TouchableOpacity,
   TextInput,
+  ActivityIndicator,
+  RefreshControl,
+  Alert,
 } from "react-native";
 import { styled } from "nativewind";
 import { Entypo, Ionicons, FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { useNotice } from "../../../hooks/useNotice";
+import { trimWithEllipsis } from "../../helper/const";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
 const StyledTouchableOpacity = styled(TouchableOpacity);
 const StyledTextInput = styled(TextInput);
+const StyledScrollView = styled(ScrollView);
 
-const NoticesScreen = () => {
+const AnnouncementList = () => {
   const navigation = useNavigation();
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredNotices, setFilteredNotices] = useState([]);
   const [filterType, setFilterType] = useState("all");
+  const [refreshing, setRefreshing] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
 
-  const allNotices = [
-    {
-      id: 1,
-      title: "Water Supply Interruption",
-      description:
-        "Due to maintenance work, water supply will be interrupted on July 5th from 10 AM to 2 PM. Please store water accordingly.",
-      date: "June 28, 2023",
-      type: "maintenance",
-      isImportant: true,
-    },
-    {
-      id: 2,
-      title: "New Security Measures",
-      description:
-        "We have installed new security cameras in the common areas. Please ensure you carry your ID card at all times.",
-      date: "June 20, 2023",
-      type: "security",
-      isImportant: false,
-    },
-    {
-      id: 3,
-      title: "Rent Revision Notice",
-      description:
-        "As per the lease agreement, there will be a 5% increase in rent starting from August 1, 2023.",
-      date: "June 15, 2023",
-      type: "payment",
-      isImportant: true,
-    },
-    {
-      id: 4,
-      title: "Community Event",
-      description:
-        "We are organizing a community gathering on July 10th at 6 PM in the common area. All tenants are welcome to join.",
-      date: "June 10, 2023",
-      type: "event",
-      isImportant: false,
-    },
-    {
-      id: 5,
-      title: "Pest Control Service",
-      description:
-        "Pest control service will be conducted on July 8th. Please ensure your presence or make arrangements for access.",
-      date: "June 25, 2023",
-      type: "maintenance",
-      isImportant: true,
-    },
-    {
-      id: 6,
-      title: "Parking Rules Update",
-      description:
-        "Please note that parking in visitor spots for more than 24 hours is not allowed. Vehicles will be towed at owner's expense.",
-      date: "June 18, 2023",
-      type: "security",
-      isImportant: false,
-    },
-  ];
+  // Use React Query to fetch notices with type filtering
+  const {
+    data: notices = [],
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useNotice(filterType).getNoticeRequests();
+
+  const { mutate: deleteNotice, isLoading: isDeleting } =
+    useNotice().deleteNoticeRequest();
+
+  // Filter notices by search query
+  const filteredNotices = useMemo(() => {
+    if (!notices) return [];
+
+    if (!searchQuery.trim()) return notices;
+
+    const query = searchQuery.toLowerCase();
+    return notices.filter(
+      (notice) =>
+        notice.title.toLowerCase().includes(query) ||
+        notice.description.toLowerCase().includes(query)
+    );
+  }, [notices, searchQuery]);
+
+  // Handle pull-to-refresh
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  };
 
   const filterTypes = [
     { id: "all", label: "All" },
-    { id: "maintenance", label: "Maintenance" },
-    { id: "security", label: "Security" },
-    { id: "payment", label: "Payment" },
-    { id: "event", label: "Events" },
+    { id: "Maintenance", label: "Maintenance" },
+    { id: "Security", label: "Security" },
+    { id: "Payment", label: "Payment" },
+    { id: "Events", label: "Events" },
   ];
 
-  const navigateToNoticeDetails = (noticeId) => {
-    // @ts-ignore - Ignore type checking for navigation params
-    navigation.navigate("AnnouncementDetails", { noticeId });
-  };
-
-  useEffect(() => {
-    // Initialize filteredNotices with allNotices on first render
-    setFilteredNotices(allNotices);
-  }, []);
-
-  useEffect(() => {
-    filterNotices();
-  }, [searchQuery, filterType]);
-
-  const filterNotices = () => {
-    let filtered = [...allNotices];
-
-    // Filter by type
-    if (filterType !== "all") {
-      filtered = filtered.filter((notice) => notice.type === filterType);
-    }
-
-    // Filter by search query
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        (notice) =>
-          notice.title.toLowerCase().includes(query) ||
-          notice.description.toLowerCase().includes(query)
-      );
-    }
-
-    setFilteredNotices(filtered);
-  };
+  console.log(notices);
 
   const getNoticeIcon = (type) => {
-    switch (type) {
+    switch (type?.toLowerCase()) {
       case "maintenance":
         return <FontAwesome5 name="tools" size={20} color="#3498db" />;
       case "security":
@@ -133,34 +83,58 @@ const NoticesScreen = () => {
         return (
           <FontAwesome5 name="money-bill-wave" size={20} color="#e74c3c" />
         );
-      case "event":
+      case "events":
         return <Ionicons name="calendar" size={20} color="#27ae60" />;
       default:
         return <Entypo name="notification" size={20} color="#8395a7" />;
     }
   };
 
-  const addAnnouncement = () => {
-    navigation.navigate("AddAnnouncement");
+  const navigateToNoticeDetails = (noticeId) => {
+    // @ts-ignore - Ignore type checking for navigation params
+    navigation.navigate("AnnouncementDetails", { noticeId });
+  };
+
+  const handleDeleteNotice = (noticeId) => {
+    Alert.alert(
+      "Delete Notice",
+      "Are you sure you want to delete this notice? This action cannot be undone.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () => {
+            setDeletingId(noticeId);
+            deleteNotice(noticeId, {
+              onSuccess: () => {
+                setDeletingId(null);
+                Alert.alert("Success", "Notice deleted successfully");
+                refetch();
+              },
+              onError: (err) => {
+                setDeletingId(null);
+                Alert.alert("Error", err.message || "Failed to delete notice");
+              },
+            });
+          },
+        },
+      ]
+    );
   };
 
   return (
     <StyledView className="flex-1 bg-[#f8f9fa]">
       {/* Header */}
-      <StyledView className="bg-[#1a2c4e] pt-4 pb-4 px-4">
+      <StyledView className="bg-[#1a2c4e] pt-4 pb-6 px-4">
         <StyledView className="flex-row justify-between items-center mb-4">
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={24} color="white" />
           </TouchableOpacity>
           <StyledText className="text-white text-xl font-bold">
-            Announcements
+            Notices & Announcements
           </StyledText>
-          <StyledTouchableOpacity
-            className="bg-white w-8 h-8 rounded-full items-center justify-center shadow-sm"
-            onPress={addAnnouncement}
-          >
-            <Ionicons name="add" size={24} color="#1a2c4e" />
-          </StyledTouchableOpacity>
+          <StyledView style={{ width: 24 }} />
         </StyledView>
 
         {/* Search Bar */}
@@ -191,9 +165,9 @@ const NoticesScreen = () => {
           {filterTypes.map((type) => (
             <StyledTouchableOpacity
               key={type.id}
-              className={`mr-2 px-4 py-1 rounded-full ${
+              className={`mr-2 px-4 py-2 rounded-full ${
                 filterType === type.id
-                  ? "bg-secondary"
+                  ? "bg-[#27ae60]"
                   : "bg-[#f0f2f5] border border-[#e9ecef]"
               }`}
               onPress={() => setFilterType(type.id)}
@@ -210,52 +184,138 @@ const NoticesScreen = () => {
         </ScrollView>
       </View>
 
-      <ScrollView className="flex-1 px-4 pt-4">
-        {filteredNotices.length > 0 ? (
-          filteredNotices.map((notice) => (
-            <StyledTouchableOpacity
-              key={notice.id}
-              className="bg-white p-4 rounded-xl mb-4 shadow-md"
-              onPress={() => navigateToNoticeDetails(notice.id)}
-            >
-              <StyledView className="flex-row items-start">
-                <StyledView className="bg-[#f8f9fa] p-3 rounded-full mr-3">
-                  {getNoticeIcon(notice.type)}
-                </StyledView>
-                <StyledView className="flex-1">
-                  <StyledView className="flex-row justify-between items-center mb-2">
-                    <StyledText className="text-[#1a2c4e] text-lg font-bold flex-1 pr-2">
-                      {notice.title}
-                    </StyledText>
-                    {notice.isImportant && (
-                      <StyledView className="bg-[#e74c3c] px-2 py-1 rounded">
-                        <StyledText className="text-white text-xs">
-                          Important
+      {/* Content Area */}
+      {isLoading && !refreshing ? (
+        <StyledView className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" color="#27ae60" />
+          <StyledText className="text-[#8395a7] mt-2">
+            Loading notices...
+          </StyledText>
+        </StyledView>
+      ) : isError ? (
+        <StyledView className="flex-1 items-center justify-center px-4">
+          <Ionicons name="alert-circle-outline" size={50} color="#e74c3c" />
+          <StyledText className="text-[#1a2c4e] text-lg font-bold mt-2">
+            Something went wrong
+          </StyledText>
+          <StyledText className="text-[#8395a7] text-center mb-4">
+            {error instanceof Error ? error.message : "Failed to load notices"}
+          </StyledText>
+          <StyledTouchableOpacity
+            className="bg-[#27ae60] px-4 py-2 rounded-lg"
+            onPress={() => refetch()}
+          >
+            <StyledText className="text-white font-medium">
+              Try Again
+            </StyledText>
+          </StyledTouchableOpacity>
+        </StyledView>
+      ) : (
+        <StyledScrollView
+          className="flex-1 px-4 pt-4"
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={["#27ae60"]}
+            />
+          }
+        >
+          {filteredNotices.length > 0 ? (
+            filteredNotices.map((notice) => (
+              <StyledView
+                key={notice._id}
+                className="bg-white rounded-xl mb-4 shadow-md overflow-hidden"
+              >
+                <StyledTouchableOpacity
+                  className="p-4"
+                  onPress={() => navigateToNoticeDetails(notice._id)}
+                >
+                  <StyledView className="flex-row items-start">
+                    <StyledView className="bg-[#f8f9fa] p-3 rounded-full mr-3">
+                      {getNoticeIcon(notice.type)}
+                    </StyledView>
+                    <StyledView className="flex-1">
+                      <StyledView className="flex-row justify-between items-center mb-2">
+                        <StyledText className="text-[#1a2c4e] text-lg font-bold flex-1 pr-2">
+                          {notice.title}
                         </StyledText>
+                        {notice.isImportant && (
+                          <StyledView className="bg-[#e74c3c] px-2 py-1 rounded">
+                            <StyledText className="text-white text-xs">
+                              Important
+                            </StyledText>
+                          </StyledView>
+                        )}
                       </StyledView>
-                    )}
+                      <StyledText className="text-[#8395a7] mb-3">
+                        {trimWithEllipsis(notice.description, 100)}
+                      </StyledText>
+                      <StyledText className="text-[#8395a7] text-sm">
+                        {new Date(notice.createdAt).toLocaleString()}
+                      </StyledText>
+                    </StyledView>
                   </StyledView>
-                  <StyledText className="text-[#8395a7] mb-3">
-                    {notice.description}
-                  </StyledText>
-                  <StyledText className="text-[#8395a7] text-sm">
-                    {notice.date}
-                  </StyledText>
+                </StyledTouchableOpacity>
+
+                {/* Admin Actions */}
+                <StyledView className="flex-row border-t border-[#f0f2f5]">
+                  <StyledTouchableOpacity
+                    className="flex-1 py-3 flex-row justify-center items-center"
+                    onPress={() =>
+                      navigation.navigate("AddAnnouncement", {
+                        noticeId: notice._id,
+                        data: notice,
+                      })
+                    }
+                  >
+                    <Ionicons name="pencil" size={16} color="#3498db" />
+                    <StyledText className="text-[#3498db] ml-1 font-medium">
+                      Edit
+                    </StyledText>
+                  </StyledTouchableOpacity>
+
+                  <StyledView className="w-[1px] bg-[#f0f2f5]" />
+
+                  <StyledTouchableOpacity
+                    className="flex-1 py-3 flex-row justify-center items-center"
+                    onPress={() => handleDeleteNotice(notice._id)}
+                    disabled={isDeleting && deletingId === notice.id}
+                  >
+                    {isDeleting && deletingId === notice.id ? (
+                      <ActivityIndicator size="small" color="#e74c3c" />
+                    ) : (
+                      <>
+                        <Ionicons name="trash-bin" size={16} color="#e74c3c" />
+                        <StyledText className="text-[#e74c3c] ml-1 font-medium">
+                          Delete
+                        </StyledText>
+                      </>
+                    )}
+                  </StyledTouchableOpacity>
                 </StyledView>
               </StyledView>
-            </StyledTouchableOpacity>
-          ))
-        ) : (
-          <StyledView className="items-center justify-center py-10">
-            <Ionicons name="notifications-off" size={50} color="#e9ecef" />
-            <StyledText className="text-[#8395a7] mt-2 text-center">
-              No notices found matching your criteria
-            </StyledText>
-          </StyledView>
-        )}
-      </ScrollView>
+            ))
+          ) : (
+            <StyledView className="items-center justify-center py-10">
+              <Ionicons name="notifications-off" size={50} color="#e9ecef" />
+              <StyledText className="text-[#8395a7] mt-2 text-center">
+                No notices found matching your criteria
+              </StyledText>
+            </StyledView>
+          )}
+        </StyledScrollView>
+      )}
+
+      {/* Add Notice Button (for admin/landlord) */}
+      <StyledTouchableOpacity
+        className="absolute bottom-6 right-6 bg-[#27ae60] w-14 h-14 rounded-full items-center justify-center shadow-lg"
+        onPress={() => navigation.navigate("AddAnnouncement")}
+      >
+        <Ionicons name="add" size={30} color="white" />
+      </StyledTouchableOpacity>
     </StyledView>
   );
 };
 
-export default NoticesScreen;
+export default AnnouncementList;

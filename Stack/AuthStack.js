@@ -9,7 +9,7 @@ import TenantLogin from "../Screens/AuthScreen/Tenant/TenantLogin";
 
 const Stack = createNativeStackNavigator();
 
-const LoggedOutStack = () => {
+const AuthStack = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen
@@ -64,4 +64,4 @@ const LoggedOutStack = () => {
   );
 };
 
-export default LoggedOutStack;
+export default AuthStack;

@@ -1,7 +1,7 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
 import MaintenanceScreen from "./MaintenanceScreen";
-import ViewMaaintenance from "./ViewMaintenance";
+import ViewMaintenance from "./ViewMaintenance";
 
 const Stack = createNativeStackNavigator();
 
@@ -15,7 +15,7 @@ const MaintenanceStack = () => {
       />
       <Stack.Screen
         name="Maintenance Request Details"
-        component={ViewMaaintenance}
+        component={ViewMaintenance}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

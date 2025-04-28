@@ -1,21 +1,23 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// Create an axios instance with a base URL
-const API_URL = "https://your-api-url.com/api"; // Replace with your actual API URL
+// Base API URL - replace with your actual API URL
+const BASE_URL = "http://192.168.1.114:8000/api/";
+// const BASE_URL = "http://192.168.248.75:8000/api/";
 
-export const apiClient = axios.create({
-  baseURL: API_URL,
+// Create an Axios instance with default config
+const apiClient = axios.create({
+  baseURL: BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// Add a request interceptor to include auth token in requests
+// Request interceptor to add auth token to requests
 apiClient.interceptors.request.use(
   async (config) => {
-    // Get token from AsyncStorage
-    const token = await AsyncStorage.getItem("auth_token");
+    // Get token from storage
+    const token = await AsyncStorage.getItem("authToken");
 
     // If token exists, add it to the headers
     if (token) {
@@ -29,17 +31,29 @@ apiClient.interceptors.request.use(
   }
 );
 
-// Add a response interceptor to handle common errors
+// Response interceptor to handle common errors
 apiClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    return response;
+  },
   async (error) => {
-    // Handle 401 Unauthorized errors (expired token, etc.)
-    if (error.response && error.response.status === 401) {
-      // Clear stored tokens
-      await AsyncStorage.removeItem("auth_token");
-      // You could also navigate to login screen here or trigger a context update
+    const originalRequest = error.config;
+
+    // If the error is 401 (Unauthorized) and not already retrying
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      // Here you could implement token refresh logic
+      // For now, we'll just clear the token and force logout
+      await AsyncStorage.removeItem("authToken");
+      await AsyncStorage.removeItem("userData");
+
+      // Force reload the app or navigate to login
+      // This will be handled by the auth context
     }
 
     return Promise.reject(error);
   }
 );
+
+export default apiClient;

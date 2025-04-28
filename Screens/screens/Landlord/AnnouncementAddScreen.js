@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -15,9 +15,11 @@ import {
 } from "react-native";
 import { styled } from "nativewind";
 import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import * as ImagePicker from "expo-image-picker";
+import { useNotice } from "../../../hooks/useNotice";
+import { PrimaryButton } from "../../../components/Buttons";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -29,16 +31,38 @@ const StyledImage = styled(Image);
 const AddNoticeScreen = () => {
   const navigation = useNavigation();
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const { createNoticeRequest, updateNoticeRequest } = useNotice();
+  const { mutate } = createNoticeRequest();
+
+  const { refetch } = useNotice("all").getNoticeRequests();
+  const { mutate: editNotice } = updateNoticeRequest();
+  const route = useRoute();
+  const { noticeId, data } = route.params || { noticeId: 1, data: {} };
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     type: "general", // general, maintenance, security, payment, event
     isImportant: false,
-    date: new Date(),
+    effectiveDate: new Date(),
     images: [],
     contactPerson: "",
     contactNumber: "",
   });
+
+  useEffect(() => {
+    if (noticeId) {
+      setFormData({
+        title: data.title,
+        description: data.description,
+        type: data.type,
+        isImportant: data.isImportant,
+        effectiveDate: new Date(data.effectiveDate),
+        images: data.images,
+        contactPerson: data.contactPerson,
+        contactNumber: data.contactNumber,
+      });
+    }
+  }, [noticeId]);
 
   // Handle input change
   const handleInputChange = (field, value) => {
@@ -60,7 +84,7 @@ const AddNoticeScreen = () => {
   const handleConfirmDate = (date) => {
     setFormData({
       ...formData,
-      date: date,
+      effectiveDate: date,
     });
     hideDatePicker();
   };
@@ -115,27 +139,91 @@ const AddNoticeScreen = () => {
       return;
     }
 
-    // Here you would typically send the data to your API
-    Alert.alert("Success", "Notice has been published successfully", [
-      { text: "OK", onPress: () => navigation.navigate("Notices") },
-    ]);
-  };
+    // Use the mutation to create a new notice
 
+    if (noticeId) {
+      editNotice(
+        { id: noticeId, data: formData },
+        {
+          onSuccess: (data) => {
+            refetch();
+            Alert.alert("Success", "Notice has been updated successfully", [
+              {
+                text: "OK",
+                onPress: () => navigation.navigate("AnnouncementList"),
+              },
+            ]);
+          },
+          onError: (error) => {
+            Alert.alert("Error", error.message || "Failed to update notice");
+          },
+        }
+      );
+    } else {
+      mutate(formData, {
+        onSuccess: (data) => {
+          Alert.alert("Success", "Notice has been published successfully", [
+            {
+              text: "OK",
+              onPress: () => {
+                navigation.navigate("AnnouncementList");
+                refetch();
+              },
+            },
+          ]);
+        },
+        onError: (error) => {
+          Alert.alert(
+            "Error",
+            error.message || "Failed to publish notice. Please try again."
+          );
+        },
+      });
+    }
+  };
   // Get notice type icon
-  const getNoticeTypeIcon = (type) => {
-    switch (type) {
+  const getNoticeTypeIcon = (type, id) => {
+    switch (id) {
       case "maintenance":
-        return <FontAwesome5 name="tools" size={20} color="#3498db" />;
+        return (
+          <FontAwesome5
+            name="tools"
+            size={20}
+            color={type !== id ? "#3498db" : "#fff"}
+          />
+        );
       case "security":
-        return <Ionicons name="shield-checkmark" size={20} color="#9b59b6" />;
+        return (
+          <Ionicons
+            name="shield-checkmark"
+            size={20}
+            color={type !== id ? "#9b59b6" : "#fff"}
+          />
+        );
       case "payment":
         return (
-          <FontAwesome5 name="money-bill-wave" size={20} color="#e74c3c" />
+          <FontAwesome5
+            name="money-bill-wave"
+            size={20}
+            color={type !== id ? "#e74c3c" : "#fff"}
+          />
         );
-      case "event":
-        return <Ionicons name="calendar" size={20} color="#27ae60" />;
+      case "events":
+        return (
+          <Ionicons
+            name="calendar"
+            size={20}
+            color={type !== id ? "#27ae60" : "#fff"}
+          />
+        );
       default:
-        return <Ionicons name="information-circle" size={20} color="#8395a7" />;
+        return (
+          <Ionicons
+            name="information-circle"
+            size={20}
+            color={type !== id ? "#8395a7" : "#fff"}
+          />
+        );
     }
   };
 
@@ -166,26 +254,29 @@ const AddNoticeScreen = () => {
             </StyledText>
             <StyledView className="flex-row flex-wrap justify-between">
               {[
-                { id: "general", label: "General" },
-                { id: "maintenance", label: "Maintenance" },
-                { id: "security", label: "Security" },
-                { id: "payment", label: "Payment" },
-                { id: "event", label: "Event" },
+                { id: "General", label: "General" },
+                { id: "Maintenance", label: "Maintenance" },
+                { id: "Security", label: "Security" },
+                { id: "Payment", label: "Payment" },
+                { id: "Events", label: "Events" },
               ].map((type) => (
                 <StyledTouchableOpacity
                   key={type.id}
                   className={`mb-2 p-3 rounded-lg items-center justify-center w-[30%] ${
-                    formData.type === type.id
+                    formData?.type?.toLowerCase() === type.id?.toLowerCase()
                       ? "bg-[#27ae60]"
                       : "bg-[#f0f2f5] border border-[#e9ecef]"
                   }`}
                   onPress={() => handleInputChange("type", type.id)}
                 >
                   <StyledView className="items-center">
-                    {getNoticeTypeIcon(type.id)}
+                    {getNoticeTypeIcon(
+                      formData?.type?.toLowerCase(),
+                      type.id?.toLowerCase()
+                    )}
                     <StyledText
                       className={`text-xs mt-1 ${
-                        formData.type === type.id
+                        formData?.type?.toLowerCase() === type.id?.toLowerCase()
                           ? "text-white"
                           : "text-[#1a2c4e]"
                       }`}
@@ -197,7 +288,6 @@ const AddNoticeScreen = () => {
               ))}
             </StyledView>
           </StyledView>
-
           {/* Notice Details */}
           <StyledView className="bg-white p-4 rounded-xl shadow-sm mb-4">
             <StyledText className="text-[#1a2c4e] font-bold mb-3">
@@ -258,11 +348,7 @@ const AddNoticeScreen = () => {
                 onPress={showDatePicker}
               >
                 <StyledText className="text-[#1a2c4e]">
-                  {formData.date.toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
+                  {new Date(formData?.effectiveDate)?.toLocaleString()}
                 </StyledText>
                 <Ionicons name="calendar" size={20} color="#8395a7" />
               </StyledTouchableOpacity>
@@ -273,10 +359,9 @@ const AddNoticeScreen = () => {
               mode="date"
               onConfirm={handleConfirmDate}
               onCancel={hideDatePicker}
-              date={formData.date}
+              date={new Date(formData?.effectiveDate)}
             />
           </StyledView>
-
           {/* Image Upload */}
           <StyledView className="bg-white p-4 rounded-xl shadow-sm mb-4">
             <StyledText className="text-[#1a2c4e] font-bold mb-3">
@@ -284,7 +369,7 @@ const AddNoticeScreen = () => {
             </StyledText>
 
             <StyledView className="flex-row flex-wrap">
-              {formData.images.map((image, index) => (
+              {formData?.images?.map((image, index) => (
                 <StyledView key={index} className="w-24 h-24 m-1 relative">
                   <StyledImage
                     source={{ uri: image }}
@@ -307,7 +392,6 @@ const AddNoticeScreen = () => {
               </StyledTouchableOpacity>
             </StyledView>
           </StyledView>
-
           {/* Contact Information */}
           <StyledView className="bg-white p-4 rounded-xl shadow-sm mb-6">
             <StyledText className="text-[#1a2c4e] font-bold mb-3">
@@ -343,16 +427,13 @@ const AddNoticeScreen = () => {
               />
             </StyledView>
           </StyledView>
-
           {/* Submit Button */}
-          <StyledTouchableOpacity
-            className="bg-[#27ae60] p-4 rounded-xl mb-8 items-center"
+
+          <PrimaryButton
+            text={"Submit Notice"}
             onPress={handleSubmit}
-          >
-            <StyledText className="text-white font-bold text-lg">
-              Publish Notice
-            </StyledText>
-          </StyledTouchableOpacity>
+            parentClass={"mb-8"}
+          />
         </StyledScrollView>
       </StyledView>
     </KeyboardAvoidingView>

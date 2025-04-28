@@ -16,6 +16,7 @@ import { useNavigation } from "@react-navigation/native";
 import { PrimaryButton, OutlinedButton } from "../../../components/Buttons";
 import BottomSheet from "../../../components/Bottomsheet";
 import useGharbeti from "../../../context/useGharbeti";
+import { useAuth } from "../../../context/AuthContext";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -34,7 +35,7 @@ const SettingsScreen = () => {
     useState(false);
   const [passwordBottomSheetVisible, setPasswordBottomSheetVisible] =
     useState(false);
-  const [{}, { logoutUser }] = useGharbeti();
+  const { logout } = useAuth();
 
   // Current language
   const [currentLanguage, setCurrentLanguage] = useState("English");
@@ -331,7 +332,7 @@ const SettingsScreen = () => {
                 text="Logout"
                 bgColor="#e74c3c"
                 style={{ flex: 1, marginLeft: 8 }}
-                onPress={logoutUser}
+                onPress={logout}
               />
             </StyledView>
           </StyledView>

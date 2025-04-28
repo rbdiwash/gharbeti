@@ -9,19 +9,21 @@ import {
   TextInput,
   Image,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { styled } from "nativewind";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
-import { PrimaryButton } from "../../../components/Buttons";
+import { useMaintenance } from "../../../hooks/useMaintenance";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
 const StyledTouchableOpacity = styled(TouchableOpacity);
 const StyledTextInput = styled(TextInput);
+const StyledImage = styled(Image);
 
-const NewMaintenanceRequest = () => {
+const NewMaintenanceRequestScreen = () => {
   const navigation = useNavigation();
   const [formData, setFormData] = useState({
     title: "",
@@ -31,6 +33,11 @@ const NewMaintenanceRequest = () => {
     images: [],
   });
 
+  // Use the create maintenance request mutation
+  const { mutate: createRequest, isLoading } =
+    useMaintenance().createMaintenanceRequest();
+
+  // Category options
   const categories = [
     { id: "plumbing", name: "Plumbing", icon: "water" },
     { id: "electrical", name: "Electrical", icon: "flash" },
@@ -40,12 +47,18 @@ const NewMaintenanceRequest = () => {
     { id: "other", name: "Other", icon: "ellipsis-horizontal" },
   ];
 
+  // Priority options
   const priorities = ["Low", "Medium", "High"];
 
+  // Handle form field changes
   const handleInputChange = (field, value) => {
-    setFormData({ ...formData, [field]: value });
+    setFormData({
+      ...formData,
+      [field]: value,
+    });
   };
 
+  // Handle image selection
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -62,13 +75,19 @@ const NewMaintenanceRequest = () => {
     }
   };
 
+  // Remove image
   const removeImage = (index) => {
     const updatedImages = [...formData.images];
     updatedImages.splice(index, 1);
-    setFormData({ ...formData, images: updatedImages });
+    setFormData({
+      ...formData,
+      images: updatedImages,
+    });
   };
 
+  // Submit maintenance request
   const submitRequest = () => {
+    // Validate form
     if (!formData.title.trim()) {
       Alert.alert("Error", "Please enter a title for your request");
       return;
@@ -84,18 +103,29 @@ const NewMaintenanceRequest = () => {
       return;
     }
 
-    // Here you would typically send the data to your API
-    Alert.alert(
-      "Success",
-      "Your maintenance request has been submitted successfully",
-      [{ text: "OK", onPress: () => navigation.navigate("Maintenance") }]
-    );
+    // Submit the request using the mutation
+    createRequest(formData, {
+      onSuccess: (data) => {
+        Alert.alert(
+          "Success",
+          "Your maintenance request has been submitted successfully",
+          [{ text: "OK", onPress: () => navigation.navigate("Maintenance") }]
+        );
+      },
+      onError: (error) => {
+        Alert.alert(
+          "Error",
+          error.message ||
+            "Failed to submit maintenance request. Please try again."
+        );
+      },
+    });
   };
 
   return (
     <StyledView className="flex-1 bg-[#f8f9fa]">
       {/* Header */}
-      <StyledView className="bg-[#1a2c4e] pt-4 pb-4 px-4">
+      <StyledView className="bg-[#1a2c4e] pt-12 pb-6 px-4">
         <StyledView className="flex-row justify-between items-center">
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={24} color="white" />
@@ -114,7 +144,7 @@ const NewMaintenanceRequest = () => {
             Title
           </StyledText>
           <StyledTextInput
-            className="border border-[#e9ecef] rounded-lg p-3"
+            className="border border-[#e9ecef] bg-white p-3 rounded-lg text-[#1a2c4e]"
             placeholder="Enter a title for your request"
             value={formData.title}
             onChangeText={(text) => handleInputChange("title", text)}
@@ -164,7 +194,7 @@ const NewMaintenanceRequest = () => {
             Description
           </StyledText>
           <StyledTextInput
-            className="border border-[#e9ecef] rounded-lg p-3 h-24"
+            className="border border-[#e9ecef] bg-white p-3 rounded-lg h-24"
             placeholder="Describe the issue in detail"
             multiline
             textAlignVertical="top"
@@ -215,7 +245,7 @@ const NewMaintenanceRequest = () => {
           <StyledView className="flex-row flex-wrap">
             {formData.images.map((image, index) => (
               <StyledView key={index} className="w-24 h-24 m-1 relative">
-                <Image
+                <StyledImage
                   source={{ uri: image }}
                   className="w-full h-full rounded-lg"
                 />
@@ -237,15 +267,28 @@ const NewMaintenanceRequest = () => {
         </StyledView>
 
         {/* Submit Button */}
-
-        <PrimaryButton
-          text="Submit Request"
+        <StyledTouchableOpacity
+          className="bg-[#27ae60] p-4 rounded-xl mb-8 items-center flex-row justify-center"
           onPress={submitRequest}
-          parentClass={"mb-8"}
-        />
+          disabled={isLoading}
+          style={{ opacity: isLoading ? 0.7 : 1 }}
+        >
+          {isLoading ? (
+            <>
+              <ActivityIndicator size="small" color="white" />
+              <StyledText className="text-white font-bold text-lg ml-2">
+                Submitting...
+              </StyledText>
+            </>
+          ) : (
+            <StyledText className="text-white font-bold text-lg">
+              Submit Request
+            </StyledText>
+          )}
+        </StyledTouchableOpacity>
       </ScrollView>
     </StyledView>
   );
 };
 
-export default NewMaintenanceRequest;
+export default NewMaintenanceRequestScreen;

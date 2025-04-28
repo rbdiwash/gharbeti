@@ -7,10 +7,14 @@ import {
   ScrollView,
   TouchableOpacity,
   TextInput,
+  ActivityIndicator,
+  Alert,
+  RefreshControl,
 } from "react-native";
 import { styled } from "nativewind";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { useMaintenance } from "../../../../hooks/useMaintenance";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -26,99 +30,72 @@ const MaintenanceScreen = () => {
     completed: [],
   });
 
+  // Using the custom hook to get maintenance requests
+  const {
+    data: activeRequests,
+    isLoading: isActiveLoading,
+    isError: isActiveError,
+    error: activeError,
+    refetch: refetchActive,
+  } = useMaintenance().getMaintenanceRequests("Pending");
+
+  const {
+    data: completedRequests,
+    isLoading: isCompletedLoading,
+    isError: isCompletedError,
+    error: completedError,
+    refetch: refetchCompleted,
+  } = useMaintenance().getMaintenanceRequests("Completed");
+
+  // Filter requests based on search query
   useEffect(() => {
-    // Initialize filteredRequests with allRequests on first render
-    setFilteredRequests(allRequests);
-  }, []);
+    if (activeRequests || completedRequests) {
+      const filterRequests = (requests, query) => {
+        if (!requests) return [];
+        if (!query.trim()) return requests;
 
-  const allRequests = {
-    active: [
-      {
-        id: 1,
-        title: "Plumbing Issue",
-        description: "Leaking tap in kitchen sink",
-        status: "In Progress",
-        date: "June 15, 2023",
-        priority: "High",
-      },
-      {
-        id: 2,
-        title: "Electrical Issue",
-        description: "Power fluctuation in bedroom",
-        status: "Pending",
-        date: "June 14, 2023",
-        priority: "Medium",
-      },
-      {
-        id: 3,
-        title: "Door Lock Problem",
-        description: "Main door lock is not working properly",
-        status: "Pending",
-        date: "June 12, 2023",
-        priority: "High",
-      },
-    ],
-    completed: [
-      {
-        id: 4,
-        title: "AC Repair",
-        description: "AC not cooling properly",
-        status: "Completed",
-        date: "June 10, 2023",
-        priority: "High",
-        completedDate: "June 11, 2023",
-      },
-      {
-        id: 5,
-        title: "Bathroom Tiles",
-        description: "Loose tiles in bathroom floor",
-        status: "Completed",
-        date: "May 25, 2023",
-        priority: "Medium",
-        completedDate: "May 28, 2023",
-      },
-      {
-        id: 6,
-        title: "Window Repair",
-        description: "Bedroom window not closing properly",
-        status: "Completed",
-        date: "May 20, 2023",
-        priority: "Low",
-        completedDate: "May 22, 2023",
-      },
-    ],
-  };
+        const lowerCaseQuery = query.toLowerCase();
+        return requests.filter(
+          (request) =>
+            request.title.toLowerCase().includes(lowerCaseQuery) ||
+            request.description.toLowerCase().includes(lowerCaseQuery) ||
+            request.status.toLowerCase().includes(lowerCaseQuery) ||
+            request.priority.toLowerCase().includes(lowerCaseQuery)
+        );
+      };
 
-  useEffect(() => {
-    filterRequests();
-  }, [searchQuery, activeTab]);
-
-  const filterRequests = () => {
-    if (!searchQuery.trim()) {
-      setFilteredRequests(allRequests);
-      return;
+      setFilteredRequests({
+        active: filterRequests(activeRequests || [], searchQuery),
+        completed: filterRequests(completedRequests || [], searchQuery),
+      });
     }
+  }, [searchQuery, activeRequests, completedRequests]);
 
-    const query = searchQuery.toLowerCase();
-    const filtered = {
-      active: allRequests.active.filter(
-        (request) =>
-          request.title.toLowerCase().includes(query) ||
-          request.description.toLowerCase().includes(query) ||
-          request.status.toLowerCase().includes(query) ||
-          request.priority.toLowerCase().includes(query)
-      ),
-      completed: allRequests.completed.filter(
-        (request) =>
-          request.title.toLowerCase().includes(query) ||
-          request.description.toLowerCase().includes(query) ||
-          request.status.toLowerCase().includes(query) ||
-          request.priority.toLowerCase().includes(query)
-      ),
-    };
-
-    setFilteredRequests(filtered);
+  // Handle pull-to-refresh
+  const handleRefresh = () => {
+    if (activeTab === "active") {
+      refetchActive();
+    } else {
+      refetchCompleted();
+    }
   };
+
+  // Handle error states
+  useEffect(() => {
+    if (isActiveError) {
+      Alert.alert(
+        "Error",
+        activeError?.message || "Failed to fetch active maintenance requests"
+      );
+    }
+    if (isCompletedError) {
+      Alert.alert(
+        "Error",
+        completedError?.message ||
+          "Failed to fetch completed maintenance requests"
+      );
+    }
+  }, [isActiveError, activeError, isCompletedError, completedError]);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -149,11 +126,17 @@ const MaintenanceScreen = () => {
   return (
     <StyledView className="flex-1 bg-[#f8f9fa]">
       {/* Header */}
-      <StyledView className="bg-[#1a2c4e] pt-4 pb-4 px-4">
+      <StyledView className="bg-[#1a2c4e] pt-4 pb-6 px-4">
         <StyledView className="flex-row justify-between items-center mb-4">
           <StyledText className="text-white text-xl font-bold">
             Maintenance Requests
           </StyledText>
+          {/* <StyledTouchableOpacity
+            className="bg-[#27ae60] p-3 rounded-full"
+            onPress={() => navigation.navigate("NewMaintenance")}
+          >
+            <Ionicons name="add" size={24} color="white" />
+          </StyledTouchableOpacity> */}
         </StyledView>
 
         {/* Search Bar */}
@@ -178,46 +161,93 @@ const MaintenanceScreen = () => {
       <StyledView className="flex-row px-4 mt-4">
         <StyledTouchableOpacity
           className={`flex-1 py-2 ${
-            activeTab === "active" ? "border-b-2 border-secondary" : ""
+            activeTab === "active" ? "border-b-2 border-[#27ae60]" : ""
           }`}
           onPress={() => setActiveTab("active")}
         >
           <StyledText
             className={`text-center font-bold ${
-              activeTab === "active" ? "text-secondary" : "text-[#8395a7]"
+              activeTab === "active" ? "text-[#27ae60]" : "text-[#8395a7]"
             }`}
           >
-            Active ({filteredRequests.active.length})
+            Active ({filteredRequests.active?.length || 0})
           </StyledText>
         </StyledTouchableOpacity>
         <StyledTouchableOpacity
           className={`flex-1 py-2 ${
-            activeTab === "completed" ? "border-b-2 border-secondary" : ""
+            activeTab === "completed" ? "border-b-2 border-[#27ae60]" : ""
           }`}
-          onPress={() => setActiveTab("completed")}
+          onPress={() => {
+            setActiveTab("completed");
+            console.log("asdf");
+            refetchCompleted();
+          }}
         >
           <StyledText
             className={`text-center font-bold ${
-              activeTab === "completed" ? "text-secondary" : "text-[#8395a7]"
+              activeTab === "completed" ? "text-[#27ae60]" : "text-[#8395a7]"
             }`}
           >
-            Completed ({filteredRequests.completed.length})
+            Completed ({filteredRequests.completed?.length || 0})
           </StyledText>
         </StyledTouchableOpacity>
       </StyledView>
 
       {/* Request List */}
-      <ScrollView className="flex-1 px-4 pt-4">
-        {filteredRequests[activeTab] &&
-        filteredRequests[activeTab].length > 0 ? (
-          filteredRequests[activeTab].map((request) => (
+      <ScrollView
+        className="flex-1 px-4 pt-4"
+        refreshControl={
+          <RefreshControl
+            refreshing={
+              activeTab === "active" ? isActiveLoading : isCompletedLoading
+            }
+            onRefresh={handleRefresh}
+          />
+        }
+      >
+        {/* Loading State */}
+        {(activeTab === "active" && isActiveLoading) ||
+        (activeTab === "completed" && isCompletedLoading) ? (
+          <StyledView className="items-center justify-center py-10">
+            <ActivityIndicator size="large" color="#27ae60" />
+            <StyledText className="text-[#8395a7] mt-2">
+              Loading requests...
+            </StyledText>
+          </StyledView>
+        ) : /* Error State */
+        (activeTab === "active" && isActiveError) ||
+          (activeTab === "completed" && isCompletedError) ? (
+          <StyledView className="items-center justify-center py-10">
+            <Ionicons name="alert-circle-outline" size={50} color="#e74c3c" />
+            <StyledText className="text-[#e74c3c] mt-2">
+              Failed to load requests
+            </StyledText>
             <StyledTouchableOpacity
-              key={request.id}
+              className="mt-4 bg-[#27ae60] px-4 py-2 rounded-lg"
+              onPress={handleRefresh}
+            >
+              <StyledText className="text-white font-bold">Retry</StyledText>
+            </StyledTouchableOpacity>
+          </StyledView>
+        ) : /* Empty State */
+        filteredRequests[activeTab]?.length === 0 ? (
+          <StyledView className="items-center justify-center py-10">
+            <Ionicons name="construct-outline" size={50} color="#e9ecef" />
+            <StyledText className="text-[#8395a7] mt-2 text-center">
+              {searchQuery
+                ? "No maintenance requests found matching your search"
+                : `No ${activeTab} maintenance requests`}
+            </StyledText>
+          </StyledView>
+        ) : (
+          /* Data List */
+          filteredRequests[activeTab]?.map((request) => (
+            <StyledTouchableOpacity
+              key={request._id}
               className="bg-white p-4 rounded-xl mb-4 shadow"
               onPress={() => {
-                // @ts-ignore - Ignore type checking for navigation params
                 navigation.navigate("Maintenance Request Details", {
-                  requestId: request.id,
+                  requestId: request._id,
                 });
               }}
             >
@@ -240,29 +270,27 @@ const MaintenanceScreen = () => {
                   </StyledText>
                 </StyledView>
               </StyledView>
+
               <StyledView className="flex-row justify-between items-center mt-3">
                 <StyledText className="text-[#8395a7]">
                   {activeTab === "completed" && request.completedDate
-                    ? `Completed: ${request.completedDate}`
-                    : `Reported: ${request.date}`}
+                    ? `Completed: ${new Date(
+                        request.completedDate
+                      ).toLocaleDateString()}`
+                    : `Reported: ${new Date(
+                        request.createdAt
+                      ).toLocaleString()}`}
                 </StyledText>
                 <StyledText
-                  className={`font-bold ${getPriorityColor(request.priority)}`}
+                  className={`font-medium ${getPriorityColor(
+                    request.priority
+                  )}`}
                 >
                   {request.priority} Priority
                 </StyledText>
               </StyledView>
             </StyledTouchableOpacity>
           ))
-        ) : (
-          <StyledView className="items-center justify-center py-10">
-            <Ionicons name="search" size={50} color="#e9ecef" />
-            <StyledText className="text-[#8395a7] mt-2 text-center">
-              {searchQuery
-                ? "No maintenance requests found matching your search"
-                : `No ${activeTab} maintenance requests`}
-            </StyledText>
-          </StyledView>
         )}
       </ScrollView>
     </StyledView>

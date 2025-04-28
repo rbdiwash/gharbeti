@@ -1,7 +1,7 @@
 import { View, Text } from "react-native";
 import React from "react";
-import LoggedInLandlordStack from "../../Stack/LoggedInLandlordStack";
-import LoggedInTenantStack from "../../Stack/LoggedInTenantStack";
+import LoggedInLandlordStack from "../../Stack/LandlordStack";
+import LoggedInTenantStack from "../../Stack/TenantStack";
 
 const CheckLandLordUser = ({ user }) => {
   return (
