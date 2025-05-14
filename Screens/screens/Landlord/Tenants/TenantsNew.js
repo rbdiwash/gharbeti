@@ -14,6 +14,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 // Import mock data
 import { tenantsList } from "../../../helper/data";
+import { useTenants } from "../../../../hooks/useTenants";
+import { useAuth } from "../../../../context/AuthContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -23,8 +26,16 @@ const StyledSafeAreaView = styled(SafeAreaView);
 
 const TenantListScreen = () => {
   const navigation = useNavigation();
-  const [tenants, setTenants] = useState(tenantsList);
   const [refreshing, setRefreshing] = useState(false);
+  const { userData } = useAuth();
+
+  const {
+    data: tenants = [],
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useTenants().getTenantByLandlordId(userData?._id);
 
   // Function to handle adding a new tenant
   const addTenant = () => {
@@ -35,6 +46,7 @@ const TenantListScreen = () => {
   const handleRefresh = () => {
     setRefreshing(true);
     // Simulate data fetching
+    refetch();
     setTimeout(() => {
       setRefreshing(false);
     }, 1500);
@@ -44,7 +56,13 @@ const TenantListScreen = () => {
   const renderItem = ({ item }) => (
     <StyledTouchableOpacity
       className="bg-white p-4 mb-3 rounded-xl shadow-sm"
-      onPress={() => navigation.navigate("Tenant Details")}
+      onPress={() =>
+        navigation.navigate("Tenant Details", {
+          tenantId: item._id,
+          tenantData: item,
+        })
+      }
+      key={item._id}
     >
       <StyledView className="flex-row items-center">
         {/* Tenant Image */}
@@ -56,7 +74,7 @@ const TenantListScreen = () => {
         ) : (
           <StyledView className="w-14 h-14 rounded-full bg-primary items-center justify-center">
             <StyledText className="text-white text-xl font-bold">
-              {item.name.charAt(0)}
+              {item?.name?.charAt(0)}
             </StyledText>
           </StyledView>
         )}
@@ -68,7 +86,7 @@ const TenantListScreen = () => {
           </StyledText>
           <StyledView className="flex-row items-center">
             <StyledText className="text-[#8395a7] text-sm">
-              {item.id} {item.id === "1" ? "Room" : "Rooms"}
+              {item?.noOfRooms ?? 0} {item?.noOfRooms <= 1 ? "Room" : "Rooms"}
             </StyledText>
             {item.dueAmount && (
               <>
@@ -79,6 +97,16 @@ const TenantListScreen = () => {
               </>
             )}
           </StyledView>
+          {/* Invitation Status */}
+          {!item.isAccepted && (
+            <StyledView className="flex-row items-center mt-1">
+              <StyledView className="bg-yellow-100 px-2 py-1 rounded-full">
+                <StyledText className="text-yellow-600 text-xs font-medium">
+                  Pending Invitation
+                </StyledText>
+              </StyledView>
+            </StyledView>
+          )}
         </StyledView>
 
         {/* Action Buttons */}
@@ -99,7 +127,12 @@ const TenantListScreen = () => {
 
           <StyledTouchableOpacity
             className="p-1 rounded-full"
-            onPress={() => navigation.navigate("Edit Tenant")}
+            onPress={() =>
+              navigation.navigate("Edit Tenant", {
+                tenantId: item._id,
+                tenantData: item,
+              })
+            }
           >
             <Ionicons name="create-outline" size={22} color="#f1c40f" />
           </StyledTouchableOpacity>

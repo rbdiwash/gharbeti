@@ -11,13 +11,23 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
+  Share,
+  Modal,
 } from "react-native";
 import { styled } from "nativewind";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import * as ImagePicker from "expo-image-picker";
+import {
+  OutlinedButton,
+  PrimaryButton,
+  SecondaryButton,
+} from "../../../../components/Buttons";
+import { useTenants } from "../../../../hooks/useTenants";
+import { useAuth } from "../../../../context/AuthContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -30,20 +40,56 @@ const StyledSafeAreaView = styled(SafeAreaView);
 const AddTenantsScreen = () => {
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    address: "",
-    phone: "",
-    email: "",
-    document: null,
-    profileImage: null,
-    rooms: "",
-    totalRent: "",
-    startDate: new Date(),
-    emergencyName: "",
-    emergencyNumber: "",
-  });
+  const [showInvitationModal, setShowInvitationModal] = useState(false);
+  const [invitationCode, setInvitationCode] = useState("");
+  const [userData, setUserData] = useState(null);
 
+  const [formData, setFormData] = useState({
+    name: "Divash Ranabhat",
+    address: "123 Main Street, Kathmandu, Nepal",
+    phoneNumber: "9841234567",
+    email: "rbdiwash@gmail.com",
+    document: null, // This would be a URI in real usage
+    profileImage: null, // This would be a URI in real usage
+    noOfRooms: "2",
+    totalRentPerMonth: "25000",
+    startingDate: new Date("2024-04-01"),
+    emergencyContactName: "Rajiv Sodari",
+    emergencyContactNumber: "9849876543",
+    landlordId: null, // Initialize as null, will be set when userData is loaded
+  });
+  const { createTenant, updateTenant } = useTenants();
+  const { mutate } = createTenant();
+  const { mutate: updateMutate } = updateTenant();
+  const route = useRoute();
+  const { tenantData } = route.params || {};
+
+  useEffect(() => {
+    if (tenantData) {
+      // Format the date if it exists
+      const startingDate = tenantData.startingDate
+        ? new Date(tenantData.startingDate)
+        : new Date();
+
+      // Set the selected date for display
+      setSelectedDate(
+        startingDate.toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        })
+      );
+
+      // Set form data with proper type conversion
+      setFormData({
+        ...tenantData,
+        noOfRooms: tenantData.noOfRooms?.toString() || "0",
+        totalRentPerMonth: tenantData.totalRentPerMonth?.toString() || "0",
+      });
+    }
+  }, [tenantData]);
+
+  const { refetch } = useTenants().getTenantByLandlordId(userData?._id);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
   const [hasGalleryPermission, setHasGalleryPermission] = useState(null);
@@ -55,6 +101,26 @@ const AddTenantsScreen = () => {
         await ImagePicker.requestMediaLibraryPermissionsAsync();
       setHasGalleryPermission(galleryStatus.status === "granted");
     })();
+  }, []);
+
+  useEffect(() => {
+    const getUserData = async () => {
+      try {
+        const data = await AsyncStorage.getItem("userData");
+        if (data) {
+          const parsedData = JSON.parse(data);
+          setUserData(parsedData);
+          setFormData((prev) => ({
+            ...prev,
+            landlordId: parsedData._id,
+          }));
+        }
+      } catch (error) {
+        console.error("Error reading userData from AsyncStorage:", error);
+      }
+    };
+
+    getUserData();
   }, []);
 
   // Show the date picker
@@ -78,7 +144,7 @@ const AddTenantsScreen = () => {
     );
     setFormData({
       ...formData,
-      startDate: date,
+      startingDate: date,
     });
     hideDatePicker();
   };
@@ -135,20 +201,62 @@ const AddTenantsScreen = () => {
 
   // Handle form submission
   const handleSubmit = () => {
+    setIsLoading(true);
+
     // Validate form
-    if (!formData.name || !formData.phone) {
+    if (!formData.name || !formData.phoneNumber) {
       alert("Please fill in all required fields");
+      setIsLoading(false);
       return;
     }
 
-    setIsLoading(true);
+    if (!tenantData) {
+      mutate(formData, {
+        onSuccess: (response) => {
+          if (response?.data) {
+            setInvitationCode(response?.data?.invitationCode);
+            setShowInvitationModal(true);
+            refetch();
+          }
+          setIsLoading(false);
+        },
+        onError: (error) => {
+          console.log("Error response:", error?.response?.data?.error);
+          setIsLoading(false);
+          alert(error?.response?.data?.error);
+        },
+      });
+    } else {
+      updateMutate(
+        { id: tenantData._id, data: formData },
+        {
+          onSuccess: (response) => {
+            alert("Tenant updated successfully");
+            navigation.goBack();
+            setIsLoading(false);
+            refetch();
+          },
+          onError: (error) => {
+            console.log("Error response:", error?.response?.data?.error);
+            setIsLoading(false);
+            alert(error?.response?.data?.error);
+          },
+        }
+      );
+    }
+  };
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      alert("Tenant added successfully!");
-      navigation.goBack();
-    }, 1500);
+  const handleShareInvitation = async () => {
+    try {
+      const message = `Hello ${formData.name},\n\nYou have been invited to join Gharbeti. Use this invitation code to complete your registration:\n\n${invitationCode}\n\nPlease download the Gharbeti app and use this code to set up your account.`;
+
+      await Share.share({
+        message,
+        title: "Gharbeti Invitation Code",
+      });
+    } catch (error) {
+      alert("Error sharing invitation code");
+    }
   };
 
   // Render form field
@@ -169,11 +277,57 @@ const AddTenantsScreen = () => {
         className="border border-[#e9ecef] bg-white p-3 rounded-lg text-[#1a2c4e]"
         placeholder={placeholder}
         placeholderTextColor="#8395a7"
-        value={value}
+        value={value?.toString()}
         onChangeText={(text) => handleInputChange(name, text)}
         keyboardType={keyboardType}
+        autoCapitalize="none"
       />
     </StyledView>
+  );
+
+  const renderInvitationModal = () => (
+    <Modal
+      visible={showInvitationModal}
+      transparent={true}
+      animationType="fade"
+      onRequestClose={() => setShowInvitationModal(false)}
+    >
+      <StyledView className="flex-1 justify-center items-center bg-black/50">
+        <StyledView className="bg-white p-6 rounded-xl w-[90%] max-w-[400px]">
+          <StyledText className="text-primary text-xl font-bold mb-4 text-center">
+            Tenant Added Successfully!
+          </StyledText>
+
+          <StyledText className="text-gray-600 mb-4 text-center">
+            Share this invitation code with the tenant:
+          </StyledText>
+
+          <StyledView className="bg-gray-100 p-4 rounded-lg mb-6">
+            <StyledText className="text-2xl font-bold text-center text-primary">
+              {invitationCode}
+            </StyledText>
+          </StyledView>
+
+          <PrimaryButton
+            onPress={handleShareInvitation}
+            text="Share Invitation"
+            rightIcon={
+              <Ionicons name="share-outline" size={24} color="white" />
+            }
+            parentClass={"w-full mb-2"}
+          ></PrimaryButton>
+
+          <OutlinedButton
+            onPress={() => {
+              setShowInvitationModal(false);
+              navigation.goBack();
+            }}
+            text="Close"
+            parentClass={"w-full"}
+          ></OutlinedButton>
+        </StyledView>
+      </StyledView>
+    </Modal>
   );
 
   return (
@@ -188,7 +342,7 @@ const AddTenantsScreen = () => {
             <Ionicons name="arrow-back" size={24} color="#fff" />
           </StyledTouchableOpacity>
           <StyledText className="text-white text-xl font-bold">
-            Add Tenant
+            {tenantData ? "Edit Tenant" : "Add Tenant"}
           </StyledText>
           <StyledView style={{ width: 24 }} />
         </StyledView>
@@ -248,8 +402,8 @@ const AddTenantsScreen = () => {
             {renderFormField(
               "Phone Number",
               "Enter phone number",
-              "phone",
-              formData.phone,
+              "phoneNumber",
+              formData.phoneNumber,
               "phone-pad",
               true
             )}
@@ -271,15 +425,15 @@ const AddTenantsScreen = () => {
             {renderFormField(
               "Number of Rooms",
               "Enter number of rooms",
-              "rooms",
-              formData.rooms,
+              "noOfRooms",
+              formData.noOfRooms,
               "numeric"
             )}
             {renderFormField(
               "Total Rent (Rs )",
               "Enter total rent amount",
-              "totalRent",
-              formData.totalRent,
+              "totalRentPerMonth",
+              formData.totalRentPerMonth,
               "numeric"
             )}
 
@@ -318,14 +472,14 @@ const AddTenantsScreen = () => {
             {renderFormField(
               "Name",
               "Enter emergency contact name",
-              "emergencyName",
-              formData.emergencyName
+              "emergencyContactName",
+              formData.emergencyContactName
             )}
             {renderFormField(
               "Phone Number",
               "Enter emergency contact number",
-              "emergencyNumber",
-              formData.emergencyNumber,
+              "emergencyContactNumber",
+              formData.emergencyContactNumber,
               "phone-pad"
             )}
           </StyledView>
@@ -381,12 +535,13 @@ const AddTenantsScreen = () => {
               <ActivityIndicator color="white" />
             ) : (
               <StyledText className="text-white font-bold text-lg">
-                Add Tenant
+                {tenantData ? "Update Tenant" : "Add Tenant"}
               </StyledText>
             )}
           </StyledTouchableOpacity>
         </StyledScrollView>
       </KeyboardAvoidingView>
+      {renderInvitationModal()}
     </StyledSafeAreaView>
   );
 };

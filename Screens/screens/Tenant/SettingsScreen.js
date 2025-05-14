@@ -15,7 +15,7 @@ import { Ionicons, Entypo } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { PrimaryButton, OutlinedButton } from "../../../components/Buttons";
 import BottomSheet from "../../../components/Bottomsheet";
-import useGharbeti from "../../../context/useGharbeti";
+import { useAuth } from "../../../context/AuthContext";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -34,7 +34,7 @@ const SettingsScreen = () => {
     useState(false);
   const [passwordBottomSheetVisible, setPasswordBottomSheetVisible] =
     useState(false);
-  const [{}, { logoutUser }] = useGharbeti();
+  const { logout: logoutUser } = useAuth();
 
   // Current language
   const [currentLanguage, setCurrentLanguage] = useState("English");

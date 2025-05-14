@@ -9,11 +9,13 @@ import {
   ScrollView,
   StatusBar,
   Linking,
+  Alert,
 } from "react-native";
 import { styled } from "nativewind";
 import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTenants } from "../../../../hooks/useTenants";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -23,7 +25,7 @@ const StyledScrollView = styled(ScrollView);
 const StyledSafeAreaView = styled(SafeAreaView);
 
 // Mock Tenant Data
-const tenantData = {
+const initialTenantData = {
   id: "1",
   name: "Divash Ranabhat",
   address: "Bhaktapur, Kathmandu",
@@ -102,10 +104,14 @@ const tenantData = {
 const TenantDetailsScreen = () => {
   const navigation = useNavigation();
   const [activeTab, setActiveTab] = useState("overview");
-
+  const route = useRoute();
+  const { tenantId, tenantData } = route.params;
+  const { deleteTenant } = useTenants();
+  const { mutate: deleteMutate } = deleteTenant();
+  const { refetch } = useTenants().getTenantByLandlordId(tenantData?._id);
   // Function to handle phone call
   const handleCall = () => {
-    Linking.openURL(`tel:${tenantData.phone}`);
+    Linking.openURL(`tel:${tenantData.phoneNumber}`);
   };
 
   // Function to handle email
@@ -141,6 +147,38 @@ const TenantDetailsScreen = () => {
     }
   };
 
+  const handleDelete = () => {
+    Alert.alert(
+      "Delete Tenant",
+      "Are you sure you want to delete this tenant? This action cannot be undone.",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () => {
+            deleteMutate(tenantId, {
+              onSuccess: () => {
+                alert("Tenant deleted successfully");
+                navigation.goBack();
+                refetch();
+              },
+              onError: (error) => {
+                console.error("Error deleting tenant:", error);
+                alert(
+                  error?.response?.data?.error || "Failed to delete tenant"
+                );
+              },
+            });
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <StyledSafeAreaView className="flex-1 bg-[#f8f9fa]">
       <StatusBar barStyle="dark-content" backgroundColor="transparent" />
@@ -163,7 +201,7 @@ const TenantDetailsScreen = () => {
       <StyledScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Profile Section */}
         <StyledView className="px-4 pb-6 items-center">
-          {tenantData.imageUrl ? (
+          {tenantData?.imageUrl ? (
             <StyledImage
               source={{ uri: tenantData.imageUrl }}
               className="w-24 h-24 rounded-full border-4 border-white shadow-md"
@@ -171,34 +209,43 @@ const TenantDetailsScreen = () => {
           ) : (
             <StyledView className="w-24 h-24 rounded-full bg-[#27ae60] items-center justify-center border-4 border-white shadow-md">
               <StyledText className="text-white text-2xl font-bold">
-                {tenantData.name.charAt(0)}
+                {tenantData?.name?.charAt(0)}
               </StyledText>
             </StyledView>
           )}
 
           <StyledText className="mt-3 text-[#1a2c4e] text-xl font-bold">
-            {tenantData.name}
+            {tenantData?.name}
           </StyledText>
           <StyledText className="text-[#8395a7]">
-            {tenantData.address}
+            {tenantData?.address}
           </StyledText>
 
           <StyledView className="flex-row mt-4">
             <StyledView
               className={`px-3 py-1 rounded-full ${
-                tenantData.isActive ? "bg-[#e8f5e9]" : "bg-[#ffebee]"
+                tenantData?.isActive ? "bg-[#e8f5e9]" : "bg-[#ffebee]"
               }`}
             >
               <StyledText
                 className={
-                  tenantData.isActive
+                  tenantData?.isActive
                     ? "text-[#27ae60] font-medium"
                     : "text-[#e74c3c] font-medium"
                 }
               >
-                {tenantData.isActive ? "Active" : "Inactive"}
+                {tenantData?.isActive ? "Active" : "Inactive"}
               </StyledText>
             </StyledView>
+            {!tenantData?.isAccepted && (
+              <StyledView className="flex-row items-center mt-1">
+                <StyledView className="bg-yellow-100 px-2 py-1 rounded-full">
+                  <StyledText className="text-yellow-600 text-xs font-medium">
+                    Pending Invitation
+                  </StyledText>
+                </StyledView>
+              </StyledView>
+            )}
           </StyledView>
 
           {/* Quick Actions */}
@@ -320,7 +367,7 @@ const TenantDetailsScreen = () => {
                     </StyledText>
                   </StyledView>
                   <StyledText className="text-[#1a2c4e] font-medium">
-                    {tenantData.phone}
+                    {tenantData?.phoneNumber}
                   </StyledText>
                 </StyledView>
 
@@ -332,7 +379,7 @@ const TenantDetailsScreen = () => {
                     </StyledText>
                   </StyledView>
                   <StyledText className="text-[#1a2c4e] font-medium">
-                    {tenantData.email}
+                    {tenantData?.email}
                   </StyledText>
                 </StyledView>
 
@@ -344,7 +391,7 @@ const TenantDetailsScreen = () => {
                     </StyledText>
                   </StyledView>
                   <StyledText className="text-[#1a2c4e] font-medium text-right flex-1 ml-4">
-                    {tenantData.address}
+                    {tenantData?.address}
                   </StyledText>
                 </StyledView>
               </StyledView>
@@ -360,7 +407,7 @@ const TenantDetailsScreen = () => {
                     Monthly Rent
                   </StyledText>
                   <StyledText className="text-[#1a2c4e] font-bold">
-                    Rs {tenantData.monthlyRent}
+                    Rs {tenantData?.totalRentPerMonth ?? 0}
                   </StyledText>
                 </StyledView>
 
@@ -369,7 +416,7 @@ const TenantDetailsScreen = () => {
                     Rooms Rented
                   </StyledText>
                   <StyledText className="text-[#1a2c4e] font-medium">
-                    {tenantData.totalRooms}
+                    {tenantData?.noOfRooms ?? 0}
                   </StyledText>
                 </StyledView>
 
@@ -378,7 +425,7 @@ const TenantDetailsScreen = () => {
                     Security Deposit
                   </StyledText>
                   <StyledText className="text-[#1a2c4e] font-medium">
-                    Rs {tenantData.securityDeposit}
+                    Rs {tenantData?.securityDeposit ?? 0}
                   </StyledText>
                 </StyledView>
 
@@ -387,7 +434,9 @@ const TenantDetailsScreen = () => {
                     Lease Start Date
                   </StyledText>
                   <StyledText className="text-[#1a2c4e] font-medium">
-                    {tenantData.leaseStartDate}
+                    {tenantData?.startingDate
+                      ? new Date(tenantData.startingDate).toLocaleDateString()
+                      : "N/A"}
                   </StyledText>
                 </StyledView>
 
@@ -396,7 +445,7 @@ const TenantDetailsScreen = () => {
                     Lease End Date
                   </StyledText>
                   <StyledText className="text-[#1a2c4e] font-medium">
-                    {tenantData.leaseEndDate}
+                    {tenantData?.leaseEndDate ?? "N/A"}
                   </StyledText>
                 </StyledView>
               </StyledView>
@@ -412,7 +461,7 @@ const TenantDetailsScreen = () => {
                     Current Due
                   </StyledText>
                   <StyledText className="text-[#e74c3c] font-bold">
-                    Rs {tenantData.dueAmount}
+                    Rs {tenantData?.dueAmount ?? 0}
                   </StyledText>
                 </StyledView>
 
@@ -421,7 +470,7 @@ const TenantDetailsScreen = () => {
                     Next Due Date
                   </StyledText>
                   <StyledText className="text-[#1a2c4e] font-medium">
-                    {tenantData.rentDueDate}
+                    {tenantData?.rentDueDate ?? 0}
                   </StyledText>
                 </StyledView>
 
@@ -430,7 +479,7 @@ const TenantDetailsScreen = () => {
                     Total Paid (Till Date)
                   </StyledText>
                   <StyledText className="text-[#27ae60] font-bold">
-                    Rs {tenantData.totalPaid}
+                    Rs {tenantData?.totalPaid ?? 0}
                   </StyledText>
                 </StyledView>
               </StyledView>
@@ -444,21 +493,21 @@ const TenantDetailsScreen = () => {
                 <StyledView className="flex-row justify-between mb-3">
                   <StyledText className="text-[#8395a7]">Name</StyledText>
                   <StyledText className="text-[#1a2c4e] font-medium">
-                    {tenantData.emergencyContact.name}
+                    {tenantData?.emergencyContactName}
                   </StyledText>
                 </StyledView>
 
-                <StyledView className="flex-row justify-between mb-3">
+                {/* <StyledView className="flex-row justify-between mb-3">
                   <StyledText className="text-[#8395a7]">Relation</StyledText>
                   <StyledText className="text-[#1a2c4e] font-medium">
-                    {tenantData.emergencyContact.relation}
+                    {tenantData?.emergencyContact?.relation}
                   </StyledText>
-                </StyledView>
+                </StyledView> */}
 
                 <StyledView className="flex-row justify-between">
                   <StyledText className="text-[#8395a7]">Phone</StyledText>
                   <StyledText className="text-[#1a2c4e] font-medium">
-                    {tenantData.emergencyContact.phone}
+                    {tenantData?.emergencyContactNumber}
                   </StyledText>
                 </StyledView>
               </StyledView>
@@ -474,7 +523,7 @@ const TenantDetailsScreen = () => {
                 </StyledText>
               </StyledView>
 
-              {tenantData.maintenanceRequests.map((request) => (
+              {tenantData?.maintenanceRequests?.map((request) => (
                 <StyledTouchableOpacity
                   key={request.id}
                   className="bg-white p-4 rounded-xl shadow-sm mb-4"
@@ -519,7 +568,7 @@ const TenantDetailsScreen = () => {
                 </StyledTouchableOpacity>
               ))}
 
-              {tenantData.maintenanceRequests.length === 0 && (
+              {tenantData?.maintenanceRequests?.length === 0 && (
                 <StyledView className="bg-white p-6 rounded-xl shadow-sm items-center justify-center">
                   <Ionicons
                     name="construct-outline"
@@ -679,6 +728,12 @@ const TenantDetailsScreen = () => {
       {/* Action Buttons */}
       <StyledView className="p-4 border-t border-[#e9ecef] bg-white">
         <StyledView className="flex-row">
+          <StyledTouchableOpacity
+            className="flex-1 bg-[#e74c3c] py-3 rounded-lg mr-2 items-center justify-center"
+            onPress={() => handleDelete()}
+          >
+            <StyledText className="text-white font-bold">Delete</StyledText>
+          </StyledTouchableOpacity>
           <StyledTouchableOpacity
             className="flex-1 bg-[#e74c3c] py-3 rounded-lg mr-2 items-center justify-center"
             onPress={() =>

@@ -1,4 +1,11 @@
-import { View, Text, TouchableOpacity, TextInput, Image } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  TextInput,
+  Image,
+  ActivityIndicator,
+} from "react-native";
 import { styled } from "nativewind";
 import { Entypo } from "@expo/vector-icons";
 import logo from "../../../assets/logo_nobg.png";
@@ -17,6 +24,7 @@ const InvitationStep = ({
   isInvitationOn,
   setIsInvitationOn,
   handleLogin,
+  isLoading,
 }) => {
   const [isPasswordSecure, setIsPasswordSecure] = useState(true);
 
@@ -49,29 +57,36 @@ const InvitationStep = ({
           </StyledText>
 
           <StyledTextInput
-            placeholder="Invitation Code"
-            className="w-full border-b border-[#7f8c8d] p-3 mb-4 text-white placeholder:text-[#95a5a6]"
+            placeholder="Enter Invitation Code"
+            className="w-full border-b border-[#7f8c8d] p-3 mb-6 text-white"
             placeholderTextColor={"#95a5a6"}
             onChangeText={(text) => handleInputChange(text, "invitationCode")}
-            value={data.invitationCode}
+            value={data?.invitationCode || ""}
+            // autoCapitalize="characters"
           />
 
           <StyledTextInput
             placeholder="Email"
             keyboardType="email-address"
-            className="w-full border-b border-[#7f8c8d] p-3 mb-6 text-white placeholder:text-[#95a5a6]"
+            className="w-full border-b border-[#7f8c8d] p-3 mb-6 text-white"
             placeholderTextColor={"#95a5a6"}
             onChangeText={(text) => handleInputChange(text, "email")}
-            value={data.email}
+            value={data?.email || ""}
+            autoCapitalize="none"
           />
 
           <StyledTouchableOpacity
             className="bg-secondary w-full py-3 rounded-lg"
             onPress={validateInvitation}
+            disabled={isLoading}
           >
-            <StyledText className="text-white text-center text-lg font-bold">
-              Verify Invitation
-            </StyledText>
+            {isLoading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <StyledText className="text-white text-center text-lg font-bold">
+                Verify Invitation
+              </StyledText>
+            )}
           </StyledTouchableOpacity>
           <StyledText
             className="text-white text-center mt-2 underline"
@@ -97,6 +112,7 @@ const InvitationStep = ({
             onChangeText={(text) => handleInputChange(text, "email")}
             value={data.email}
             keyboardType="email-address"
+            autoCapitalize="none"
           />
 
           <View className="flex flex-row items-center w-full border-b border-[#7f8c8d] mb-6">
@@ -107,6 +123,7 @@ const InvitationStep = ({
               placeholderTextColor={"#95a5a6"}
               onChangeText={(text) => handleInputChange(text, "password")}
               value={data.password}
+              autoCapitalize="none"
             />
             <TouchableOpacity onPress={togglePasswordVisibility}>
               <Entypo

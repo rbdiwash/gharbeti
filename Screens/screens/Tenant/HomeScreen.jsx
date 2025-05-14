@@ -21,6 +21,7 @@ import {
   SecondaryButton,
 } from "../../../components/Buttons";
 import AutoScroll from "@homielab/react-native-auto-scroll";
+import { useAuth } from "../../../context/AuthContext";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -32,20 +33,25 @@ const HomeScreen = () => {
   const translateY = new Animated.Value(50);
   const opacity = new Animated.Value(0);
 
-  // Mock data for tenant
-  const tenantData = {
-    name: "Divash Ranabhat",
-    profileImage: "https://i.pravatar.cc/150?img=8",
-    property: "Apartment 303, Green Valley",
-    rentDue: 25000,
-    dueDate: "July 1, 2023",
-    lastPayment: 25000,
-    lastPaymentDate: "June 1, 2023",
-    leaseEndDate: "December 31, 2023",
-    maintenanceRequests: 2,
-    unreadNotices: 3,
-    unreadMessages: 1,
-  };
+  const { state } = useAuth();
+  console.log({ state });
+  const tenantData = state.userData || {};
+  console.log({ tenantData });
+
+  // // Mock data for tenant
+  // const tenantData = {
+  //   name: "Divash Ranabhat",
+  //   profileImage: "https://i.pravatar.cc/150?img=8",
+  //   property: "Apartment 303, Green Valley",
+  //   rentDue: 25000,
+  //   dueDate: "July 1, 2023",
+  //   lastPayment: 25000,
+  //   lastPaymentDate: "June 1, 2023",
+  //   leaseEndDate: "December 31, 2023",
+  //   maintenanceRequests: 2,
+  //   unreadNotices: 3,
+  //   unreadMessages: 1,
+  // };
   useEffect(() => {
     Animated.parallel([
       Animated.timing(translateY, {
@@ -83,6 +89,9 @@ const HomeScreen = () => {
               </StyledText>
               <StyledText className="text-white text-xl font-bold">
                 Divash Ranabhat
+              </StyledText>
+              <StyledText className="text-[#8395a7] text-sm">
+                {tenantData?.landlord?.name}'s Home
               </StyledText>
             </StyledView>
           </StyledView>
@@ -163,7 +172,7 @@ const HomeScreen = () => {
             {
               icon: <FontAwesome5 name="tools" size={24} color="#27ae60" />,
               title: "Maintenance",
-              screen: "NewMaintenance",
+              screen: "Maintenance",
             },
             {
               icon: <Entypo name="documents" size={24} color="#3498db" />,

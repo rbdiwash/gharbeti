@@ -1,4 +1,4 @@
-// import "react-native-gesture-handler";
+import "react-native-gesture-handler";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import ForgotPassword from "../Screens/AuthScreen/ForgotPassword";
 import login from "../Screens/AuthScreen/LoginScreen";

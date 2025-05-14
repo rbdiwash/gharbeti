@@ -20,9 +20,10 @@ import Settings from "../Screens/screens/Landlord/Settings";
 import TenantPaymentDetailsScreen from "../Screens/screens/Landlord/TenantPaymentDetailsScreen";
 import AddTenants from "../Screens/screens/Landlord/Tenants/AddTenants";
 import TenantDetails from "../Screens/screens/Landlord/Tenants/TenantDetails";
-import { default as Tenants } from "../Screens/screens/Landlord/Tenants/Tenants";
+import { default as Tenants } from "../Screens/screens/Landlord/Tenants/TenantsNew";
 import TenantListScreen from "../Screens/screens/Landlord/Tenants/TenantsNew";
 import LandlordCodeScreen from "../Screens/screens/Landlord/TenantScreens/MainScreen";
+import LeaseDetails from "../Screens/screens/Tenant/LeaseDetails";
 
 const Tab = createBottomTabNavigator();
 
@@ -215,6 +216,13 @@ const LoggedInLandlordStack = () => {
         <Stack.Screen
           name="Chat"
           component={ChatScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="LeaseDetails"
+          component={LeaseDetails}
           options={{
             headerShown: false,
           }}

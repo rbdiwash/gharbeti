@@ -1,30 +1,10 @@
-// import "react-native-gesture-handler";
+import "react-native-gesture-handler";
 import { NavigationContainer } from "@react-navigation/native";
-import GharbetiProvider from "./context/provider";
-import useGharbeti from "./context/useGharbeti";
-import LandlordStack from "./Stack/LandlordStack";
-import TenantStack from "./Stack/TenantStack";
-import AuthStack from "./Stack/AuthStack";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import RootNavigator from "./navigation/RootNavigator";
-import { AuthProvider } from "./context/AuthContext";
 import { StatusBar } from "expo-status-bar";
-
-// const CheckUser = () => {
-//   const [{ userState }, {}] = useGharbeti();
-
-//   return (
-//     <>
-//       {userState?.userType === "landlord" ? (
-//         <LandlordStack />
-//       ) : userState?.userType === "tenant" ? (
-//         <TenantStack />
-//       ) : (
-//         <AuthStack />
-//       )}
-//     </>
-//   );
-// };
+import { AuthProvider } from "./context/AuthContext";
+import RootNavigator from "./navigation/RootNavigator";
+import Toast from "react-native-toast-message";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -42,9 +22,9 @@ export default function App() {
         <>
           <NavigationContainer>
             <StatusBar barStyle="light-content" backgroundColor="#1a2c4e" />
-
             <RootNavigator />
           </NavigationContainer>
+          <Toast />
         </>
       </AuthProvider>
     </QueryClientProvider>

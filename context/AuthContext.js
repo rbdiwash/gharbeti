@@ -30,25 +30,18 @@ export function AuthProvider({ children }) {
   const loginMutation = useMutation({
     mutationFn: authApi.login,
     onSuccess: async (response) => {
-      console.log(response?.data);
-
       const { user, email, role, token } = response.data;
-
-      // Store user data in AsyncStorage
-      await AsyncStorage.setItem(
-        "userData",
-        JSON.stringify({ user: email, role })
-      );
-
       // Update auth state
       setState({
         isLoggedIn: true,
         role,
         user: email,
         isLoading: false,
+        userData: response?.data,
       });
     },
     onError: (error) => {
+      console.log(error);
       console.error("Login failed:", error?.response?.data?.message);
     },
   });
@@ -80,6 +73,17 @@ export function AuthProvider({ children }) {
         user,
         isLoading: false,
       });
+    },
+  });
+
+  // Change password mutation
+  const changePasswordMutation = useMutation({
+    mutationFn: authApi.changePassword,
+    onSuccess: () => {
+      console.log("Password changed successfully");
+    },
+    onError: (error) => {
+      console.error("Password change failed:", error?.response?.data?.message);
     },
   });
 
@@ -140,6 +144,7 @@ export function AuthProvider({ children }) {
   // Login function
   const login = useCallback(
     (credentials) => {
+      console.log(credentials);
       return loginMutation.mutateAsync(credentials);
     },
     [loginMutation]
@@ -211,6 +216,9 @@ export function AuthProvider({ children }) {
     role: state.role,
     user: state.user,
     isLoading: state.isLoading,
+    userData: state.userData,
+    setState,
+    state,
 
     // Login
     login,
@@ -234,6 +242,16 @@ export function AuthProvider({ children }) {
 
     // Profile
     updateUserProfile,
+
+    // Change password
+    changePassword: useCallback(
+      (data) => {
+        return changePasswordMutation.mutateAsync(data);
+      },
+      [changePasswordMutation]
+    ),
+    isChangingPassword: changePasswordMutation.isLoading,
+    changePasswordError: changePasswordMutation.error,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

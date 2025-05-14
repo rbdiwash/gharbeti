@@ -11,6 +11,7 @@ import { styled } from "nativewind";
 import logo from "../../assets/icon.png";
 import useGharbeti from "../../context/useGharbeti";
 import { Entypo } from "@expo/vector-icons";
+import { useAuth } from "../../context/AuthContext";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -18,7 +19,8 @@ const StyledTouchableOpacity = styled(TouchableOpacity);
 const StyledTextInput = styled(TextInput);
 
 const LoginScreen = ({ navigation }) => {
-  const [{ loggedIn }, { setIsLoggedIn, loginUser }] = useGharbeti();
+  const { login: loginUser } = useAuth();
+
   const [data, setData] = useState({ email: "", password: "" });
   const [isPasswordSecure, setIsPasswordSecure] = useState(false);
 
@@ -32,8 +34,6 @@ const LoginScreen = ({ navigation }) => {
   ``;
 
   const handleLogin = () => {
-    setIsLoggedIn(true);
-
     const success = loginUser("landlord", "admin");
     if (!success) {
       throw new Error("Failed to save login state");

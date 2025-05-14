@@ -8,6 +8,7 @@ const AUTH_ENDPOINTS = {
   VERIFY_INVITATION: "/auth/verify-invitation",
   REGISTER_TENANT: "/auth/register-tenant",
   LOGOUT: "/auth/logout",
+  CHANGE_PASSWORD: "/auth/change-password",
 };
 
 export const login = async (credentials) => {
@@ -66,10 +67,27 @@ export const login = async (credentials) => {
 
   // Real API call for production
   const response = await apiClient.post(AUTH_ENDPOINTS.LOGIN, credentials);
-  console.log(response?.data, credentials);
-  // Store token
-  if (response.data.token) {
-    await AsyncStorage.setItem("authToken", response.data.token);
+  // Store token and user data
+  if (response.data) {
+    try {
+      // Store auth token
+      await AsyncStorage.setItem("authToken", response.data.token);
+      // Store user data
+      const userData = {
+        _id: response.data._id,
+        name: response.data.name,
+        email: response.data.email,
+        phone: response.data.phone,
+        role: response.data.role,
+        data: response.data,
+        // Add any other user data you need to store
+      };
+
+      await AsyncStorage.setItem("userData", JSON.stringify(userData));
+    } catch (error) {
+      console.error("Error storing user data:", error);
+      throw error;
+    }
   }
 
   return response;
@@ -147,6 +165,10 @@ export const registerTenant = async (data) => {
   }
 
   return response;
+};
+
+export const changePassword = async (data) => {
+  return apiClient.post(AUTH_ENDPOINTS.CHANGE_PASSWORD, data);
 };
 
 /**

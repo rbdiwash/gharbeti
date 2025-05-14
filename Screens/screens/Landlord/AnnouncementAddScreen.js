@@ -37,7 +37,7 @@ const AddNoticeScreen = () => {
   const { refetch } = useNotice("all").getNoticeRequests();
   const { mutate: editNotice } = updateNoticeRequest();
   const route = useRoute();
-  const { noticeId, data } = route.params || { noticeId: 1, data: {} };
+  const { noticeId, data } = route.params || { noticeId: null, data: {} };
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -129,12 +129,12 @@ const AddNoticeScreen = () => {
   // Handle form submission
   const handleSubmit = () => {
     // Validate form
-    if (!formData.title.trim()) {
+    if (!formData?.title?.trim()) {
       Alert.alert("Error", "Please enter a title for the notice");
       return;
     }
 
-    if (!formData.description.trim()) {
+    if (!formData?.description?.trim()) {
       Alert.alert("Error", "Please enter a description for the notice");
       return;
     }
@@ -348,7 +348,7 @@ const AddNoticeScreen = () => {
                 onPress={showDatePicker}
               >
                 <StyledText className="text-[#1a2c4e]">
-                  {new Date(formData?.effectiveDate)?.toLocaleString()}
+                  {new Date(formData?.effectiveDate)?.toLocaleDateString()}
                 </StyledText>
                 <Ionicons name="calendar" size={20} color="#8395a7" />
               </StyledTouchableOpacity>
@@ -360,6 +360,7 @@ const AddNoticeScreen = () => {
               onConfirm={handleConfirmDate}
               onCancel={hideDatePicker}
               date={new Date(formData?.effectiveDate)}
+              defaultDate={new Date()}
             />
           </StyledView>
           {/* Image Upload */}
