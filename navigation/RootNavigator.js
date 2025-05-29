@@ -7,6 +7,7 @@ import AuthStack from "../Stack/AuthStack";
 
 const RootNavigator = () => {
   const { isLoggedIn, role, isLoading } = useAuth();
+  console.log("isLoggedIn", isLoggedIn);
 
   // Show loading screen while checking authentication state
   if (isLoading) {

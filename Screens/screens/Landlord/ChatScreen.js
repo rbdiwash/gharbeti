@@ -16,7 +16,10 @@ import {
 } from "react-native";
 import { styled } from "nativewind";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { useChat } from "../../../hooks/useChat";
+import { useStateData } from "../../../hooks/useStateData";
+import { getInitials } from "../../helper/const";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -25,116 +28,50 @@ const StyledTextInput = styled(TextInput);
 const StyledImage = styled(Image);
 
 // Mock tenants data
-const tenants = [
-  {
-    id: 1,
-    name: "John Doe",
-    property: "Apartment 303, Green Valley",
-    image: "https://randomuser.me/api/portraits/men/1.jpg",
-    unread: 2,
-    lastActive: "2 min ago",
-  },
-  {
-    id: 2,
-    name: "Sarah Johnson",
-    property: "Apartment 205, Green Valley",
-    image: "https://randomuser.me/api/portraits/women/2.jpg",
-    unread: 0,
-    lastActive: "1 hour ago",
-  },
-  {
-    id: 3,
-    name: "Michael Brown",
-    property: "Apartment 410, Green Valley",
-    image: "https://randomuser.me/api/portraits/men/3.jpg",
-    unread: 5,
-    lastActive: "5 min ago",
-  },
-  {
-    id: 4,
-    name: "Emily Wilson",
-    property: "Apartment 112, Green Valley",
-    image: "https://randomuser.me/api/portraits/women/4.jpg",
-    unread: 0,
-    lastActive: "Yesterday",
-  },
-  {
-    id: 5,
-    name: "Luke Findel",
-    property: "Apartment 501, Green Valley",
-    image: "https://randomuser.me/api/portraits/men/5.jpg",
-    unread: 1,
-    lastActive: "Just now",
-  },
-];
 
 const LandlordChatScreen = () => {
   const navigation = useNavigation();
   const [message, setMessage] = useState("");
-  const [selectedTenant, setSelectedTenant] = useState(tenants[0]);
+  const { profile, initializeData } = useStateData();
+  const [selectedTenant, setSelectedTenant] = useState(profile?.tenants[0]);
   const [showTenantSelector, setShowTenantSelector] = useState(false);
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      text: `Hello ${tenants[0].name}, how can I help you today?`,
-      sender: "landlord",
-      time: "10:30 AM",
-      read: true,
-    },
-    {
-      id: 2,
-      text: "I wanted to ask about the water heater in the bathroom. It seems to be not working properly.",
-      sender: "tenant",
-      time: "10:32 AM",
-      read: true,
-    },
-    {
-      id: 3,
-      text: "I'll send a maintenance person tomorrow between 10 AM and 12 PM. Will you be available?",
-      sender: "landlord",
-      time: "10:35 AM",
-      read: true,
-    },
-  ]);
 
   const scrollViewRef = useRef();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const dropdownAnim = useRef(new Animated.Value(0)).current;
 
+  const { tenantId, tenantData } = useRoute().params || {};
+
   useEffect(() => {
+    if (tenantData) {
+      setSelectedTenant(tenantData);
+    }
+  }, [tenantData]);
+
+  const {
+    data: messageArray,
+    isLoading: isMessageLoading,
+    refetch,
+  } = useChat().getChats(profile?._id, selectedTenant?._id);
+  const { mutate: postChat, isLoading } = useChat().postChat();
+
+  useEffect(() => {
+    if (messageArray?.length > 0) {
+      setTimeout(() => {
+        scrollViewRef.current?.scrollToEnd({ animated: false });
+      }, 100);
+    }
+  }, [messageArray]);
+
+  useEffect(() => {
+    initializeData();
+
     Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 500,
       useNativeDriver: true,
     }).start();
   }, []);
-
-  useEffect(() => {
-    // Reset messages when tenant changes
-    setMessages([
-      {
-        id: 1,
-        text: `Hello ${selectedTenant.name}, how can I help you today?`,
-        sender: "landlord",
-        time: "10:30 AM",
-        read: true,
-      },
-      {
-        id: 2,
-        text: "I wanted to ask about the water heater in the bathroom. It seems to be not working properly.",
-        sender: "tenant",
-        time: "10:32 AM",
-        read: true,
-      },
-      {
-        id: 3,
-        text: "I'll send a maintenance person tomorrow between 10 AM and 12 PM. Will you be available?",
-        sender: "landlord",
-        time: "10:35 AM",
-        read: true,
-      },
-    ]);
-  }, [selectedTenant]);
 
   const toggleTenantSelector = () => {
     setShowTenantSelector(!showTenantSelector);
@@ -148,6 +85,7 @@ const LandlordChatScreen = () => {
   const selectTenant = (tenant) => {
     setSelectedTenant(tenant);
     setShowTenantSelector(false);
+
     Animated.timing(dropdownAnim, {
       toValue: 0,
       duration: 300,
@@ -158,35 +96,20 @@ const LandlordChatScreen = () => {
   const sendMessage = () => {
     if (message.trim() === "") return;
 
-    const newMessage = {
-      id: messages.length + 1,
-      text: message,
-      sender: "landlord",
-      time: new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-      read: false,
+    const payload = {
+      senderId: profile?._id,
+      receiverId: selectedTenant?._id,
+      message: message,
     };
-
-    setMessages([...messages, newMessage]);
     setMessage("");
-
-    // Simulate tenant response
-    setTimeout(() => {
-      const tenantResponse = {
-        id: messages.length + 2,
-        text: "Yes, I'll be available. Thank you for arranging this so quickly!",
-        sender: "tenant",
-        time: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-        read: false,
-      };
-
-      setMessages((prevMessages) => [...prevMessages, tenantResponse]);
-    }, 2000);
+    postChat(payload, {
+      onSuccess: (response) => {
+        refetch();
+      },
+      onError: (error) => {
+        console.log("error", error);
+      },
+    });
   };
 
   const renderTenantItem = ({ item }) => (
@@ -202,7 +125,7 @@ const LandlordChatScreen = () => {
       ) : (
         <StyledView className="w-10 h-10 rounded-full bg-[#3498db] justify-center items-center">
           <StyledText className="text-white font-bold">
-            {item.name.charAt(0)}
+            {getInitials(item.name)}
           </StyledText>
         </StyledView>
       )}
@@ -217,7 +140,7 @@ const LandlordChatScreen = () => {
           </StyledText>
         </StyledView>
         <StyledText className="text-[#8395a7] text-xs">
-          {item.property}
+          {item?.tenantDetails?.address ?? item?.address}
         </StyledText>
       </StyledView>
 
@@ -255,25 +178,26 @@ const LandlordChatScreen = () => {
           className="flex-row items-center bg-[#2c3e50] p-2 rounded-lg mt-2"
           onPress={toggleTenantSelector}
         >
-          {selectedTenant.image ? (
+          {selectedTenant?.image ? (
             <StyledImage
-              source={{ uri: selectedTenant.image }}
+              source={{ uri: selectedTenant?.image }}
               className="w-8 h-8 rounded-full"
             />
           ) : (
             <StyledView className="w-8 h-8 rounded-full bg-[#3498db] justify-center items-center">
               <StyledText className="text-white font-bold">
-                {selectedTenant.name.charAt(0)}
+                {getInitials(selectedTenant?.name)}
               </StyledText>
             </StyledView>
           )}
 
           <StyledView className="flex-1 ml-2">
             <StyledText className="text-white font-bold">
-              {selectedTenant.name}
+              {selectedTenant?.name}
             </StyledText>
             <StyledText className="text-[#8395a7] text-xs">
-              {selectedTenant.property}
+              {selectedTenant?.tenantDetails?.address ??
+                selectedTenant?.address}
             </StyledText>
           </StyledView>
 
@@ -319,9 +243,9 @@ const LandlordChatScreen = () => {
             </StyledView>
 
             <FlatList
-              data={tenants}
+              data={profile?.tenants}
               renderItem={renderTenantItem}
-              keyExtractor={(item) => item.id.toString()}
+              keyExtractor={(item) => item._id.toString()}
               style={{ maxHeight: 300 }}
             />
 
@@ -346,37 +270,43 @@ const LandlordChatScreen = () => {
         }
       >
         <Animated.View style={{ opacity: fadeAnim }}>
-          {messages.map((msg, index) => (
+          {messageArray?.map((msg, index) => (
             <StyledView
-              key={msg.id}
+              key={msg._id + index}
               className={`mb-4 max-w-[80%] ${
-                msg.sender === "landlord" ? "self-end ml-auto" : "self-start"
+                msg.receiverId !== profile?._id
+                  ? "self-end ml-auto"
+                  : "self-start"
               }`}
             >
               <StyledView
-                className={`p-3 rounded-2xl ${
-                  msg.sender === "landlord"
-                    ? "bg-primary rounded-tr-none"
-                    : "bg-[#e9ecef] rounded-tl-none"
+                className={`p-3 rounded-2xl w-full ${
+                  msg.senderId === profile?._id
+                    ? "bg-primary rounded-br-none ml-auto"
+                    : "bg-[#e9ecef] rounded-bl-none"
                 }`}
               >
                 <StyledText
                   className={`${
-                    msg.sender === "landlord" ? "text-white" : "text-[#1a2c4e]"
+                    msg.senderId === profile?._id
+                      ? "text-white "
+                      : "text-[#1a2c4e]"
                   }`}
                 >
-                  {msg.text}
+                  {msg.message}
                 </StyledText>
               </StyledView>
               <StyledView
                 className={`flex-row items-center mt-1 ${
-                  msg.sender === "landlord" ? "justify-end" : "justify-start"
+                  msg.senderId !== profile?._id
+                    ? "justify-end"
+                    : "justify-start"
                 }`}
               >
                 <StyledText className="text-[#8395a7] text-xs">
-                  {msg.time}
+                  {new Date(msg.createdAt).toLocaleString()}
                 </StyledText>
-                {msg.sender === "landlord" && (
+                {msg.senderId !== profile?._id && (
                   <Ionicons
                     name={msg.read ? "checkmark-done" : "checkmark"}
                     size={16}

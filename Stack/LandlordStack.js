@@ -11,6 +11,7 @@ import ChatScreen from "../Screens/screens/Landlord/ChatScreen";
 import Dues from "../Screens/screens/Landlord/Dues";
 import Home from "../Screens/screens/Landlord/Home";
 import LandlordProfile from "../Screens/screens/Landlord/LandlordProfile/Profile";
+import EditProfile from "../Screens/screens/Landlord/LandlordProfile/EditProfile";
 import MaintenanceStack from "../Screens/screens/Landlord/Maintenance/MaintenanceStack";
 import Notifications from "../Screens/screens/Landlord/Notifications";
 import HomeScreen from "../Screens/screens/Landlord/OldHome";
@@ -23,7 +24,7 @@ import TenantDetails from "../Screens/screens/Landlord/Tenants/TenantDetails";
 import { default as Tenants } from "../Screens/screens/Landlord/Tenants/TenantsNew";
 import TenantListScreen from "../Screens/screens/Landlord/Tenants/TenantsNew";
 import LandlordCodeScreen from "../Screens/screens/Landlord/TenantScreens/MainScreen";
-import LeaseDetails from "../Screens/screens/Tenant/LeaseDetails";
+import LeaseDetails from "../Screens/screens/Landlord/LeaseDetails";
 
 const Tab = createBottomTabNavigator();
 
@@ -155,6 +156,11 @@ const LoggedInLandlordStack = () => {
         <Stack.Screen
           name="Profile"
           component={LandlordProfile}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Edit Profile"
+          component={EditProfile}
           options={{ headerShown: false }}
         />
         <Stack.Screen

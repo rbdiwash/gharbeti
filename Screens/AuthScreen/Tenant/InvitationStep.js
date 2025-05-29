@@ -5,11 +5,15 @@ import {
   TextInput,
   Image,
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
 } from "react-native";
 import { styled } from "nativewind";
-import { Entypo } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import logo from "../../../assets/logo_nobg.png";
 import { useState } from "react";
+import { PrimaryButton, SecondaryButton } from "../../../components/Buttons";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -33,152 +37,178 @@ const InvitationStep = ({
   };
 
   return (
-    <>
-      <StyledView className="w-full flex-row justify-center items-center mb-6">
-        <View className="bg- border border-white p-4 rounded-full">
-          <Image source={logo} name="home" className="w-14 h-14" />
-        </View>
-        <View className="ml-4">
-          <Text className="text-white text-2xl font-bold">Tenant Portal</Text>
-          <Text className="text-[#bdc3c7] text-sm">
-            Welcome to your new home
-          </Text>
-        </View>
-      </StyledView>
-
-      {isInvitationOn ? (
-        <StyledView className="w-full bg-primary2 rounded-xl p-6 mb-6">
-          <StyledText className="text-white text-xl font-bold mb-4">
-            Enter Your Invitation
-          </StyledText>
-
-          <StyledText className="text-[#bdc3c7] mb-4">
-            Please enter the invitation code and email provided by your landlord
-          </StyledText>
-
-          <StyledTextInput
-            placeholder="Enter Invitation Code"
-            className="w-full border-b border-[#7f8c8d] p-3 mb-6 text-white"
-            placeholderTextColor={"#95a5a6"}
-            onChangeText={(text) => handleInputChange(text, "invitationCode")}
-            value={data?.invitationCode || ""}
-            // autoCapitalize="characters"
-          />
-
-          <StyledTextInput
-            placeholder="Email"
-            keyboardType="email-address"
-            className="w-full border-b border-[#7f8c8d] p-3 mb-6 text-white"
-            placeholderTextColor={"#95a5a6"}
-            onChangeText={(text) => handleInputChange(text, "email")}
-            value={data?.email || ""}
-            autoCapitalize="none"
-          />
-
-          <StyledTouchableOpacity
-            className="bg-secondary w-full py-3 rounded-lg"
-            onPress={validateInvitation}
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <ActivityIndicator size="small" color="#fff" />
-            ) : (
-              <StyledText className="text-white text-center text-lg font-bold">
-                Verify Invitation
-              </StyledText>
-            )}
-          </StyledTouchableOpacity>
-          <StyledText
-            className="text-white text-center mt-2 underline"
-            onPress={() => setIsInvitationOn(!isInvitationOn)}
-          >
-            Already registered? Login here.
-          </StyledText>
-        </StyledView>
-      ) : (
-        <StyledView className="w-full bg-primary2 rounded-xl p-6 mb-6">
-          <StyledText className="text-white text-xl font-bold mb-4">
-            Enter login details
-          </StyledText>
-
-          <StyledText className="text-[#bdc3c7] mb-4">
-            Please enter your email & password if you are already registered.
-          </StyledText>
-
-          <StyledTextInput
-            placeholder="Email Address"
-            className="py-3 flex-1 text-white text-base border-b border-[#7f8c8d]"
-            placeholderTextColor={"#95a5a6"}
-            onChangeText={(text) => handleInputChange(text, "email")}
-            value={data.email}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
-
-          <View className="flex flex-row items-center w-full border-b border-[#7f8c8d] mb-6">
-            <StyledTextInput
-              placeholder="Password"
-              secureTextEntry={isPasswordSecure}
-              className="py-3 flex-1 text-white text-base"
-              placeholderTextColor={"#95a5a6"}
-              onChangeText={(text) => handleInputChange(text, "password")}
-              value={data.password}
-              autoCapitalize="none"
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      className="flex-1 bg-primary"
+    >
+      <ScrollView
+        className="flex-1"
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ flexGrow: 1 }}
+      >
+        <StyledView className="flex-1 px-6 pb-8">
+          {/* Logo and Header */}
+          <StyledView className="items-center mb-8">
+            <Image
+              source={logo}
+              className="w-24 h-24 mb-4"
+              resizeMode="contain"
             />
-            <TouchableOpacity onPress={togglePasswordVisibility}>
-              <Entypo
-                name={isPasswordSecure ? "eye" : "eye-with-line"}
-                size={24}
-                color="#95a5a6"
-              />
-            </TouchableOpacity>
-          </View>
-          <StyledTouchableOpacity
-            className="bg-secondary w-full py-3 rounded-lg"
-            onPress={handleLogin}
-          >
-            <StyledText className="text-white text-center text-lg font-bold">
-              Login
+            <StyledText className="text-white text-2xl font-bold mb-2">
+              Gharbeti
             </StyledText>
-          </StyledTouchableOpacity>
-          <StyledText
-            className="text-white text-center mt-2 underline"
-            onPress={() => setIsInvitationOn(!isInvitationOn)}
-          >
-            Already invited? Enter Invitation code here.
-          </StyledText>
+            <StyledText className="text-gray-400 text-center">
+              Welcome to your new home
+            </StyledText>
+          </StyledView>
+
+          {isInvitationOn ? (
+            <StyledView className="space-y-4 mb-6">
+              <StyledText className="text-white text-xl font-bold mb-2">
+                Enter your invitation code
+              </StyledText>
+
+              <StyledView>
+                <StyledText className="text-gray-400 mb-2 ml-1">
+                  Invitation Code
+                </StyledText>
+                <StyledView className="flex-row items-center bg-[#2a3c5e] rounded-xl px-4">
+                  <Ionicons name="key-outline" size={20} color="#8395a7" />
+                  <StyledTextInput
+                    className="flex-1 p-4 text-white"
+                    placeholder="Enter invitation code"
+                    placeholderTextColor="#8395a7"
+                    onChangeText={(text) =>
+                      handleInputChange(text, "invitationCode")
+                    }
+                    value={data?.invitationCode || ""}
+                  />
+                </StyledView>
+              </StyledView>
+
+              <StyledView>
+                <StyledText className="text-gray-400 mb-2 ml-1">
+                  Email Address
+                </StyledText>
+                <StyledView className="flex-row items-center bg-[#2a3c5e] rounded-xl px-4">
+                  <Ionicons name="mail-outline" size={20} color="#8395a7" />
+                  <StyledTextInput
+                    className="flex-1 p-4 text-white"
+                    placeholder="Enter your email"
+                    placeholderTextColor="#8395a7"
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    onChangeText={(text) => handleInputChange(text, "email")}
+                    value={data?.email || ""}
+                  />
+                </StyledView>
+              </StyledView>
+
+              <SecondaryButton
+                text={isLoading ? "Verifying..." : "Verify Invitation"}
+                onPress={validateInvitation}
+                disabled={isLoading}
+                size="medium"
+                parentClass="mt-4"
+              />
+
+              <StyledTouchableOpacity
+                className="mt-4"
+                onPress={() => setIsInvitationOn(!isInvitationOn)}
+              >
+                <StyledText className="text-[#3498db] text-center">
+                  Already registered? Login here
+                </StyledText>
+              </StyledTouchableOpacity>
+            </StyledView>
+          ) : (
+            <StyledView className="space-y-4 mb-6">
+              <StyledText className="text-white text-xl font-bold mb-2">
+                Login to Your Account
+              </StyledText>
+
+              <StyledView>
+                <StyledText className="text-gray-400 mb-2 ml-1">
+                  Email Address
+                </StyledText>
+                <StyledView className="flex-row items-center bg-[#2a3c5e] rounded-xl px-4">
+                  <Ionicons name="mail-outline" size={20} color="#8395a7" />
+                  <StyledTextInput
+                    className="flex-1 p-4 text-white"
+                    placeholder="Enter your email"
+                    placeholderTextColor="#8395a7"
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    onChangeText={(text) => handleInputChange(text, "email")}
+                    value={data.email}
+                  />
+                </StyledView>
+              </StyledView>
+
+              <StyledView>
+                <StyledText className="text-gray-400 mb-2 ml-1">
+                  Password
+                </StyledText>
+                <StyledView className="flex-row items-center bg-[#2a3c5e] rounded-xl px-4">
+                  <Ionicons
+                    name="lock-closed-outline"
+                    size={20}
+                    color="#8395a7"
+                  />
+                  <StyledTextInput
+                    className="flex-1 p-4 text-white"
+                    placeholder="Enter your password"
+                    placeholderTextColor="#8395a7"
+                    secureTextEntry={isPasswordSecure}
+                    onChangeText={(text) => handleInputChange(text, "password")}
+                    value={data.password}
+                  />
+                  <TouchableOpacity onPress={togglePasswordVisibility}>
+                    <Ionicons
+                      name={
+                        isPasswordSecure ? "eye-off-outline" : "eye-outline"
+                      }
+                      size={20}
+                      color="#8395a7"
+                    />
+                  </TouchableOpacity>
+                </StyledView>
+              </StyledView>
+
+              <SecondaryButton
+                text="Login"
+                onPress={handleLogin}
+                size="medium"
+                parentClass="mt-4"
+              />
+
+              <StyledTouchableOpacity
+                className="mt-4"
+                onPress={() => setIsInvitationOn(!isInvitationOn)}
+              >
+                <StyledText className="text-[#3498db] text-center">
+                  Already invited? Enter Invitation code here
+                </StyledText>
+              </StyledTouchableOpacity>
+            </StyledView>
+          )}
+
+          {/* Landlord Section */}
+          <StyledView className="mt-6">
+            <StyledText className="text-white text-lg font-bold mb-4 text-center">
+              Are you a landlord?
+            </StyledText>
+            <StyledTouchableOpacity
+              onPress={() => navigation.replace("signup")}
+            >
+              <StyledText className="text-[#3498db] text-center">
+                Register as Landlord
+              </StyledText>
+            </StyledTouchableOpacity>
+          </StyledView>
         </StyledView>
-      )}
-      <StyledView className="w-full bg-primary2 rounded-xl p-6">
-        <StyledText className="text-white text-lg font-bold mb-4 text-center">
-          Are you a landlord?
-        </StyledText>
-
-        <StyledTouchableOpacity
-          className="bg-secondary w-full py-3 rounded-lg mb-3"
-          onPress={() => navigation.replace("login")}
-        >
-          <StyledText className="text-white text-center text-base font-bold">
-            Login as Landlord
-          </StyledText>
-        </StyledTouchableOpacity>
-
-        {/* <StyledTouchableOpacity
-          className="border border-[#3498db] w-full py-3 rounded-lg"
-          onPress={() => navigation.replace("signup")}
-        >
-          <StyledText className="text-[#3498db] text-center text-base font-bold">
-            Register as Landlord
-          </StyledText>
-        </StyledTouchableOpacity> */}
-        <StyledText
-          className="text-[#fff] underline text-center"
-          onPress={() => navigation.replace("signup")}
-        >
-          Register as Landlord
-        </StyledText>
-      </StyledView>
-    </>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 

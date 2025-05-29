@@ -1,33 +1,46 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   View,
   Text,
   ScrollView,
   TouchableOpacity,
   Switch,
-  Modal,
-  TextInput,
+  Alert,
 } from "react-native";
 import { styled } from "nativewind";
-import { Ionicons, Entypo } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import { PrimaryButton, OutlinedButton } from "../../../components/Buttons";
-import BottomSheet from "../../../components/Bottomsheet";
-import useGharbeti from "../../../context/useGharbeti";
+import { PrimaryButton } from "../../../components/Buttons";
+import { useStateData } from "../../../hooks/useStateData";
+import { getInitials } from "../../helper/const";
 import { useAuth } from "../../../context/AuthContext";
+import * as LocalAuthentication from "expo-local-authentication";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+// Import the new components
+import LogoutModal from "./components/LogoutModal";
+import LanguageBottomSheet from "./components/LanguageBottomSheet";
+import ChangePasswordBottomSheet from "./components/ChangePasswordBottomSheet";
+import NotificationsBottomSheet from "./components/NotificationsBottomSheet";
+import AboutAppBottomSheet from "./components/AboutAppBottomSheet";
+import ContactSupportBottomSheet from "./components/ContactSupportBottomSheet";
+import { useProfile } from "../../../hooks/useProfile";
+import Toast from "react-native-toast-message";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
 const StyledTouchableOpacity = styled(TouchableOpacity);
 const StyledScrollView = styled(ScrollView);
-const StyledTextInput = styled(TextInput);
 
 const SettingsScreen = () => {
   const navigation = useNavigation();
+  const { profile } = useStateData();
+  const { logout } = useAuth();
 
   // States for toggles and modals
+  const [isBiometricAvailable, setIsBiometricAvailable] = useState(false);
   const [isBiometricEnabled, setIsBiometricEnabled] = useState(false);
   const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(true);
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
@@ -35,18 +48,19 @@ const SettingsScreen = () => {
     useState(false);
   const [passwordBottomSheetVisible, setPasswordBottomSheetVisible] =
     useState(false);
-  const { logout } = useAuth();
+  const [notificationsBottomSheetVisible, setNotificationsBottomSheetVisible] =
+    useState(false);
+  const [aboutAppBottomSheetVisible, setAboutAppBottomSheetVisible] =
+    useState(false);
+  const [
+    contactSupportBottomSheetVisible,
+    setContactSupportBottomSheetVisible,
+  ] = useState(false);
 
   // Current language
   const [currentLanguage, setCurrentLanguage] = useState("English");
 
-  // Available languages
-  const languages = [
-    { id: "en", name: "English" },
-    { id: "hi", name: "हिंदी (Nepali)" },
-  ];
-
-  // Update the Change Password Bottom Sheet to have actual input fields
+  // Password data
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
     newPassword: "",
@@ -57,24 +71,7 @@ const SettingsScreen = () => {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const handlePasswordChange = (field, value) => {
-    setPasswordData({
-      ...passwordData,
-      [field]: value,
-    });
-  };
-
-  // Add states for additional bottom sheets
-  const [notificationsBottomSheetVisible, setNotificationsBottomSheetVisible] =
-    useState(false);
-  const [aboutAppBottomSheetVisible, setAboutAppBottomSheetVisible] =
-    useState(false);
-  const [
-    contactSupportBottomSheetVisible,
-    setContactSupportBottomSheetVisible,
-  ] = useState(false);
-
-  // Add notification settings
+  // Notification settings
   const [notificationSettings, setNotificationSettings] = useState({
     chatNotifications: true,
     paymentReminders: true,
@@ -83,6 +80,63 @@ const SettingsScreen = () => {
     appUpdates: false,
   });
 
+  useEffect(() => {
+    checkBiometricAvailability();
+    loadBiometricPreference();
+  }, []);
+
+  const checkBiometricAvailability = async () => {
+    const compatible = await LocalAuthentication.hasHardwareAsync();
+    setIsBiometricAvailable(compatible);
+  };
+
+  const loadBiometricPreference = async () => {
+    try {
+      const value = await AsyncStorage.getItem("biometricEnabled");
+      setIsBiometricEnabled(value === "true");
+    } catch (error) {
+      console.error("Error loading biometric preference:", error);
+    }
+  };
+
+  const handleBiometricToggle = async (value) => {
+    if (value) {
+      // If enabling biometric, authenticate first
+      const result = await LocalAuthentication.authenticateAsync({
+        promptMessage: "Authenticate to enable biometric login",
+        fallbackLabel: "Use passcode",
+      });
+
+      if (result.success) {
+        try {
+          await AsyncStorage.setItem("biometricEnabled", "true");
+          setIsBiometricEnabled(true);
+          Alert.alert("Success", "Biometric login has been enabled");
+        } catch (error) {
+          console.error("Error saving biometric preference:", error);
+          Alert.alert("Error", "Failed to enable biometric login");
+        }
+      }
+    } else {
+      // If disabling biometric, just update the state
+      try {
+        await AsyncStorage.setItem("biometricEnabled", "false");
+        setIsBiometricEnabled(false);
+        Alert.alert("Success", "Biometric login has been disabled");
+      } catch (error) {
+        console.error("Error saving biometric preference:", error);
+        Alert.alert("Error", "Failed to disable biometric login");
+      }
+    }
+  };
+
+  const handlePasswordChange = (field, value) => {
+    setPasswordData({
+      ...passwordData,
+      [field]: value,
+    });
+  };
+
   const toggleNotificationSetting = (setting) => {
     setNotificationSettings({
       ...notificationSettings,
@@ -90,13 +144,9 @@ const SettingsScreen = () => {
     });
   };
 
-  // Handle logout
-
-  // Handle language change
   const handleLanguageChange = (language) => {
     setCurrentLanguage(language.name);
     setLanguageBottomSheetVisible(false);
-    // Implement language change logic here
   };
 
   // Settings sections
@@ -115,7 +165,7 @@ const SettingsScreen = () => {
           icon: <Ionicons name="create" size={22} color="#27ae60" />,
           title: "Edit Profile",
           subtitle: "Update your personal information",
-          action: () => navigation.navigate("EditProfile"),
+          action: () => navigation.navigate("Edit Profile"),
           showArrow: true,
         },
         {
@@ -128,10 +178,13 @@ const SettingsScreen = () => {
         {
           icon: <Ionicons name="finger-print" size={22} color="#9b59b6" />,
           title: "Biometric Authentication",
-          subtitle: "Login using fingerprint or face ID",
-          action: () => setIsBiometricEnabled(!isBiometricEnabled),
+          subtitle: isBiometricAvailable
+            ? "Login using fingerprint or face ID"
+            : "Biometric authentication not available",
+          action: () => handleBiometricToggle(!isBiometricEnabled),
           isToggle: true,
           toggleValue: isBiometricEnabled,
+          disabled: !isBiometricAvailable,
         },
       ],
     },
@@ -205,6 +258,33 @@ const SettingsScreen = () => {
     },
   ];
 
+  const { mutate, isLoading } = useProfile().changePasswordRequest();
+
+  const handleUpdatePassword = () => {
+    const payload = {
+      email: profile?.email,
+      currentPassword: passwordData.currentPassword,
+      newPassword: passwordData.newPassword,
+    };
+    mutate(
+      { data: payload },
+      {
+        onSuccess: () => {
+          Toast.show({
+            text1: "Success",
+            text2: "Password updated successfully",
+            type: "success",
+          });
+          setPasswordBottomSheetVisible(false);
+        },
+        onError: (error) => {
+          console.log(error.response.data?.message);
+          alert("Error !! " + error.response.data?.message);
+        },
+      }
+    );
+  };
+
   return (
     <StyledView className="flex-1 bg-[#f8f9fa]">
       {/* Header */}
@@ -223,16 +303,18 @@ const SettingsScreen = () => {
       {/* Profile Summary */}
       <StyledView className="bg-white mx-4 mt-4 p-4 rounded-xl shadow-sm flex-row items-center">
         <StyledView className="w-16 h-16 rounded-full bg-primary justify-center items-center">
-          <StyledText className="text-white text-2xl font-bold">JD</StyledText>
+          <StyledText className="text-white text-2xl font-bold">
+            {getInitials(profile?.name)}
+          </StyledText>
         </StyledView>
         <StyledView className="ml-4 flex-1">
           <StyledText className="text-[#1a2c4e] text-lg font-bold">
-            Divash Ranabhat
+            {profile?.name}
           </StyledText>
+          <StyledText className="text-[#8395a7]">{profile?.email}</StyledText>
           <StyledText className="text-[#8395a7]">
-            rbdiwash@gmail.com{" "}
+            {profile?.phoneNumber || "N/A"}
           </StyledText>
-          <StyledText className="text-[#8395a7]">+91 98765 43210</StyledText>
         </StyledView>
       </StyledView>
 
@@ -301,445 +383,74 @@ const SettingsScreen = () => {
         </StyledView>
       </StyledScrollView>
 
-      {/* Logout Confirmation Modal */}
-      <Modal
-        animationType="fade"
-        transparent={true}
+      {/* Modals and Bottom Sheets */}
+      <LogoutModal
         visible={logoutModalVisible}
-        onRequestClose={() => setLogoutModalVisible(false)}
-      >
-        <StyledView className="flex-1 justify-center items-center bg-black/50">
-          <StyledView className="bg-white rounded-xl p-6 w-[80%] max-w-md">
-            <StyledView className="items-center mb-4">
-              <Ionicons name="log-out" size={50} color="#e74c3c" />
-              <StyledText className="text-[#1a2c4e] text-xl font-bold mt-2">
-                Logout
-              </StyledText>
-              <StyledText className="text-[#8395a7] text-center mt-2">
-                Are you sure you want to logout from your account?
-              </StyledText>
-            </StyledView>
+        onClose={() => setLogoutModalVisible(false)}
+        onLogout={logout}
+      />
 
-            <StyledView className="flex-row justify-between mt-4">
-              <OutlinedButton
-                text="Cancel"
-                borderColor="#8395a7"
-                textColor="#8395a7"
-                style={{ flex: 1, marginRight: 8 }}
-                onPress={() => setLogoutModalVisible(false)}
-              />
-              <PrimaryButton
-                text="Logout"
-                bgColor="#e74c3c"
-                style={{ flex: 1, marginLeft: 8 }}
-                onPress={logout}
-              />
-            </StyledView>
-          </StyledView>
-        </StyledView>
-      </Modal>
-
-      {/* Language Bottom Sheet */}
-      <BottomSheet
+      <LanguageBottomSheet
         visible={languageBottomSheetVisible}
         onClose={() => setLanguageBottomSheetVisible(false)}
-        title="Select Language"
-      >
-        <StyledView className="p-4">
-          {[
-            { id: "en", name: "English", flag: "🇺🇸" },
-            { id: "hi", name: " नेपाली (Nepali)", flag: "🇳🇵" },
-          ].map((language) => (
-            <StyledTouchableOpacity
-              key={language.id}
-              className={`flex-row items-center p-4 rounded-lg mb-2 ${
-                currentLanguage === language.name ? "bg-[#e9f7ef]" : ""
-              }`}
-              onPress={() => handleLanguageChange(language)}
-            >
-              <StyledText className="text-2xl mr-3">{language.flag}</StyledText>
-              <StyledView className="flex-1">
-                <StyledText className="text-[#1a2c4e] font-medium">
-                  {language.name}
-                </StyledText>
-              </StyledView>
-              {currentLanguage === language.name && (
-                <Ionicons name="checkmark-circle" size={24} color="#27ae60" />
-              )}
-            </StyledTouchableOpacity>
-          ))}
-        </StyledView>
-      </BottomSheet>
+        currentLanguage={currentLanguage}
+        onLanguageChange={handleLanguageChange}
+      />
 
-      {/* Change Password Bottom Sheet */}
-      <BottomSheet
+      <ChangePasswordBottomSheet
         visible={passwordBottomSheetVisible}
+        isLoading={isLoading}
         onClose={() => setPasswordBottomSheetVisible(false)}
-        title="Change Password"
-      >
-        <StyledView className="p-4">
-          <StyledView className="mb-4">
-            <StyledText className="text-[#1a2c4e] font-medium mb-2">
-              Current Password
-            </StyledText>
-            <StyledView className="flex-row items-center border border-[#e9ecef] rounded-lg p-3">
-              <Ionicons
-                name="lock-closed"
-                size={20}
-                color="#8395a7"
-                style={{ marginRight: 10 }}
-              />
-              <TextInput
-                className="flex-1 text-[#1a2c4e]"
-                placeholder="Enter current password"
-                secureTextEntry={!showCurrentPassword}
-                value={passwordData.currentPassword}
-                onChangeText={(text) =>
-                  handlePasswordChange("currentPassword", text)
-                }
-              />
-              <TouchableOpacity
-                onPress={() => setShowCurrentPassword(!showCurrentPassword)}
-              >
-                <Ionicons
-                  name={showCurrentPassword ? "eye-off" : "eye"}
-                  size={20}
-                  color="#8395a7"
-                />
-              </TouchableOpacity>
-            </StyledView>
-          </StyledView>
+        passwordData={passwordData}
+        onPasswordChange={handlePasswordChange}
+        showCurrentPassword={showCurrentPassword}
+        showNewPassword={showNewPassword}
+        showConfirmPassword={showConfirmPassword}
+        onToggleCurrentPassword={() =>
+          setShowCurrentPassword(!showCurrentPassword)
+        }
+        onToggleNewPassword={() => setShowNewPassword(!showNewPassword)}
+        onToggleConfirmPassword={() =>
+          setShowConfirmPassword(!showConfirmPassword)
+        }
+        onUpdatePassword={handleUpdatePassword}
+      />
 
-          <StyledView className="mb-4">
-            <StyledText className="text-[#1a2c4e] font-medium mb-2">
-              New Password
-            </StyledText>
-            <StyledView className="flex-row items-center border border-[#e9ecef] rounded-lg p-3">
-              <Ionicons
-                name="lock-closed"
-                size={20}
-                color="#8395a7"
-                style={{ marginRight: 10 }}
-              />
-              <TextInput
-                className="flex-1 text-[#1a2c4e]"
-                placeholder="Enter new password"
-                secureTextEntry={!showNewPassword}
-                value={passwordData.newPassword}
-                onChangeText={(text) =>
-                  handlePasswordChange("newPassword", text)
-                }
-              />
-              <TouchableOpacity
-                onPress={() => setShowNewPassword(!showNewPassword)}
-              >
-                <Ionicons
-                  name={showNewPassword ? "eye-off" : "eye"}
-                  size={20}
-                  color="#8395a7"
-                />
-              </TouchableOpacity>
-            </StyledView>
-          </StyledView>
-
-          <StyledView className="mb-6">
-            <StyledText className="text-[#1a2c4e] font-medium mb-2">
-              Confirm New Password
-            </StyledText>
-            <StyledView className="flex-row items-center border border-[#e9ecef] rounded-lg p-3">
-              <Ionicons
-                name="lock-closed"
-                size={20}
-                color="#8395a7"
-                style={{ marginRight: 10 }}
-              />
-              <TextInput
-                className="flex-1 text-[#1a2c4e]"
-                placeholder="Confirm new password"
-                secureTextEntry={!showConfirmPassword}
-                value={passwordData.confirmPassword}
-                onChangeText={(text) =>
-                  handlePasswordChange("confirmPassword", text)
-                }
-              />
-              <TouchableOpacity
-                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-              >
-                <Ionicons
-                  name={showConfirmPassword ? "eye-off" : "eye"}
-                  size={20}
-                  color="#8395a7"
-                />
-              </TouchableOpacity>
-            </StyledView>
-          </StyledView>
-
-          <PrimaryButton
-            text="Update Password"
-            fullWidth={true}
-            onPress={() => {
-              alert("Success", "Password updated successfully");
-              setPasswordBottomSheetVisible(false);
-            }}
-          />
-        </StyledView>
-      </BottomSheet>
-
-      {/* Notifications Bottom Sheet */}
-      <BottomSheet
+      <NotificationsBottomSheet
         visible={notificationsBottomSheetVisible}
         onClose={() => setNotificationsBottomSheetVisible(false)}
-        title="Notification Settings"
-      >
-        <StyledView className="p-4">
-          <StyledText className="text-[#8395a7] mb-4">
-            Customize which notifications you want to receive
-          </StyledText>
+        notificationSettings={notificationSettings}
+        onToggleSetting={toggleNotificationSetting}
+        onSaveSettings={() => {
+          alert("Success", "Notification settings updated");
+          setNotificationsBottomSheetVisible(false);
+        }}
+      />
 
-          {[
-            {
-              id: "chatNotifications",
-              title: "Chat Messages",
-              icon: "chatbubble",
-              color: "#3498db",
-            },
-            {
-              id: "paymentReminders",
-              title: "Payment Reminders",
-              icon: "cash",
-              color: "#27ae60",
-            },
-            {
-              id: "maintenanceUpdates",
-              title: "Maintenance Updates",
-              icon: "construct",
-              color: "#f1c40f",
-            },
-            {
-              id: "noticeAlerts",
-              title: "Notice Alerts",
-              icon: "megaphone",
-              color: "#e74c3c",
-            },
-            {
-              id: "appUpdates",
-              title: "App Updates",
-              icon: "refresh-circle",
-              color: "#9b59b6",
-            },
-          ].map((item) => (
-            <StyledView
-              key={item.id}
-              className="flex-row items-center justify-between p-4 border-b border-[#f0f2f5]"
-            >
-              <StyledView className="flex-row items-center">
-                <StyledView className="w-10 h-10 rounded-full bg-[#f0f2f5] justify-center items-center mr-3">
-                  <Ionicons name={item.icon} size={20} color={item.color} />
-                </StyledView>
-                <StyledText className="text-[#1a2c4e] font-medium">
-                  {item.title}
-                </StyledText>
-              </StyledView>
-              <Switch
-                value={notificationSettings[item.id]}
-                onValueChange={() => toggleNotificationSetting(item.id)}
-                trackColor={{ false: "#e9ecef", true: "#27ae60" }}
-                thumbColor={"#ffffff"}
-              />
-            </StyledView>
-          ))}
-
-          <StyledView className="mt-6">
-            <PrimaryButton
-              text="Save Settings"
-              fullWidth={true}
-              onPress={() => {
-                alert("Success", "Notification settings updated");
-                setNotificationsBottomSheetVisible(false);
-              }}
-            />
-          </StyledView>
-        </StyledView>
-      </BottomSheet>
-
-      {/* About App Bottom Sheet */}
-      <BottomSheet
+      <AboutAppBottomSheet
         visible={aboutAppBottomSheetVisible}
         onClose={() => setAboutAppBottomSheetVisible(false)}
-        title="About App"
-      >
-        <StyledView className="p-4">
-          <StyledView className="items-center mb-6">
-            <StyledView className="w-20 h-20 rounded-full bg-[#1a2c4e] justify-center items-center mb-3">
-              <Entypo name="home" size={40} color="white" />
-            </StyledView>
-            <StyledText className="text-[#1a2c4e] text-xl font-bold">
-              Gharbeti
-            </StyledText>
-            <StyledText className="text-[#8395a7]">
-              Version 1.0.0 (Build 103)
-            </StyledText>
-          </StyledView>
+        onCheckUpdates={() => {
+          alert(
+            "App is up to date",
+            "You are using the latest version of the app."
+          );
+        }}
+        onRateApp={() => {
+          setAboutAppBottomSheetVisible(false);
+        }}
+      />
 
-          <StyledView className="bg-[#f8f9fa] rounded-xl p-4 mb-4">
-            <StyledText className="text-[#1a2c4e] font-medium mb-2">
-              App Details
-            </StyledText>
-
-            <StyledView className="flex-row justify-between mb-2">
-              <StyledText className="text-[#8395a7]">Version</StyledText>
-              <StyledText className="text-[#1a2c4e]">1.0.0</StyledText>
-            </StyledView>
-
-            <StyledView className="flex-row justify-between mb-2">
-              <StyledText className="text-[#8395a7]">Build Number</StyledText>
-              <StyledText className="text-[#1a2c4e]">103</StyledText>
-            </StyledView>
-
-            <StyledView className="flex-row justify-between mb-2">
-              <StyledText className="text-[#8395a7]">Release Date</StyledText>
-              <StyledText className="text-[#1a2c4e]">June 15, 2023</StyledText>
-            </StyledView>
-
-            <StyledView className="flex-row justify-between">
-              <StyledText className="text-[#8395a7]">Platform</StyledText>
-              <StyledText className="text-[#1a2c4e]">iOS & Android</StyledText>
-            </StyledView>
-          </StyledView>
-
-          <StyledView className="bg-[#f8f9fa] rounded-xl p-4 mb-6">
-            <StyledText className="text-[#1a2c4e] font-medium mb-2">
-              Developer
-            </StyledText>
-            <StyledText className="text-[#8395a7] mb-2">
-              Gharbeti Technologies Pvt. Ltd.
-            </StyledText>
-            <StyledText className="text-[#8395a7]">
-              © 2023 Gharbeti. All rights reserved.
-            </StyledText>
-          </StyledView>
-
-          <StyledView className="flex-row justify-between">
-            <OutlinedButton
-              text="Check for Updates"
-              borderColor="#3498db"
-              textColor="#3498db"
-              style={{ flex: 1, marginRight: 4 }}
-              onPress={() => {
-                alert(
-                  "App is up to date",
-                  "You are using the latest version of the app."
-                );
-              }}
-            />
-            <PrimaryButton
-              text="Rate App"
-              style={{ flex: 1, marginLeft: 4 }}
-              bgColor="#f1c40f"
-              onPress={() => {
-                // Implement rate app functionality
-                setAboutAppBottomSheetVisible(false);
-              }}
-            />
-          </StyledView>
-        </StyledView>
-      </BottomSheet>
-
-      {/* Contact Support Bottom Sheet */}
-      <BottomSheet
+      <ContactSupportBottomSheet
         visible={contactSupportBottomSheetVisible}
         onClose={() => setContactSupportBottomSheetVisible(false)}
-        title="Contact Support"
-      >
-        <StyledView className="p-4">
-          <StyledView className="items-center mb-6">
-            <StyledView className="w-16 h-16 rounded-full bg-[#27ae60] justify-center items-center mb-2">
-              <Ionicons name="headset" size={32} color="white" />
-            </StyledView>
-            <StyledText className="text-[#1a2c4e] text-lg font-bold">
-              We're here to help!
-            </StyledText>
-            <StyledText className="text-[#8395a7] text-center mt-1">
-              Our support team is available 24/7 to assist you with any issues
-            </StyledText>
-          </StyledView>
-
-          <StyledView className="bg-[#f8f9fa] rounded-xl p-4 mb-4">
-            <StyledView className="flex-row items-center mb-3">
-              <Ionicons
-                name="call"
-                size={20}
-                color="#27ae60"
-                style={{ marginRight: 10 }}
-              />
-              <StyledView>
-                <StyledText className="text-[#1a2c4e] font-medium">
-                  Call Support
-                </StyledText>
-                <StyledText className="text-[#8395a7]">
-                  +91 800-123-4567
-                </StyledText>
-              </StyledView>
-            </StyledView>
-
-            <StyledView className="flex-row items-center mb-3">
-              <Ionicons
-                name="mail"
-                size={20}
-                color="#3498db"
-                style={{ marginRight: 10 }}
-              />
-              <StyledView>
-                <StyledText className="text-[#1a2c4e] font-medium">
-                  Email Support
-                </StyledText>
-                <StyledText className="text-[#8395a7]">
-                  support@gharbeti.com
-                </StyledText>
-              </StyledView>
-            </StyledView>
-
-            <StyledView className="flex-row items-center">
-              <Ionicons
-                name="chatbubbles"
-                size={20}
-                color="#9b59b6"
-                style={{ marginRight: 10 }}
-              />
-              <StyledView>
-                <StyledText className="text-[#1a2c4e] font-medium">
-                  Live Chat
-                </StyledText>
-                <StyledText className="text-[#8395a7]">
-                  Available 9 AM - 6 PM
-                </StyledText>
-              </StyledView>
-            </StyledView>
-          </StyledView>
-
-          <StyledView className="flex-row justify-between">
-            <PrimaryButton
-              text="Call Now"
-              style={{ flex: 1, marginRight: 4 }}
-              leftIcon={<Ionicons name="call" size={16} color="white" />}
-              onPress={() => {
-                // Implement call functionality
-                setContactSupportBottomSheetVisible(false);
-              }}
-            />
-            <PrimaryButton
-              text="Email"
-              style={{ flex: 1, marginLeft: 4 }}
-              bgColor="#3498db"
-              leftIcon={<Ionicons name="mail" size={16} color="white" />}
-              onPress={() => {
-                // Implement email functionality
-                setContactSupportBottomSheetVisible(false);
-              }}
-            />
-          </StyledView>
-        </StyledView>
-      </BottomSheet>
+        onCallSupport={() => {
+          setContactSupportBottomSheetVisible(false);
+        }}
+        onEmailSupport={() => {
+          setContactSupportBottomSheetVisible(false);
+        }}
+      />
     </StyledView>
   );
 };

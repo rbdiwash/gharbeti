@@ -71,8 +71,6 @@ const AnnouncementList = () => {
     { id: "Events", label: "Events" },
   ];
 
-  console.log(notices);
-
   const getNoticeIcon = (type) => {
     switch (type?.toLowerCase()) {
       case "maintenance":

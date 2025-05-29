@@ -176,7 +176,7 @@ const AnnouncementDetails = () => {
 
           <StyledView className="flex-row justify-between items-center mt-2 mb-4">
             <StyledText className="text-[#8395a7]">
-              {new Date(notice?.createdAt)?.toLocaleString()}
+              {notice.date} at {notice.time}
             </StyledText>
 
             {/* <TouchableOpacity onPress={toggleReadStatus}>

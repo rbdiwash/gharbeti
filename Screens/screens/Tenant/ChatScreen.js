@@ -1,19 +1,22 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { Ionicons } from "@expo/vector-icons";
+import { styled } from "nativewind";
+import { useEffect, useRef, useState } from "react";
 import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  TextInput,
+  Animated,
   KeyboardAvoidingView,
   Platform,
-  Animated,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { styled } from "nativewind";
-import { Ionicons } from "@expo/vector-icons";
-
+import { useChat } from "../../../hooks/useChat";
+import { useStateData } from "../../../hooks/useStateData";
+import { getInitials } from "../../helper/const";
+// import { useChat } from "../../../hooks/useChat";
 const StyledView = styled(View);
 const StyledText = styled(Text);
 const StyledTouchableOpacity = styled(TouchableOpacity);
@@ -21,34 +24,18 @@ const StyledTextInput = styled(TextInput);
 
 const ChatScreen = () => {
   const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      text: "Hello John, how can I help you today?",
-      sender: "landlord",
-      time: "10:30 AM",
-      read: true,
-    },
-    {
-      id: 2,
-      text: "I wanted to ask about the water heater in the bathroom. It seems to be not working properly.",
-      sender: "tenant",
-      time: "10:32 AM",
-      read: true,
-    },
-    {
-      id: 3,
-      text: "I'll send a maintenance person tomorrow between 10 AM and 12 PM. Will you be available?",
-      sender: "landlord",
-      time: "10:35 AM",
-      read: true,
-    },
-  ]);
-
+  const { profile, initializeData } = useStateData();
   const scrollViewRef = useRef();
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const { mutate: postChat, isLoading } = useChat().postChat();
+  const {
+    data: messageArray,
+    isLoading: isMessageLoading,
+    refetch,
+  } = useChat().getChats(profile?._id, profile?.landlord?._id);
 
   useEffect(() => {
+    refetch();
     Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 500,
@@ -56,56 +43,56 @@ const ChatScreen = () => {
     }).start();
   }, []);
 
+  useEffect(() => {
+    if (messageArray?.length > 0) {
+      setTimeout(() => {
+        scrollViewRef.current?.scrollToEnd({ animated: false });
+      }, 100);
+    }
+  }, [messageArray]);
+
   const sendMessage = () => {
     if (message.trim() === "") return;
 
-    const newMessage = {
-      id: messages.length + 1,
-      text: message,
-      sender: "tenant",
-      time: new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-      read: false,
+    const payload = {
+      senderId: profile?._id,
+      receiverId: profile?.landlord?._id,
+      message: message,
     };
-
-    setMessages([...messages, newMessage]);
     setMessage("");
-
-    // Simulate landlord response
-    setTimeout(() => {
-      const landlordResponse = {
-        id: messages.length + 2,
-        text: "I'll make a note of that. Is there anything else you need help with?",
-        sender: "landlord",
-        time: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-        read: false,
-      };
-
-      setMessages((prevMessages) => [...prevMessages, landlordResponse]);
-    }, 2000);
+    postChat(payload, {
+      onSuccess: (response) => {
+        refetch();
+      },
+      onError: (error) => {
+        console.log("error", error);
+      },
+    });
   };
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
       className="flex-1 bg-[#f8f9fa]"
+      keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
+      style={{ flex: 1 }}
     >
       {/* Header */}
       <StyledView className="bg-[#1a2c4e] pt-4 pb-4 px-4">
         <StyledView className="flex-row items-center">
           <StyledView className="w-10 h-10 rounded-full bg-white justify-center items-center mr-3">
-            <StyledText className="text-primary font-bold">RL</StyledText>
+            <StyledText className="text-primary font-bold">
+              {getInitials(profile?.landlord?.name)}
+            </StyledText>
           </StyledView>
           <StyledView>
             <StyledText className="text-white text-lg font-bold">
-              Raj Landlord
+              {profile?.landlord?.name}
             </StyledText>
-            <StyledText className="text-[#8395a7]">Online</StyledText>
+            <StyledView className="flex-row items-center">
+              <StyledView className="mr-2 w-2 h-2 rounded-full bg-green"></StyledView>
+              <StyledText className="text-[#8395a7]">Online</StyledText>
+            </StyledView>
           </StyledView>
         </StyledView>
       </StyledView>
@@ -115,41 +102,51 @@ const ChatScreen = () => {
         className="flex-1 px-4 pt-4"
         ref={scrollViewRef}
         onContentSizeChange={() =>
-          scrollViewRef.current.scrollToEnd({ animated: true })
+          scrollViewRef.current?.scrollToEnd({ animated: true })
         }
+        // keyboardShouldPersistTaps="handled"
+        // keyboardDismissMode="on-drag"
+        // contentContainerStyle={{ flexGrow: 1 }}
+        automaticallyAdjustKeyboardInsets={true}
       >
         <Animated.View style={{ opacity: fadeAnim }}>
-          {messages.map((msg, index) => (
+          {messageArray?.map((msg, index) => (
             <StyledView
-              key={msg.id}
+              key={index}
               className={`mb-4 max-w-[80%] ${
-                msg.sender === "tenant" ? "self-end ml-auto" : "self-start"
+                message?.senderId !== profile?._id
+                  ? "self-end ml-auto"
+                  : "self-start"
               }`}
             >
               <StyledView
                 className={`p-3 rounded-2xl ${
-                  msg.sender === "tenant"
-                    ? "bg-primary rounded-tr-none"
+                  message?.senderId !== profile?._id
+                    ? "bg-primary rounded-br-none"
                     : "bg-[#e9ecef] rounded-tl-none"
                 }`}
               >
                 <StyledText
                   className={`${
-                    msg.sender === "tenant" ? "text-white" : "text-[#1a2c4e]"
+                    message?.senderId !== profile?._id
+                      ? "text-white"
+                      : "text-[#1a2c4e]"
                   }`}
                 >
-                  {msg.text}
+                  {msg.message}
                 </StyledText>
               </StyledView>
               <StyledView
                 className={`flex-row items-center mt-1 ${
-                  msg.sender === "tenant" ? "justify-end" : "justify-start"
+                  message?.senderId === profile?._id
+                    ? "justify-end"
+                    : "justify-start"
                 }`}
               >
                 <StyledText className="text-[#8395a7] text-xs">
-                  {msg.time}
+                  {new Date(msg.createdAt).toLocaleString()}
                 </StyledText>
-                {msg.sender === "tenant" && (
+                {message?.senderId === profile?._id && (
                   <Ionicons
                     name={msg.read ? "checkmark-done" : "checkmark"}
                     size={16}
@@ -164,7 +161,7 @@ const ChatScreen = () => {
       </ScrollView>
 
       {/* Message Input */}
-      <StyledView className="p-4 border-t border-[#e9ecef] bg-white">
+      <StyledView className="p-2 border-t border-[#e9ecef] bg-white">
         <StyledView className="flex-row items-center">
           <StyledTextInput
             className="flex-1 bg-[#f8f9fa] rounded-full px-4 py-2 mr-2"
@@ -172,9 +169,11 @@ const ChatScreen = () => {
             value={message}
             onChangeText={setMessage}
             multiline
+            style={{ maxHeight: 100 }}
+            textAlignVertical="center"
           />
           <StyledTouchableOpacity
-            className="bg-primary w-12 h-12 rounded-full justify-center items-center"
+            className="bg-primary w-10 h-10 rounded-full justify-center items-center"
             onPress={sendMessage}
           >
             <Ionicons name="send" size={20} color="white" />

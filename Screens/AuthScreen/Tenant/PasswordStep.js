@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { View, Text, TouchableOpacity, TextInput } from "react-native";
+import { View, Text, TouchableOpacity, TextInput, Image } from "react-native";
 import { styled } from "nativewind";
 import { Entypo } from "@expo/vector-icons";
+import logo from "../../../assets/logo_nobg.png";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -30,12 +31,11 @@ const PasswordStep = ({
   return (
     <>
       <StyledView className="w-full flex-row justify-center items-center mb-6">
-        <View className="bg-[#27ae60] p-4 rounded-full">
-          <Entypo name="home" size={40} color="white" />
-        </View>
+        <Image source={logo} className="w-24 h-24 mb-4" resizeMode="contain" />
+
         <View className="ml-4">
           <Text className="text-white text-2xl font-bold">Tenant Portal</Text>
-          <Text className="text-[#bdc3c7] text-sm">Create your account</Text>
+          <Text className="text-[#bdc3c7] text-sm">Set your password</Text>
         </View>
       </StyledView>
 
@@ -97,7 +97,7 @@ const PasswordStep = ({
         </View>
 
         <StyledTouchableOpacity
-          className="bg-[#27ae60] w-full py-3 rounded-lg"
+          className="bg-secondary w-full py-3 rounded-lg"
           onPress={validatePassword}
         >
           <StyledText className="text-white text-center text-lg font-bold">

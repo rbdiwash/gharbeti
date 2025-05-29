@@ -16,6 +16,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import { useMaintenance } from "../../../hooks/useMaintenance";
+import { useAuth } from "../../../context/AuthContext";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -25,12 +26,16 @@ const StyledImage = styled(Image);
 
 const NewMaintenanceRequestScreen = () => {
   const navigation = useNavigation();
+  const { state } = useAuth();
+  const landlord = state?.userData?.landlord || {};
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     priority: "Medium",
     category: "",
     images: [],
+    landlordId: landlord?._id,
+    tenantId: state?.userData?._id,
   });
 
   // Use the create maintenance request mutation

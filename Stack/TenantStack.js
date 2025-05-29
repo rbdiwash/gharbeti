@@ -20,6 +20,7 @@ import ProfileScreen from "../Screens/screens/Tenant/ProfileScreen";
 import SettingsScreen from "../Screens/screens/Tenant/SettingsScreen";
 import UnderConstructionScreen from "../Screens/screens/Tenant/UnderConstruction";
 import { SafeAreaView } from "react-native-safe-area-context";
+import ChatScreen from "../Screens/screens/Tenant/ChatScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -111,6 +112,7 @@ const LoggedInTenantStack = () => {
           name="UnderConstruction"
           component={UnderConstructionScreen}
         />
+        <Stack.Screen name="Chat" component={ChatScreen} />
       </Stack.Navigator>
     </SafeAreaView>
   );

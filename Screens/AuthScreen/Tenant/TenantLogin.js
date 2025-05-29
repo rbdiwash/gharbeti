@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { View, TouchableOpacity, Text, ScrollView } from "react-native";
 import { styled } from "nativewind";
 import useGharbeti from "../../../context/useGharbeti";
@@ -11,12 +11,12 @@ import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../../../context/AuthContext";
 import { useTenants } from "../../../hooks/useTenants";
 import Toast from "react-native-toast-message";
+import * as LocalAuthentication from "expo-local-authentication";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const StyledView = styled(View);
 
 const TenantLogin = ({}) => {
-  // const [{ loggedIn }, { setIsLoggedIn, setUserType }] = useGharbeti();
-
   const {
     login: loginUser,
     isLoggingIn,
@@ -32,13 +32,54 @@ const TenantLogin = ({}) => {
   const navigation = useNavigation();
   const [data, setData] = useState({
     invitationCode: "274785",
-    email: "rbdiwash2@gmail.com",
+    email: "rbramesh@gmail.com",
     password: "asd123@#",
     confirmPassword: "asd123@#",
   });
 
   const [rulesModalVisible, setRulesModalVisible] = useState(false);
   const [isInvitationOn, setIsInvitationOn] = useState(false);
+
+  useEffect(() => {
+    checkBiometricLogin();
+  }, []);
+
+  const checkBiometricLogin = async () => {
+    try {
+      const biometricEnabled = await AsyncStorage.getItem("biometricEnabled");
+      if (biometricEnabled === "true") {
+        const result = await LocalAuthentication.authenticateAsync({
+          promptMessage: "Login with biometric",
+          fallbackLabel: "Use passcode",
+        });
+
+        if (result.success) {
+          // Get stored credentials
+          const storedEmail = await AsyncStorage.getItem("userEmail");
+          const storedPassword = await AsyncStorage.getItem("userPassword");
+
+          if (storedEmail && storedPassword) {
+            // Attempt login with stored credentials
+            const success = loginUser({
+              email: storedEmail,
+              password: storedPassword,
+            });
+
+            if (!success) {
+              Toast.show({
+                type: "error",
+                text1: "Login Failed",
+                text2: "Biometric login failed. Please try again.",
+                position: "bottom",
+              });
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error during biometric login:", error);
+    }
+  };
 
   const handleInputChange = (text, name) => {
     setData({ ...data, [name]: text });
@@ -82,16 +123,28 @@ const TenantLogin = ({}) => {
     );
   };
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (data?.email.trim() === "" || data?.password.trim() === "") {
       alert("Please enter both email and password");
       return;
     }
+
     const success = loginUser({ email: data?.email, password: data?.password });
-    if (!success) {
+
+    if (success) {
+      // Store credentials for biometric login if enabled
+      try {
+        const biometricEnabled = await AsyncStorage.getItem("biometricEnabled");
+        if (biometricEnabled === "true") {
+          await AsyncStorage.setItem("userEmail", data.email);
+          await AsyncStorage.setItem("userPassword", data.password);
+        }
+      } catch (error) {
+        console.error("Error storing credentials:", error);
+      }
+    } else {
       throw new Error("Failed to save login state");
     }
-    // navigation.navigate("TenantTabs", { screen: "Tenant Home" });
   };
 
   const validatePassword = () => {
@@ -186,7 +239,7 @@ const TenantLogin = ({}) => {
 
         <TouchableOpacity
           activeOpacity={0.8}
-          className={"text-white bg-transparent absolute bottom-4 left-4"}
+          className={"text-white absolute bottom-4 left-4"}
           onPress={() => navigation.replace("splash")}
         >
           <Text className={"text-white font-bold"}>Intro</Text>

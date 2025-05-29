@@ -21,7 +21,7 @@ export default function App() {
       <AuthProvider>
         <>
           <NavigationContainer>
-            <StatusBar barStyle="light-content" backgroundColor="#1a2c4e" />
+            {/* <StatusBar barStyle="light-content" backgroundColor="#1a2c4e" /> */}
             <RootNavigator />
           </NavigationContainer>
           <Toast />

@@ -1,0 +1,72 @@
+Date : 2025-05-23 13:58:37
+Directory : /Users/divash/Projects/gharbeti
+Total : 30 files,  607 codes, -24 comments, 70 blanks, all 653 lines
+
+Languages
++----------------+------------+------------+------------+------------+------------+
+| language       | files      | code       | comment    | blank      | total      |
++----------------+------------+------------+------------+------------+------------+
+| JavaScript     |         29 |        574 |        -31 |         65 |        608 |
+| JavaScript JSX |          1 |         33 |          7 |          5 |         45 |
++----------------+------------+------------+------------+------------+------------+
+
+Directories
++--------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                             | files      | code       | comment    | blank      | total      |
++--------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                |         30 |        607 |        -24 |         70 |        653 |
+| Screens                                                                                          |         18 |        518 |         -2 |         61 |        577 |
+| Screens/AuthScreen                                                                               |          3 |        169 |         -8 |         10 |        171 |
+| Screens/AuthScreen (Files)                                                                       |          1 |        132 |          0 |         11 |        143 |
+| Screens/AuthScreen/Tenant                                                                        |          2 |         37 |         -8 |         -1 |         28 |
+| Screens/helper                                                                                   |          1 |          6 |          0 |          1 |          7 |
+| Screens/screens                                                                                  |         14 |        343 |          6 |         50 |        399 |
+| Screens/screens/Landlord                                                                         |         12 |        310 |         -4 |         49 |        355 |
+| Screens/screens/Landlord (Files)                                                                 |          3 |       -392 |         -9 |        -14 |       -415 |
+| Screens/screens/Landlord/LandlordProfile                                                         |          2 |        219 |          5 |         19 |        243 |
+| Screens/screens/Landlord/Tenants                                                                 |          1 |          9 |          0 |          1 |         10 |
+| Screens/screens/Landlord/components                                                              |          6 |        474 |          0 |         43 |        517 |
+| Screens/screens/Tenant                                                                           |          2 |         33 |         10 |          1 |         44 |
+| Stack                                                                                            |          2 |          8 |          0 |          0 |          8 |
+| api                                                                                              |          4 |         23 |        -54 |         -6 |        -37 |
+| components                                                                                       |          1 |          1 |          0 |          0 |          1 |
+| context                                                                                          |          2 |        -81 |         -4 |         -9 |        -94 |
+| hooks                                                                                            |          3 |        138 |         36 |         24 |        198 |
++--------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++--------------------------------------------------------------------------------------------------+----------------+------------+------------+------------+------------+
+| filename                                                                                         | language       | code       | comment    | blank      | total      |
++--------------------------------------------------------------------------------------------------+----------------+------------+------------+------------+------------+
+| /Users/divash/Projects/gharbeti/Screens/AuthScreen/SignupScreen.js                               | JavaScript     |        132 |          0 |         11 |        143 |
+| /Users/divash/Projects/gharbeti/Screens/AuthScreen/Tenant/InvitationStep.js                      | JavaScript     |         37 |         -7 |          0 |         30 |
+| /Users/divash/Projects/gharbeti/Screens/AuthScreen/Tenant/TenantLogin.js                         | JavaScript     |          0 |         -1 |         -1 |         -2 |
+| /Users/divash/Projects/gharbeti/Screens/helper/const.js                                          | JavaScript     |          6 |          0 |          1 |          7 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Landlord/ChatScreen.js                           | JavaScript     |        -70 |         -2 |          2 |        -70 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Landlord/Home.js                                 | JavaScript     |          6 |          0 |          1 |          7 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Landlord/LandlordProfile/EditProfile.js          | JavaScript     |        215 |          5 |         19 |        239 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Landlord/LandlordProfile/Profile.js              | JavaScript     |          4 |          0 |          0 |          4 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Landlord/Settings.js                             | JavaScript     |       -328 |         -7 |        -17 |       -352 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Landlord/Tenants/TenantsNew.js                   | JavaScript     |          9 |          0 |          1 |         10 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Landlord/components/AboutAppBottomSheet.js       | JavaScript     |         79 |          0 |         11 |         90 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Landlord/components/ChangePasswordBottomSheet.js | JavaScript     |        118 |          0 |          7 |        125 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Landlord/components/ContactSupportBottomSheet.js | JavaScript     |         97 |          0 |          8 |        105 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Landlord/components/LanguageBottomSheet.js       | JavaScript     |         44 |          0 |          5 |         49 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Landlord/components/LogoutModal.js               | JavaScript     |         47 |          0 |          5 |         52 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Landlord/components/NotificationsBottomSheet.js  | JavaScript     |         89 |          0 |          7 |         96 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Tenant/ChatScreen.js                             | JavaScript     |          0 |          3 |         -4 |         -1 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Tenant/HomeScreen.jsx                            | JavaScript JSX |         33 |          7 |          5 |         45 |
+| /Users/divash/Projects/gharbeti/Stack/LandlordStack.js                                           | JavaScript     |          6 |          0 |          0 |          6 |
+| /Users/divash/Projects/gharbeti/Stack/TenantStack.js                                             | JavaScript     |          2 |          0 |          0 |          2 |
+| /Users/divash/Projects/gharbeti/api/api-client.js                                                | JavaScript     |          0 |          0 |         -1 |         -1 |
+| /Users/divash/Projects/gharbeti/api/auth-api.js                                                  | JavaScript     |        -50 |        -56 |        -14 |       -120 |
+| /Users/divash/Projects/gharbeti/api/chat-api.js                                                  | JavaScript     |         42 |          1 |          5 |         48 |
+| /Users/divash/Projects/gharbeti/api/profile-api.js                                               | JavaScript     |         31 |          1 |          4 |         36 |
+| /Users/divash/Projects/gharbeti/components/Buttons.js                                            | JavaScript     |          1 |          0 |          0 |          1 |
+| /Users/divash/Projects/gharbeti/context/AuthContext.js                                           | JavaScript     |         15 |          2 |          2 |         19 |
+| /Users/divash/Projects/gharbeti/context/useStateandActions.js                                    | JavaScript     |        -96 |         -6 |        -11 |       -113 |
+| /Users/divash/Projects/gharbeti/hooks/useChat.js                                                 | JavaScript     |         36 |          1 |          6 |         43 |
+| /Users/divash/Projects/gharbeti/hooks/useProfile.js                                              | JavaScript     |         31 |          2 |          5 |         38 |
+| /Users/divash/Projects/gharbeti/hooks/useStateData.js                                            | JavaScript     |         71 |         33 |         13 |        117 |
+| Total                                                                                            |                |        607 |        -24 |         70 |        653 |
++--------------------------------------------------------------------------------------------------+----------------+------------+------------+------------+------------+

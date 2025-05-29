@@ -1,0 +1,162 @@
+Date : 2025-05-16 13:53:15
+Directory : /Users/divash/Projects/gharbeti
+Total : 95 files,  14326 codes, 753 comments, 1299 blanks, all 16378 lines
+
+Languages
++--------------------+------------+------------+------------+------------+------------+
+| language           | files      | code       | comment    | blank      | total      |
++--------------------+------------+------------+------------+------------+------------+
+| JavaScript         |         68 |     12,353 |        533 |      1,081 |     13,967 |
+| JavaScript JSX     |          7 |      1,555 |         61 |        137 |      1,753 |
+| Groovy             |          3 |        153 |         71 |         34 |        258 |
+| JSON               |          3 |        108 |          0 |          4 |        112 |
+| XML                |         10 |         94 |         23 |          6 |        123 |
+| Batch              |          1 |         41 |         32 |         22 |         95 |
+| Properties         |          2 |         18 |         33 |         14 |         65 |
+| JSON with Comments |          1 |          4 |          0 |          1 |          5 |
++--------------------+------------+------------+------------+------------+------------+
+
+Directories
++--------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                             | files      | code       | comment    | blank      | total      |
++--------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                |         95 |     14,326 |        753 |      1,299 |     16,378 |
+| . (Files)                                                                                        |          7 |        170 |          2 |         11 |        183 |
+| Screens                                                                                          |         53 |     11,993 |        425 |      1,001 |     13,419 |
+| Screens (Files)                                                                                  |          1 |        196 |          2 |         12 |        210 |
+| Screens/AuthScreen                                                                               |          9 |        953 |         20 |         92 |      1,065 |
+| Screens/AuthScreen (Files)                                                                       |          5 |        379 |          8 |         31 |        418 |
+| Screens/AuthScreen/Tenant                                                                        |          4 |        574 |         12 |         61 |        647 |
+| Screens/helper                                                                                   |          3 |         94 |          0 |          5 |         99 |
+| Screens/screens                                                                                  |         40 |     10,750 |        403 |        892 |     12,045 |
+| Screens/screens/Landlord                                                                         |         23 |      6,644 |        298 |        556 |      7,498 |
+| Screens/screens/Landlord (Files)                                                                 |         13 |      4,342 |        234 |        356 |      4,932 |
+| Screens/screens/Landlord/LandlordProfile                                                         |          1 |        115 |          0 |         11 |        126 |
+| Screens/screens/Landlord/Maintenance                                                             |          4 |        744 |         21 |         58 |        823 |
+| Screens/screens/Landlord/TenantScreens                                                           |          1 |         92 |         11 |         10 |        113 |
+| Screens/screens/Landlord/Tenants                                                                 |          4 |      1,351 |         32 |        121 |      1,504 |
+| Screens/screens/Tenant                                                                           |         17 |      4,106 |        105 |        336 |      4,547 |
+| Stack                                                                                            |          3 |        403 |          3 |         19 |        425 |
+| android                                                                                          |         16 |        306 |        159 |         76 |        541 |
+| android (Files)                                                                                  |          4 |        118 |         68 |         47 |        233 |
+| android/app                                                                                      |         11 |        181 |         91 |         28 |        300 |
+| android/app (Files)                                                                              |          1 |         87 |         68 |         22 |        177 |
+| android/app/src                                                                                  |         10 |         94 |         23 |          6 |        123 |
+| android/app/src/debug                                                                            |          1 |          5 |          0 |          3 |          8 |
+| android/app/src/main                                                                             |          9 |         89 |         23 |          3 |        115 |
+| android/app/src/main (Files)                                                                     |          1 |         32 |          0 |          0 |         32 |
+| android/app/src/main/res                                                                         |          8 |         57 |         23 |          3 |         83 |
+| android/app/src/main/res/drawable                                                                |          2 |         18 |         23 |          3 |         44 |
+| android/app/src/main/res/mipmap-anydpi-v26                                                       |          2 |         10 |          0 |          0 |         10 |
+| android/app/src/main/res/values                                                                  |          3 |         28 |          0 |          0 |         28 |
+| android/app/src/main/res/values-night                                                            |          1 |          1 |          0 |          0 |          1 |
+| android/gradle                                                                                   |          1 |          7 |          0 |          1 |          8 |
+| android/gradle/wrapper                                                                           |          1 |          7 |          0 |          1 |          8 |
+| api                                                                                              |          5 |        412 |         94 |         66 |        572 |
+| components                                                                                       |          2 |        456 |         11 |         31 |        498 |
+| context                                                                                          |          5 |        310 |         40 |         59 |        409 |
+| hooks                                                                                            |          3 |        241 |         15 |         30 |        286 |
+| navigation                                                                                       |          1 |         35 |          4 |          6 |         45 |
++--------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++--------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| filename                                                                                         | language           | code       | comment    | blank      | total      |
++--------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| /Users/divash/Projects/gharbeti/App.js                                                           | JavaScript         |         30 |          1 |          4 |         35 |
+| /Users/divash/Projects/gharbeti/Screens/AuthScreen/ForgotPassword.js                             | JavaScript         |        117 |          0 |          6 |        123 |
+| /Users/divash/Projects/gharbeti/Screens/AuthScreen/LoginScreen.js                                | JavaScript         |        108 |          8 |         12 |        128 |
+| /Users/divash/Projects/gharbeti/Screens/AuthScreen/ResetPassword.js                              | JavaScript         |         80 |          0 |          5 |         85 |
+| /Users/divash/Projects/gharbeti/Screens/AuthScreen/SignupScreen.js                               | JavaScript         |         64 |          0 |          5 |         69 |
+| /Users/divash/Projects/gharbeti/Screens/AuthScreen/Tenant/InvitationStep.js                      | JavaScript         |        163 |          7 |         16 |        186 |
+| /Users/divash/Projects/gharbeti/Screens/AuthScreen/Tenant/PasswordStep.js                        | JavaScript         |        109 |          0 |         14 |        123 |
+| /Users/divash/Projects/gharbeti/Screens/AuthScreen/Tenant/RulesModal.js                          | JavaScript         |        127 |          0 |         11 |        138 |
+| /Users/divash/Projects/gharbeti/Screens/AuthScreen/Tenant/TenantLogin.js                         | JavaScript         |        175 |          5 |         20 |        200 |
+| /Users/divash/Projects/gharbeti/Screens/AuthScreen/VerificationScreen.js                         | JavaScript         |         10 |          0 |          3 |         13 |
+| /Users/divash/Projects/gharbeti/Screens/SplashScreen.js                                          | JavaScript         |        196 |          2 |         12 |        210 |
+| /Users/divash/Projects/gharbeti/Screens/helper/CheckUser.js                                      | JavaScript         |         16 |          0 |          3 |         19 |
+| /Users/divash/Projects/gharbeti/Screens/helper/const.js                                          | JavaScript         |          6 |          0 |          1 |          7 |
+| /Users/divash/Projects/gharbeti/Screens/helper/data.js                                           | JavaScript         |         72 |          0 |          1 |         73 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Landlord/AnnouncementAddScreen.js                | JavaScript         |        405 |          8 |         32 |        445 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Landlord/AnnouncementDetails.js                  | JavaScript         |        253 |         17 |         26 |        296 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Landlord/AnnouncementList.js                     | JavaScript         |        293 |          4 |         23 |        320 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Landlord/ChatScreen.js                           | JavaScript         |        384 |          3 |         29 |        416 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Landlord/Dues.js                                 | JavaScript         |        425 |         99 |         34 |        558 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Landlord/Home.js                                 | JavaScript         |        367 |         41 |         29 |        437 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Landlord/LandlordProfile/Profile.js              | JavaScript         |        115 |          0 |         11 |        126 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Landlord/Maintenance/MaintenanceScreen.js        | JavaScript         |        273 |          9 |         19 |        301 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Landlord/Maintenance/MaintenanceStack.js         | JavaScript         |         22 |          0 |          4 |         26 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Landlord/Maintenance/StatusModal.js              | JavaScript         |         58 |          0 |          3 |         61 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Landlord/Maintenance/ViewMaintenance.js          | JavaScript         |        391 |         12 |         32 |        435 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Landlord/Notifications.js                        | JavaScript         |        305 |          1 |         29 |        335 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Landlord/OldHome.js                              | JavaScript         |        197 |         30 |         13 |        240 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Landlord/RecordPaymentScreen.js                  | JavaScript         |        254 |          5 |         24 |        283 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Landlord/Reports.js                              | JavaScript         |         89 |          7 |          9 |        105 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Landlord/Settings.js                             | JavaScript         |        690 |         13 |         45 |        748 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Landlord/TenantPaymentDetailsScreen.js           | JavaScript         |        557 |          6 |         55 |        618 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Landlord/TenantScreens/MainScreen.js             | JavaScript         |         92 |         11 |         10 |        113 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Landlord/Tenants/AddTenants.js                   | JavaScript         |        489 |         13 |         48 |        550 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Landlord/Tenants/TenantDetails.js                | JavaScript         |        697 |          9 |         55 |        761 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Landlord/Tenants/TenantStack.js                  | JavaScript         |          0 |          0 |          1 |          1 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Landlord/Tenants/TenantsNew.js                   | JavaScript         |        165 |         10 |         17 |        192 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Landlord/nrew.js                                 | JavaScript         |        123 |          0 |          8 |        131 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Tenant/ChatScreen.js                             | JavaScript         |        173 |          1 |         15 |        189 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Tenant/EditProfileScreen.js                      | JavaScript         |        180 |          5 |         20 |        205 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Tenant/HomeScreen.jsx                            | JavaScript JSX     |        231 |         19 |         13 |        263 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Tenant/LeaseDetails.jsx                          | JavaScript JSX     |        179 |          6 |         25 |        210 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Tenant/MaintenanceDetails.js                     | JavaScript         |        390 |         12 |         31 |        433 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Tenant/MaintenanceScreen.jsx                     | JavaScript JSX     |        234 |          7 |         19 |        260 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Tenant/MakePayment.jsx                           | JavaScript JSX     |        273 |          5 |         28 |        306 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Tenant/NewMaintenanceRequest.jsx                 | JavaScript JSX     |        260 |         16 |         23 |        299 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Tenant/NoticeDetails.js                          | JavaScript         |        372 |          2 |         22 |        396 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Tenant/NoticesScreen.jsx                         | JavaScript JSX     |        235 |          7 |         20 |        262 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Tenant/NotificationsScreen.jsx                   | JavaScript JSX     |        143 |          1 |          9 |        153 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Tenant/PaymentHistory.js                         | JavaScript         |        350 |          5 |         25 |        380 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Tenant/PaymentsScreen.js                         | JavaScript         |        135 |          0 |         10 |        145 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Tenant/ProfileScreen.js                          | JavaScript         |        123 |          0 |         11 |        134 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Tenant/SettingsScreen.js                         | JavaScript         |        692 |         13 |         45 |        750 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Tenant/TenantHome.js                             | JavaScript         |          0 |          0 |          1 |          1 |
+| /Users/divash/Projects/gharbeti/Screens/screens/Tenant/UnderConstruction.js                      | JavaScript         |        136 |          6 |         19 |        161 |
+| /Users/divash/Projects/gharbeti/Stack/AuthStack.js                                               | JavaScript         |         64 |          0 |          4 |         68 |
+| /Users/divash/Projects/gharbeti/Stack/LandlordStack.js                                           | JavaScript         |        227 |          1 |          8 |        236 |
+| /Users/divash/Projects/gharbeti/Stack/TenantStack.js                                             | JavaScript         |        112 |          2 |          7 |        121 |
+| /Users/divash/Projects/gharbeti/android/app/build.gradle                                         | Groovy             |         87 |         68 |         22 |        177 |
+| /Users/divash/Projects/gharbeti/android/app/src/debug/AndroidManifest.xml                        | XML                |          5 |          0 |          3 |          8 |
+| /Users/divash/Projects/gharbeti/android/app/src/main/AndroidManifest.xml                         | XML                |         32 |          0 |          0 |         32 |
+| /Users/divash/Projects/gharbeti/android/app/src/main/res/drawable/ic_launcher_background.xml     | XML                |          6 |          0 |          0 |          6 |
+| /Users/divash/Projects/gharbeti/android/app/src/main/res/drawable/rn_edit_text_material.xml      | XML                |         12 |         23 |          3 |         38 |
+| /Users/divash/Projects/gharbeti/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml       | XML                |          5 |          0 |          0 |          5 |
+| /Users/divash/Projects/gharbeti/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml | XML                |          5 |          0 |          0 |          5 |
+| /Users/divash/Projects/gharbeti/android/app/src/main/res/values-night/colors.xml                 | XML                |          1 |          0 |          0 |          1 |
+| /Users/divash/Projects/gharbeti/android/app/src/main/res/values/colors.xml                       | XML                |          6 |          0 |          0 |          6 |
+| /Users/divash/Projects/gharbeti/android/app/src/main/res/values/strings.xml                      | XML                |          5 |          0 |          0 |          5 |
+| /Users/divash/Projects/gharbeti/android/app/src/main/res/values/styles.xml                       | XML                |         17 |          0 |          0 |         17 |
+| /Users/divash/Projects/gharbeti/android/build.gradle                                             | Groovy             |         33 |          3 |          6 |         42 |
+| /Users/divash/Projects/gharbeti/android/gradle.properties                                        | Properties         |         11 |         33 |         13 |         57 |
+| /Users/divash/Projects/gharbeti/android/gradle/wrapper/gradle-wrapper.properties                 | Properties         |          7 |          0 |          1 |          8 |
+| /Users/divash/Projects/gharbeti/android/gradlew.bat                                              | Batch              |         41 |         32 |         22 |         95 |
+| /Users/divash/Projects/gharbeti/android/settings.gradle                                          | Groovy             |         33 |          0 |          6 |         39 |
+| /Users/divash/Projects/gharbeti/api/api-client.js                                                | JavaScript         |         36 |         12 |         12 |         60 |
+| /Users/divash/Projects/gharbeti/api/auth-api.js                                                  | JavaScript         |        110 |         73 |         27 |        210 |
+| /Users/divash/Projects/gharbeti/api/maintenance-api.js                                           | JavaScript         |         82 |          3 |          8 |         93 |
+| /Users/divash/Projects/gharbeti/api/notice-api.js                                                | JavaScript         |         79 |          3 |          9 |         91 |
+| /Users/divash/Projects/gharbeti/api/tenants-api.js                                               | JavaScript         |        105 |          3 |         10 |        118 |
+| /Users/divash/Projects/gharbeti/app.json                                                         | JSON               |         38 |          0 |          2 |         40 |
+| /Users/divash/Projects/gharbeti/babel.config.js                                                  | JavaScript         |          7 |          0 |          1 |          8 |
+| /Users/divash/Projects/gharbeti/components/Bottomsheet.js                                        | JavaScript         |         75 |          0 |         11 |         86 |
+| /Users/divash/Projects/gharbeti/components/Buttons.js                                            | JavaScript         |        381 |         11 |         20 |        412 |
+| /Users/divash/Projects/gharbeti/context/AuthContext.js                                           | JavaScript         |        195 |         34 |         41 |        270 |
+| /Users/divash/Projects/gharbeti/context/context.js                                               | JavaScript         |          3 |          0 |          2 |          5 |
+| /Users/divash/Projects/gharbeti/context/provider.js                                              | JavaScript         |         11 |          0 |          3 |         14 |
+| /Users/divash/Projects/gharbeti/context/useGharbeti.js                                           | JavaScript         |          5 |          0 |          2 |          7 |
+| /Users/divash/Projects/gharbeti/context/useStateandActions.js                                    | JavaScript         |         96 |          6 |         11 |        113 |
+| /Users/divash/Projects/gharbeti/eas.json                                                         | JSON               |         21 |          0 |          1 |         22 |
+| /Users/divash/Projects/gharbeti/hooks/useMaintenance.js                                          | JavaScript         |        114 |         10 |         13 |        137 |
+| /Users/divash/Projects/gharbeti/hooks/useNotice.js                                               | JavaScript         |         56 |          2 |          7 |         65 |
+| /Users/divash/Projects/gharbeti/hooks/useTenants.js                                              | JavaScript         |         71 |          3 |         10 |         84 |
+| /Users/divash/Projects/gharbeti/navigation/RootNavigator.js                                      | JavaScript         |         35 |          4 |          6 |         45 |
+| /Users/divash/Projects/gharbeti/package.json                                                     | JSON               |         49 |          0 |          1 |         50 |
+| /Users/divash/Projects/gharbeti/tailwind.config.js                                               | JavaScript         |         21 |          1 |          1 |         23 |
+| /Users/divash/Projects/gharbeti/tsconfig.json                                                    | JSON with Comments |          4 |          0 |          1 |          5 |
+| Total                                                                                            |                    |     14,326 |        753 |      1,299 |     16,378 |
++--------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+

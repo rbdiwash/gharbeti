@@ -4,3 +4,22 @@ export function trimWithEllipsis(str, maxLength) {
   }
   return str;
 }
+
+export function getInitials(name) {
+  if (!name) return "";
+  const nameParts = name.split(" ");
+  if (nameParts.length === 1) return nameParts[0].charAt(0);
+  return (nameParts[0].charAt(0) + nameParts[1].charAt(0)).toUpperCase();
+}
+
+export function formatDate(dateString) {
+  if (!dateString) return "N/A";
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}

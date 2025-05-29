@@ -4,6 +4,9 @@ import { Entypo, FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { OutlinedButton } from "../../../../components/Buttons";
 import useGharbeti from "../../../../context/useGharbeti";
+import { useAuth } from "../../../../context/AuthContext";
+import { useStateData } from "../../../../hooks/useStateData";
+import { getInitials } from "../../../helper/const";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -11,25 +14,26 @@ const StyledTouchableOpacity = styled(TouchableOpacity);
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
-  const [{ isLoggedIn }, { setIsLoggedIn }] = useGharbeti();
+  const { logout } = useAuth();
+  const { profile } = useStateData();
 
   const profileSections = [
     {
       title: "Personal Information",
       icon: <FontAwesome5 name="user" size={20} color="#3498db" />,
       items: [
-        { label: "Name", value: "Divash Ranabhat" },
-        { label: "Email", value: "rbdiwash@gmail.com" },
-        { label: "Phone", value: "+91 98765 43210" },
+        { label: "Name", value: profile?.name },
+        { label: "Email", value: profile?.email },
+        { label: "Phone", value: profile?.phoneNumber },
       ],
     },
     {
       title: "Lease & Rooms Information",
       icon: <Entypo name="documents" size={20} color="#9b59b6" />,
       items: [
-        { label: "Property", value: "Apartment 303, Green Valley" },
-        { label: "Rooms", value: "4" },
-        { label: "Vacant", value: "3" },
+        { label: "Property", value: profile?.address },
+        { label: "Rooms", value: profile?.totalRooms },
+        { label: "Vacant", value: 0 },
         { label: "Occupied", value: "1" },
       ],
     },
@@ -57,14 +61,14 @@ const ProfileScreen = () => {
         <StyledView className="bg-white rounded-xl p-6 shadow-md mb-6 items-center">
           <StyledView className="w-24 h-24 rounded-full bg-secondary justify-center items-center mb-4">
             <StyledText className="text-white text-3xl font-bold">
-              JD
+              {getInitials(profile?.name)}
             </StyledText>
           </StyledView>
           <StyledText className="text-[#1a2c4e] text-xl font-bold mb-1">
-            Divash Ranabhat
+            {profile?.name}
           </StyledText>
           <StyledText className="text-[#8395a7] mb-4">
-            Tenant since January 2023
+            Landlord since {new Date(profile?.createdAt).toLocaleDateString()}
           </StyledText>
           <StyledTouchableOpacity
             className="bg-[#f8f9fa] px-4 py-2 rounded-lg border border-[#e9ecef]"
@@ -115,7 +119,7 @@ const ProfileScreen = () => {
         <OutlinedButton
           text="Logout"
           parentClass={"mb-8"}
-          onPress={() => setIsLoggedIn(false)}
+          onPress={() => logout()}
         />
       </ScrollView>
     </StyledView>

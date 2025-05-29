@@ -1,27 +1,22 @@
 "use client";
 
-import { useEffect } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  Animated,
-} from "react-native";
-import { styled } from "nativewind";
 import { Entypo, FontAwesome5, Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
-import {
-  PrimaryButton,
-  OutlinedButton,
-  TextButton,
-  IconButton,
-  FloatingActionButton,
-  ButtonGroup,
-  SecondaryButton,
-} from "../../../components/Buttons";
 import AutoScroll from "@homielab/react-native-auto-scroll";
+import { useNavigation } from "@react-navigation/native";
+import { styled } from "nativewind";
+import { useEffect, useState } from "react";
+import {
+  Animated,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+  RefreshControl,
+} from "react-native";
+import { PrimaryButton } from "../../../components/Buttons";
 import { useAuth } from "../../../context/AuthContext";
+import { useStateData } from "../../../hooks/useStateData";
+import { getInitials } from "../../helper/const";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -34,25 +29,21 @@ const HomeScreen = () => {
   const opacity = new Animated.Value(0);
 
   const { state } = useAuth();
-  console.log({ state });
-  const tenantData = state.userData || {};
-  console.log({ tenantData });
+  const {
+    profile,
+    notifications,
+    activities,
+    isLoading,
+    isError,
+    error,
+    initializeData,
+    refreshAllData,
+  } = useStateData();
 
-  // // Mock data for tenant
-  // const tenantData = {
-  //   name: "Divash Ranabhat",
-  //   profileImage: "https://i.pravatar.cc/150?img=8",
-  //   property: "Apartment 303, Green Valley",
-  //   rentDue: 25000,
-  //   dueDate: "July 1, 2023",
-  //   lastPayment: 25000,
-  //   lastPaymentDate: "June 1, 2023",
-  //   leaseEndDate: "December 31, 2023",
-  //   maintenanceRequests: 2,
-  //   unreadNotices: 3,
-  //   unreadMessages: 1,
-  // };
+  const tenantData = profile?.tenantDetails || {};
+
   useEffect(() => {
+    initializeData();
     Animated.parallel([
       Animated.timing(translateY, {
         toValue: 0,
@@ -65,12 +56,61 @@ const HomeScreen = () => {
         useNativeDriver: true,
       }),
     ]).start();
-  }, []);
+  }, [tenantData, state]);
 
   const AnimatedView = Animated.createAnimatedComponent(StyledView);
 
+  const calculateDueAmount = () => {
+    const dueDate = new Date(tenantData?.startingDate);
+    const today = new Date();
+    const timeDiff = today.getTime() - dueDate.getTime();
+    const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+    return daysDiff * tenantData?.totalRentPerMonth || 0;
+  };
+
+  const calculateDueDate = () => {
+    if (!tenantData?.startingDate) return "";
+    const startDate = new Date(tenantData.startingDate);
+    const dueDate = new Date(startDate);
+    dueDate.setMonth(dueDate.getMonth() + 1);
+    return dueDate.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await refreshAllData();
+    setRefreshing(false);
+  };
+
+  if (isLoading) {
+    return (
+      <StyledView className="flex-1 justify-center items-center">
+        <Text>Loading...</Text>
+      </StyledView>
+    );
+  }
+
+  // if (isError) {
+  //   return (
+  //     <StyledView className="flex-1 justify-center items-center">
+  //       <Text>Error: {error?.message}</Text>
+  //     </StyledView>
+  //   );
+  // }
+
   return (
-    <ScrollView className="flex-1 bg-[#f8f9fa]">
+    <ScrollView
+      className="flex-1 bg-[#f8f9fa]"
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
       {/* Header */}
       <StyledView className="bg-[#1a2c4e] pt-4 pb-4 px-4 rounded-b-3xl shadow-lg">
         <StyledView className="flex-row justify-between items-center mb-6">
@@ -80,7 +120,9 @@ const HomeScreen = () => {
               className="mr-3"
             >
               <StyledView className="w-12 h-12 rounded-full bg-white justify-center items-center">
-                <Text className="text-primary text-lg font-bold">DR</Text>
+                <Text className="text-primary text-lg font-bold">
+                  {getInitials(state?.userData?.name)}
+                </Text>
               </StyledView>
             </TouchableOpacity>
             <StyledView>
@@ -88,11 +130,13 @@ const HomeScreen = () => {
                 Welcome back
               </StyledText>
               <StyledText className="text-white text-xl font-bold">
-                Divash Ranabhat
+                {state?.userData?.name}
               </StyledText>
-              <StyledText className="text-[#8395a7] text-sm">
-                {tenantData?.landlord?.name}'s Home
-              </StyledText>
+              {state?.userData?.landlord?.name && (
+                <StyledText className="text-[#8395a7] text-sm">
+                  {state?.userData?.landlord?.name}'s Home
+                </StyledText>
+              )}
             </StyledView>
           </StyledView>
           <TouchableOpacity
@@ -126,9 +170,11 @@ const HomeScreen = () => {
                 Due Amount
               </StyledText>
               <StyledText className="text-[#1a2c4e] text-2xl font-bold">
-                Rs 25,000
+                Rs {calculateDueAmount()}
               </StyledText>
-              <StyledText className="text-red">Due on July 1st</StyledText>
+              <StyledText className="text-red-500">
+                Due on {calculateDueDate()}
+              </StyledText>
             </StyledView>
 
             <PrimaryButton

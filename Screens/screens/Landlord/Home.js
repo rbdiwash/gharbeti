@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -20,6 +20,8 @@ import esewa from "../../../assets/esewa.png";
 import khalti from "../../../assets/khalti.png";
 import connectIPS from "../../../assets/connectIPS.png";
 import fonePay from "../../../assets/fonepay.png";
+import { useStateData } from "../../../hooks/useStateData";
+import { getInitials } from "../../helper/const";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -34,6 +36,11 @@ const HomeScreen = () => {
   const [isDueVisible, setIsDueVisible] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
+  const { profile, initializeData } = useStateData();
+
+  useEffect(() => {
+    initializeData();
+  }, []);
 
   // Mock data for tenant
   const tenantData = {
@@ -108,7 +115,7 @@ const HomeScreen = () => {
           <StyledView className="flex-row items-center">
             <StyledView className="w-10 h-10 rounded-full bg-white justify-center items-center mr-3">
               <StyledText className="text-primary text-lg font-bold">
-                {tenantData.name.charAt(0)}
+                {getInitials(profile?.name)}
               </StyledText>
             </StyledView>
             <StyledView>
@@ -116,7 +123,7 @@ const HomeScreen = () => {
                 Welcome back
               </StyledText>
               <StyledText className="text-white text-lg font-bold">
-                {tenantData.name}
+                {profile?.name}
               </StyledText>
             </StyledView>
           </StyledView>
@@ -147,7 +154,7 @@ const HomeScreen = () => {
             Your residence
           </StyledText>
           <StyledText className="text-white text-base">
-            {tenantData.property}
+            {profile?.address}
           </StyledText>
         </StyledView>
 

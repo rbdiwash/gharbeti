@@ -81,6 +81,7 @@ export const SecondaryButton = ({
   textStyle = {},
   leftIcon,
   rightIcon,
+  parentClass,
   ...props
 }) => {
   // Size variants
@@ -101,7 +102,7 @@ export const SecondaryButton = ({
     <StyledTouchableOpacity
       className={`rounded-xl ${sizeStyles[size]} ${
         fullWidth ? "w-full" : ""
-      } items-center justify-center flex-row`}
+      } items-center justify-center flex-row ${parentClass}`}
       style={{
         backgroundColor: disabled ? "#a0aec0" : bgColor,
         opacity: disabled ? 0.7 : 1,

@@ -10,6 +10,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import * as authApi from "../api/auth-api";
+import Toast from "react-native-toast-message";
 
 // Create auth context
 const AuthContext = createContext({});
@@ -24,6 +25,13 @@ export function AuthProvider({ children }) {
     role: null, // 'landlord', 'tenant', or null
     user: null,
     isLoading: true,
+  });
+
+  const registerMutation = useMutation({
+    mutationFn: authApi.register,
+    onSuccess: () => {
+      console.log("Registration successful");
+    },
   });
 
   // Login mutation
@@ -42,7 +50,14 @@ export function AuthProvider({ children }) {
     },
     onError: (error) => {
       console.log(error);
-      console.error("Login failed:", error?.response?.data?.message);
+      console.error("Login failed: ok", error?.response?.data?.message);
+      Toast.show({
+        type: "error",
+        text1:
+          error?.response?.data?.message ||
+          "Login Failed! Something went wrong",
+        position: "bottom",
+      });
     },
   });
 
@@ -150,6 +165,13 @@ export function AuthProvider({ children }) {
     [loginMutation]
   );
 
+  // Register function
+  const register = useCallback(
+    (data) => {
+      return registerMutation.mutateAsync(data);
+    },
+    [registerMutation]
+  );
   // Verify invitation function
   const verifyInvitation = useCallback(
     (data) => {
@@ -224,6 +246,11 @@ export function AuthProvider({ children }) {
     login,
     isLoggingIn: loginMutation.isLoading,
     loginError: loginMutation.error,
+
+    // Register
+    register: registerMutation.mutateAsync,
+    isRegistering: registerMutation.isLoading,
+    registrationError: registerMutation.error,
 
     // Invitation verification
     verifyInvitation,

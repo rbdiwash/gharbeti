@@ -3,6 +3,9 @@ import { styled } from "nativewind";
 import { Entypo, FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { PrimaryButton } from "../../../components/Buttons";
+import { useAuth } from "../../../context/AuthContext";
+import { getLeaseAggreements } from "../../../api/lease-aggrements";
+import { useLeaseAggreements } from "../../../hooks/useLeaseAggreements";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -10,7 +13,10 @@ const StyledTouchableOpacity = styled(TouchableOpacity);
 
 const LeaseDetails = () => {
   const navigation = useNavigation();
-
+  const { state } = useAuth();
+  const landlordId = state?.userData?.landlord?._id || {};
+  const { data: leaseAgreements } =
+    useLeaseAggreements().getLeaseAggreements(landlordId);
   const leaseDetails = {
     propertyName: "Green Valley Apartments",
     unitNumber: "Apartment 303",
@@ -194,7 +200,7 @@ const LeaseDetails = () => {
             </StyledText>
           </StyledView>
 
-          {leaseTerms.map((term, index) => (
+          {leaseAgreements?.agreementPoints?.map((term, index) => (
             <StyledView key={index} className="flex-row mb-3">
               <StyledText className="text-[#27ae60] mr-2">•</StyledText>
               <StyledText className="text-[#1a2c4e] flex-1">{term}</StyledText>

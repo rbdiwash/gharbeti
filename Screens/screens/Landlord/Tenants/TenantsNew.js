@@ -17,6 +17,8 @@ import { tenantsList } from "../../../helper/data";
 import { useTenants } from "../../../../hooks/useTenants";
 import { useAuth } from "../../../../context/AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useStateData } from "../../../../hooks/useStateData";
+import { getInitials } from "../../../helper/const";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -27,7 +29,7 @@ const StyledSafeAreaView = styled(SafeAreaView);
 const TenantListScreen = () => {
   const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
-  const { userData } = useAuth();
+  const { profile } = useStateData();
 
   const {
     data: tenants = [],
@@ -35,7 +37,10 @@ const TenantListScreen = () => {
     isError,
     error,
     refetch,
-  } = useTenants().getTenantByLandlordId(userData?._id);
+  } = useTenants().getTenantByLandlordId(profile?._id);
+  console.log("profile", profile);
+
+  console.log("tenants", tenants);
 
   // Function to handle adding a new tenant
   const addTenant = () => {
@@ -74,7 +79,7 @@ const TenantListScreen = () => {
         ) : (
           <StyledView className="w-14 h-14 rounded-full bg-primary items-center justify-center">
             <StyledText className="text-white text-xl font-bold">
-              {item?.name?.charAt(0)}
+              {getInitials(item?.name)}
             </StyledText>
           </StyledView>
         )}
@@ -113,7 +118,12 @@ const TenantListScreen = () => {
         <StyledView className="flex-row gap-2">
           <StyledTouchableOpacity
             className="p-1 rounded-full"
-            onPress={() => navigation.navigate("Chat")}
+            onPress={() =>
+              navigation.navigate("Chat", {
+                tenantId: item._id,
+                tenantData: item,
+              })
+            }
           >
             <Ionicons name="chatbubble-outline" size={22} color="#3498db" />
           </StyledTouchableOpacity>
