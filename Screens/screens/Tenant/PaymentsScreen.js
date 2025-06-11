@@ -3,6 +3,9 @@ import { styled } from "nativewind";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { PrimaryButton } from "../../../components/Buttons";
+import { useStateData } from "../../../hooks/useStateData";
+import { usePayments } from "../../../hooks/usePayments";
+import { formatDate } from "../../helper/const";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -10,30 +13,39 @@ const StyledTouchableOpacity = styled(TouchableOpacity);
 
 const PaymentsScreen = () => {
   const navigation = useNavigation();
-
-  const payments = [
-    {
-      id: 1,
-      month: "June 2023",
-      amount: 25000,
-      status: "Pending",
-      dueDate: "July 1, 2023",
-    },
-    {
-      id: 2,
-      month: "May 2023",
-      amount: 25000,
-      status: "Paid",
-      paidDate: "May 1, 2023",
-    },
-    {
-      id: 3,
-      month: "April 2023",
-      amount: 25000,
-      status: "Paid",
-      paidDate: "April 1, 2023",
-    },
+  const paymentMethods = [
+    { label: "Bank Transfer", value: "bankTransfer" },
+    { label: "Esewa", value: "esewa" },
+    { label: "Cash", value: "cash" },
   ];
+  const { profile } = useStateData();
+  const { data: paymentHistory, refetch: refetchPaymentHistory } =
+    usePayments().getPaymentById(profile?._id);
+  // const payments = [
+  //   {
+  //     id: 1,
+  //     month: "June 2023",
+  //     amount: 25000,
+  //     status: "Pending",
+  //     dueDate: "July 1, 2023",
+  //   },
+  //   {
+  //     id: 2,
+  //     month: "May 2023",
+  //     amount: 25000,
+  //     status: "Paid",
+  //     paidDate: "May 1, 2023",
+  //   },
+  //   {
+  //     id: 3,
+  //     month: "April 2023",
+  //     amount: 25000,
+  //     status: "Paid",
+  //     paidDate: "April 1, 2023",
+  //   },
+  // ];
+  console.log(paymentHistory);
+  // console.log(profile);
 
   return (
     <StyledView className="flex-1 bg-[#f8f9fa]">
@@ -92,20 +104,21 @@ const PaymentsScreen = () => {
           </StyledTouchableOpacity>
         </StyledView>
 
-        {payments.map((payment) => (
+        {console.log(paymentHistory?.payments)}
+        {paymentHistory?.payments?.map((payment) => (
           <StyledView
-            key={payment.id}
+            key={payment._id}
             className="bg-white p-4 rounded-xl mb-4 shadow"
           >
             <StyledView className="flex-row justify-between items-start mb-2">
               <StyledView>
                 <StyledText className="text-[#1a2c4e] text-lg font-bold">
-                  {payment.month}
+                  {formatDate(payment.nextDueDate)}
                 </StyledText>
                 <StyledText className="text-[#8395a7]">
                   {payment.status === "Paid"
-                    ? `Paid on ${payment.paidDate}`
-                    : `Due on ${payment.dueDate}`}
+                    ? `Paid on ${formatDate(payment.paidDate)}`
+                    : `Due on ${formatDate(payment.nextDueDate)}`}
                 </StyledText>
               </StyledView>
               <StyledView>
@@ -136,6 +149,13 @@ const PaymentsScreen = () => {
             )}
           </StyledView>
         ))}
+        {paymentHistory?.payments?.length === 0 && (
+          <StyledView className="flex-1 items-center justify-center">
+            <StyledText className="text-[#8395a7]">
+              No payment history found
+            </StyledText>
+          </StyledView>
+        )}
       </ScrollView>
     </StyledView>
   );

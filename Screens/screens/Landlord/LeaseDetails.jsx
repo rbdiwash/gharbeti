@@ -14,7 +14,7 @@ import { PrimaryButton } from "../../../components/Buttons";
 import Toast from "react-native-toast-message";
 import { useLeaseAggreements } from "../../../hooks/useLeaseAggreements";
 import { useAuth } from "../../../context/AuthContext";
-import { formatDate } from "../../helper/const";
+import { formatDateTime } from "../../helper/const";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -30,13 +30,7 @@ const LeaseDetails = () => {
   const { mutate: createLeaseAgreement, isLoading: isCreating } =
     useLeaseAggreements().createLeaseAgreement();
   const [newTerm, setNewTerm] = useState("");
-  const [leaseTerms, setLeaseTerms] = useState([
-    "Rent must be paid on or before the 1st of each month.",
-    "Late payment will incur a penalty of 5% of the monthly rent.",
-    "Tenant is responsible for all utility bills including electricity, water, and internet.",
-    "No structural modifications are allowed without written permission from the landlord.",
-    "Pets are not allowed on the premises.",
-  ]);
+  const [leaseTerms, setLeaseTerms] = useState([]);
 
   console.log(leaseAgreements);
 
@@ -170,9 +164,9 @@ const LeaseDetails = () => {
         .map((term, index) => `${index + 1}. ${term}`)
         .join("\n\n");
 
-      const shareMessage = `Lease Agreement Terms\n\n${leaseTermsText}\n\nCreated: ${formatDate(
+      const shareMessage = `Lease Agreement Terms\n\n${leaseTermsText}\n\nCreated: ${formatDateTime(
         leaseAgreements?.createdAt
-      )}\nLast Updated: ${formatDate(leaseAgreements?.updatedAt)}`;
+      )}\nLast Updated: ${formatDateTime(leaseAgreements?.updatedAt)}`;
 
       const result = await Share.share({
         message: shareMessage,
@@ -232,10 +226,10 @@ const LeaseDetails = () => {
           </StyledView>
           <StyledView className="flex-col justify-between mb-4">
             <StyledText className="text-[#8395a7] text-xs">
-              Created: {formatDate(leaseAgreements?.createdAt)}
+              Created: {formatDateTime(leaseAgreements?.createdAt)}
             </StyledText>
             <StyledText className="text-[#8395a7] text-xs">
-              Updated: {formatDate(leaseAgreements?.updatedAt)}
+              Updated: {formatDateTime(leaseAgreements?.updatedAt)}
             </StyledText>
           </StyledView>
 

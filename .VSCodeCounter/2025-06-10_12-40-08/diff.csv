@@ -1,0 +1,45 @@
+"filename", "language", "JavaScript", "JSON", "JavaScript JSX", "comment", "blank", "total"
+"/Users/divash/Projects/gharbeti/Screens/AuthScreen/Tenant/InvitationStep.jsx", "JavaScript JSX", 0, 0, 118, 0, 11, 129
+"/Users/divash/Projects/gharbeti/Screens/AuthScreen/Tenant/PasswordStep.js", "JavaScript", -1, 0, 0, 0, 1, 0
+"/Users/divash/Projects/gharbeti/Screens/AuthScreen/Tenant/RulesModal.js", "JavaScript", 1, 0, 0, 6, 1, 8
+"/Users/divash/Projects/gharbeti/Screens/AuthScreen/Tenant/TenantLogin.js", "JavaScript", 56, 0, 0, 0, 5, 61
+"/Users/divash/Projects/gharbeti/Screens/helper/const.js", "JavaScript", 20, 0, 0, 0, 2, 22
+"/Users/divash/Projects/gharbeti/Screens/screens/Auth/LoginScreen.jsx", "JavaScript JSX", 0, 0, 188, 4, 16, 208
+"/Users/divash/Projects/gharbeti/Screens/screens/Landlord/Dues.js", "JavaScript", 13, 0, 0, -91, -4, -82
+"/Users/divash/Projects/gharbeti/Screens/screens/Landlord/Home.js", "JavaScript", -1, 0, 0, 23, 0, 22
+"/Users/divash/Projects/gharbeti/Screens/screens/Landlord/LeaseDetails.jsx", "JavaScript JSX", 0, 0, 265, 3, 23, 291
+"/Users/divash/Projects/gharbeti/Screens/screens/Landlord/Maintenance/MaintenanceScreen.js", "JavaScript", 25, 0, 0, -4, 1, 22
+"/Users/divash/Projects/gharbeti/Screens/screens/Landlord/Maintenance/ViewMaintenance.js", "JavaScript", 18, 0, 0, 0, -3, 15
+"/Users/divash/Projects/gharbeti/Screens/screens/Landlord/RecordPaymentScreen.js", "JavaScript", 114, 0, 0, 1, 6, 121
+"/Users/divash/Projects/gharbeti/Screens/screens/Landlord/Settings.js", "JavaScript", 56, 0, 0, 2, 5, 63
+"/Users/divash/Projects/gharbeti/Screens/screens/Landlord/TenantPaymentDetailsScreen.js", "JavaScript", 38, 0, 0, 7, 0, 45
+"/Users/divash/Projects/gharbeti/Screens/screens/Landlord/Tenants/TenantDetails.js", "JavaScript", -27, 0, 0, 0, 1, -26
+"/Users/divash/Projects/gharbeti/Screens/screens/Landlord/Tenants/TenantsNew.js", "JavaScript", -5, 0, 0, 0, -1, -6
+"/Users/divash/Projects/gharbeti/Screens/screens/Tenant/ChatScreen.js", "JavaScript", 5, 0, 0, 0, 0, 5
+"/Users/divash/Projects/gharbeti/Screens/screens/Tenant/HomeScreen.jsx", "JavaScript JSX", 0, 0, 1, 0, 0, 1
+"/Users/divash/Projects/gharbeti/Screens/screens/Tenant/LeaseDetails.jsx", "JavaScript JSX", 0, 0, -8, 6, -2, -4
+"/Users/divash/Projects/gharbeti/Screens/screens/Tenant/MaintenanceDetails.js", "JavaScript", -3, 0, 0, 3, 0, 0
+"/Users/divash/Projects/gharbeti/Screens/screens/Tenant/MaintenanceScreen.jsx", "JavaScript JSX", 0, 0, 11, 0, 2, 13
+"/Users/divash/Projects/gharbeti/Screens/screens/Tenant/MakePayment.jsx", "JavaScript JSX", 0, 0, 0, 5, 1, 6
+"/Users/divash/Projects/gharbeti/Screens/screens/Tenant/PaymentsScreen.js", "JavaScript", 18, 0, 0, 0, -1, 17
+"/Users/divash/Projects/gharbeti/Screens/screens/Tenant/ProfileScreen.js", "JavaScript", -1, 0, 0, 0, 0, -1
+"/Users/divash/Projects/gharbeti/Screens/screens/Tenant/SettingsScreen.js", "JavaScript", -457, 0, 0, -7, -34, -498
+"/Users/divash/Projects/gharbeti/Screens/screens/Tenant/settings/SettingsScreen.jsx", "JavaScript JSX", 0, 0, 180, 9, 14, 203
+"/Users/divash/Projects/gharbeti/Screens/screens/Tenant/settings/components/ChangePasswordSheet.jsx", "JavaScript JSX", 0, 0, 161, 0, 11, 172
+"/Users/divash/Projects/gharbeti/Screens/screens/Tenant/settings/components/LogoutModal.jsx", "JavaScript JSX", 0, 0, 49, 0, 5, 54
+"/Users/divash/Projects/gharbeti/Screens/screens/Tenant/settings/components/ProfileSummary.jsx", "JavaScript JSX", 0, 0, 27, 0, 4, 31
+"/Users/divash/Projects/gharbeti/Screens/screens/Tenant/settings/components/SettingsSection.jsx", "JavaScript JSX", 0, 0, 52, 0, 5, 57
+"/Users/divash/Projects/gharbeti/api/api-client.js", "JavaScript", 0, 0, 0, 1, 0, 1
+"/Users/divash/Projects/gharbeti/api/auth-api.js", "JavaScript", 0, 0, 0, 0, 1, 1
+"/Users/divash/Projects/gharbeti/api/lease-aggrements.js", "JavaScript", 39, 0, 0, 3, 5, 47
+"/Users/divash/Projects/gharbeti/api/maintenance-api.js", "JavaScript", 7, 0, 0, -1, 2, 8
+"/Users/divash/Projects/gharbeti/api/payments-api.js", "JavaScript", 67, 0, 0, 1, 6, 74
+"/Users/divash/Projects/gharbeti/context/AuthContext.js", "JavaScript", 8, 0, 0, 0, 0, 8
+"/Users/divash/Projects/gharbeti/hooks/useBiometric.js", "JavaScript", 98, 0, 0, 0, 14, 112
+"/Users/divash/Projects/gharbeti/hooks/useLeaseAggreements.js", "JavaScript", 38, 0, 0, 3, 6, 47
+"/Users/divash/Projects/gharbeti/hooks/useMaintenance.js", "JavaScript", 1, 0, 0, 1, 0, 2
+"/Users/divash/Projects/gharbeti/hooks/usePayments.js", "JavaScript", 57, 0, 0, 2, 7, 66
+"/Users/divash/Projects/gharbeti/navigation/RootNavigator.js", "JavaScript", 1, 0, 0, 0, 0, 1
+"/Users/divash/Projects/gharbeti/package-lock.json", "JSON", 0, 12121, 0, 0, 1, 12122
+"/Users/divash/Projects/gharbeti/package.json", "JSON", 0, 1, 0, 0, 0, 1
+"Total", "-", 185, 12122, 1044, -23, 111, 13439

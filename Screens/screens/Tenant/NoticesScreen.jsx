@@ -27,7 +27,6 @@ const NoticesScreen = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState("all");
   const [refreshing, setRefreshing] = useState(false);
-  console.log(filterType);
   // const allNotices = [
   //   {
   //     id: 1,

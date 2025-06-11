@@ -9,11 +9,16 @@ import {
   Image,
   Modal,
   Alert,
+  RefreshControl,
 } from "react-native";
 import { styled } from "nativewind";
 import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { getInitials } from "../../helper/const";
+import { usePayments } from "../../../hooks/usePayments";
+import { useStateData } from "../../../hooks/useStateData";
+import { useNotification } from "../../../hooks/useNotification";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -26,28 +31,55 @@ const TenantPaymentDetailsScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const { tenant } = route.params || {};
-
+  const paymentMethods = [
+    { label: "Bank Transfer", value: "bankTransfer" },
+    { label: "Esewa", value: "esewa" },
+    { label: "Cash", value: "cash" },
+  ];
   const [receiptModalVisible, setReceiptModalVisible] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [activeTab, setActiveTab] = useState("history"); // history, stats
+  const [refreshing, setRefreshing] = useState(false);
+  const { data: paymentHistory, refetch: refetchPaymentHistory } =
+    usePayments().getPaymentById(tenant?._id);
+  const { profile } = useStateData();
+  const { mutate: createNotification } = useNotification().createNotification();
 
+  // console.log(paymentHistory);
+  // const totalDue = paymentHistory?.payments?.reduce(
+  //   (sum, payment) => sum + payment.nextDueAmount,
+  //   0
+  // );
+  // console.log("totalDue", totalDue);
   // Calculate payment statistics
-  const totalPaid = tenant?.paymentHistory.reduce((sum, payment) => {
+  const totalPaid = tenant?.paymentHistory?.reduce((sum, payment) => {
     return payment.status === "Paid" || payment.status === "Late"
       ? sum + payment.amount
       : sum;
   }, 0);
 
-  const onTimePayments = tenant?.paymentHistory.filter(
+  const onTimePayments = tenant?.paymentHistory?.filter(
     (payment) => payment.status === "Paid"
   ).length;
-  const latePayments = tenant?.paymentHistory.filter(
+  const latePayments = tenant?.paymentHistory?.filter(
     (payment) => payment.status === "Late"
   ).length;
   const paymentRate =
-    tenant?.paymentHistory.length > 0
-      ? ((onTimePayments / tenant.paymentHistory.length) * 100).toFixed(0)
+    tenant?.paymentHistory?.length > 0
+      ? ((onTimePayments / tenant?.paymentHistory?.length) * 100).toFixed(0)
       : 0;
+
+  // Handle refresh
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await refetchPaymentHistory();
+    } catch (error) {
+      console.error("Error refreshing payment history:", error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   // Handle viewing receipt
   const viewReceipt = (payment) => {
@@ -67,11 +99,35 @@ const TenantPaymentDetailsScreen = () => {
     navigation.navigate("RecordPayment", { tenant });
   };
 
+  const sendNotification = () => {
+    const payload = {
+      senderId: profile?._id,
+      recipientId: tenant?._id,
+      title: "Payment Reminder",
+      message:
+        "Dear tenant, your rent is due on " +
+        tenant?.dueDate +
+        " and the amount is " +
+        paymentHistory?.payments[paymentHistory?.payments?.length - 1]
+          ?.nextDueAmount,
+      type: "reminder",
+    };
+    createNotification(payload, {
+      onSuccess: (data) => {
+        console.log(data);
+        Alert.alert("Success", "Notification sent successfully");
+      },
+      onError: (error) => {
+        Alert.alert("Error", error.message);
+      },
+    });
+  };
+
   // Handle opening reminder modal
   const openReminderModal = (tenant) => {
     Alert.alert(
       "Send Reminder",
-      `Send a reminder to ${tenant.name}?`,
+      `Send a reminder to ${tenant?.name}?`,
       [
         {
           text: "Cancel",
@@ -79,8 +135,7 @@ const TenantPaymentDetailsScreen = () => {
         },
         {
           text: "Send",
-          onPress: () =>
-            Alert.alert("Reminder Sent", `Reminder sent to ${tenant.name}.`),
+          onPress: () => sendNotification(),
         },
       ],
       { cancelable: false }
@@ -121,7 +176,7 @@ const TenantPaymentDetailsScreen = () => {
           ) : (
             <StyledView className="w-16 h-16 rounded-full bg-[#3498db] items-center justify-center">
               <StyledText className="text-white text-2xl font-bold">
-                {tenant.name.charAt(0)}
+                {getInitials(tenant.name)}
               </StyledText>
             </StyledView>
           )}
@@ -131,7 +186,7 @@ const TenantPaymentDetailsScreen = () => {
               {tenant.name}
             </StyledText>
             <StyledText className="text-[#8395a7]">
-              {tenant.property}
+              Rs {tenant.totalRentPerMonth} per month
             </StyledText>
           </StyledView>
         </StyledView>
@@ -163,10 +218,19 @@ const TenantPaymentDetailsScreen = () => {
         <StyledView className="flex-row justify-between items-center">
           <StyledView>
             <StyledText className="text-[#1a2c4e] text-2xl font-bold">
-              Rs {tenant.dueAmount}
+              Rs{" "}
+              {paymentHistory?.payments[paymentHistory?.payments?.length - 1]
+                ?.nextDueAmount || 0}
             </StyledText>
             <StyledText className="text-[#8395a7]">
-              Due on {tenant.dueDate}
+              {paymentHistory?.payments[paymentHistory?.payments?.length - 1]
+                ?.nextDueAmount > 0
+                ? `Due on ${new Date(
+                    paymentHistory?.payments[
+                      paymentHistory?.payments?.length - 1
+                    ].nextDueDate
+                  ).toLocaleDateString()}`
+                : "No due amount"}
             </StyledText>
           </StyledView>
 
@@ -221,11 +285,16 @@ const TenantPaymentDetailsScreen = () => {
         </StyledTouchableOpacity>
       </StyledView>
 
-      <StyledScrollView className="flex-1 px-4 pt-4">
+      <StyledScrollView
+        className="flex-1 px-4 pt-4"
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         {/* Payment History Tab */}
         {activeTab === "history" && (
           <>
-            {tenant.paymentHistory.map((payment, index) => (
+            {paymentHistory?.payments?.map((payment, index) => (
               <StyledView
                 key={index}
                 className="bg-white p-4 rounded-xl mb-4 shadow-sm"
@@ -236,13 +305,13 @@ const TenantPaymentDetailsScreen = () => {
                       Rs {payment.amount}
                     </StyledText>
                     <StyledText className="text-[#8395a7]">
-                      {payment.date}
+                      {new Date(payment?.paymentDate).toLocaleString()}
                     </StyledText>
                   </StyledView>
 
                   <StyledView
                     className={`px-3 py-1 rounded-full ${
-                      payment.status === "Paid"
+                      payment.status === "completed"
                         ? "bg-[#e8f5e9]"
                         : payment.status === "Late"
                         ? "bg-[#fff8e1]"
@@ -251,7 +320,7 @@ const TenantPaymentDetailsScreen = () => {
                   >
                     <StyledText
                       className={
-                        payment.status === "Paid"
+                        payment.status === "completed"
                           ? "text-[#27ae60]"
                           : payment.status === "Late"
                           ? "text-[#f39c12]"
@@ -267,9 +336,9 @@ const TenantPaymentDetailsScreen = () => {
                   <StyledView className="flex-row items-center">
                     <FontAwesome5
                       name={
-                        payment.method === "Bank Transfer"
+                        payment.paymentMethod === "bankTransfer"
                           ? "university"
-                          : payment.method === "UPI"
+                          : payment.paymentMethod === "Esewa"
                           ? "mobile-alt"
                           : "money-bill-wave"
                       }
@@ -277,11 +346,16 @@ const TenantPaymentDetailsScreen = () => {
                       color="#8395a7"
                     />
                     <StyledText className="text-[#8395a7] ml-2">
-                      {payment.method}
+                      {
+                        paymentMethods.find(
+                          (method) => method.value === payment?.paymentMethod
+                        )?.label
+                      }
                     </StyledText>
                   </StyledView>
 
-                  {(payment.status === "Paid" || payment.status === "Late") && (
+                  {(payment.status === "completed" ||
+                    payment.status === "late") && (
                     <StyledTouchableOpacity
                       className="flex-row items-center"
                       onPress={() => viewReceipt(payment)}
@@ -308,7 +382,7 @@ const TenantPaymentDetailsScreen = () => {
               </StyledView>
             ))}
 
-            {tenant.paymentHistory.length === 0 && (
+            {paymentHistory?.payments?.length === 0 && (
               <StyledView className="items-center justify-center py-10">
                 <Ionicons
                   name="document-text-outline"
@@ -395,7 +469,7 @@ const TenantPaymentDetailsScreen = () => {
 
               <StyledView className="mb-4">
                 <StyledView className="flex-row justify-between items-center mb-2">
-                  <StyledText className="text-[#1a2c4e]">UPI</StyledText>
+                  <StyledText className="text-[#1a2c4e]">Esewa</StyledText>
                   <StyledText className="text-[#1a2c4e] font-bold">
                     35%
                   </StyledText>
@@ -550,7 +624,7 @@ const TenantPaymentDetailsScreen = () => {
                   <StyledView className="flex-row justify-between mb-2">
                     <StyledText className="text-[#8395a7]">Date</StyledText>
                     <StyledText className="text-[#1a2c4e]">
-                      {selectedPayment.date}
+                      {new Date(selectedPayment.paymentDate).toLocaleString()}
                     </StyledText>
                   </StyledView>
 
@@ -559,7 +633,12 @@ const TenantPaymentDetailsScreen = () => {
                       Payment Method
                     </StyledText>
                     <StyledText className="text-[#1a2c4e]">
-                      {selectedPayment.method}
+                      {
+                        paymentMethods.find(
+                          (method) =>
+                            method.value === selectedPayment?.paymentMethod
+                        )?.label
+                      }
                     </StyledText>
                   </StyledView>
 
@@ -567,9 +646,9 @@ const TenantPaymentDetailsScreen = () => {
                     <StyledText className="text-[#8395a7]">Status</StyledText>
                     <StyledText
                       className={
-                        selectedPayment.status === "Paid"
+                        selectedPayment.status === "completed"
                           ? "text-[#27ae60]"
-                          : selectedPayment.status === "Late"
+                          : selectedPayment.status === "late"
                           ? "text-[#f39c12]"
                           : "text-[#e74c3c]"
                       }

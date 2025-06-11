@@ -45,7 +45,7 @@ const PaymentHistory = () => {
         status: "Paid",
         paidDate: "May 1, 2023",
         transactionId: "TXN123456789",
-        paymentMethod: "UPI",
+        paymentMethod: "Esewa",
       },
       {
         id: 3,
@@ -63,7 +63,7 @@ const PaymentHistory = () => {
         status: "Paid",
         paidDate: "March 1, 2023",
         transactionId: "TXN123456787",
-        paymentMethod: "UPI",
+        paymentMethod: "Esewa",
       },
       {
         id: 5,
@@ -81,7 +81,7 @@ const PaymentHistory = () => {
         status: "Paid",
         paidDate: "January 1, 2023",
         transactionId: "TXN123456785",
-        paymentMethod: "UPI",
+        paymentMethod: "Esewa",
       },
     ],
     2022: [
@@ -92,7 +92,7 @@ const PaymentHistory = () => {
         status: "Paid",
         paidDate: "December 1, 2022",
         transactionId: "TXN123456784",
-        paymentMethod: "UPI",
+        paymentMethod: "Esewa",
       },
       {
         id: 8,

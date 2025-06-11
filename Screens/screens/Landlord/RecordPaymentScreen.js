@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -16,6 +16,8 @@ import { styled } from "nativewind";
 import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { useStateData } from "../../../hooks/useStateData";
+import { usePayments } from "../../../hooks/usePayments";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -26,17 +28,45 @@ const StyledScrollView = styled(ScrollView);
 const RecordPaymentScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { tenant } = route.params || {};
-
+  const { tenant } = route.params;
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [isNextDueDatePickerVisible, setNextDueDatePickerVisibility] =
+    useState(false);
+  console.log("tenant", tenant);
   const [formData, setFormData] = useState({
-    amount: tenant?.dueAmount.toString() || "",
-    date: new Date(),
-    paymentMethod: "Bank Transfer", // Bank Transfer, UPI, Cash
+    amount: tenant?.dueAmount?.toString() || "",
+    paymentDate: new Date(),
+    paymentMethod: "bankTransfer", // Bank Transfer, Esewa, Cash
     isLatePayment: false,
     lateFee: "0",
     notes: "",
+    landlordId: tenant?.landlordId?._id,
+    tenantId: tenant?._id,
+    nextDueDate: tenant?.rentDueDate,
+    nextDueAmount: tenant?.dueAmount,
   });
+  const { data: paymentHistory, refetch: refetchPaymentHistory } =
+    usePayments().getPaymentById(tenant?._id);
+  const { mutate: createPayment } = usePayments().createPayment();
+  const paymentMethods = [
+    { label: "Bank Transfer", value: "bankTransfer" },
+    { label: "Esewa", value: "esewa" },
+    { label: "Cash", value: "cash" },
+  ];
+
+  // Calculate next due date (30 days from payment date)
+  useEffect(() => {
+    const calculateNextDueDate = () => {
+      const nextDate = new Date(formData.date);
+      nextDate.setDate(nextDate.getDate() + 30);
+      setFormData((prev) => ({
+        ...prev,
+        nextDueDate: nextDate,
+      }));
+    };
+
+    calculateNextDueDate();
+  }, [formData.date]);
 
   // Handle input change
   const handleInputChange = (field, value) => {
@@ -46,7 +76,7 @@ const RecordPaymentScreen = () => {
     });
   };
 
-  // Handle date picker
+  // Handle payment date picker
   const showDatePicker = () => {
     setDatePickerVisibility(true);
   };
@@ -63,6 +93,23 @@ const RecordPaymentScreen = () => {
     hideDatePicker();
   };
 
+  // Handle next due date picker
+  const showNextDueDatePicker = () => {
+    setNextDueDatePickerVisibility(true);
+  };
+
+  const hideNextDueDatePicker = () => {
+    setNextDueDatePickerVisibility(false);
+  };
+
+  const handleConfirmNextDueDate = (date) => {
+    setFormData({
+      ...formData,
+      nextDueDate: date,
+    });
+    hideNextDueDatePicker();
+  };
+
   // Handle form submission
   const handleSubmit = () => {
     // Validate form
@@ -70,11 +117,29 @@ const RecordPaymentScreen = () => {
       Alert.alert("Error", "Please enter a valid amount");
       return;
     }
-
-    // Here you would typically send the data to your API
-    Alert.alert("Success", "Payment has been recorded successfully", [
-      { text: "OK", onPress: () => navigation.goBack() },
-    ]);
+    if (
+      !formData.nextDueAmount ||
+      Number.parseFloat(formData.nextDueAmount) <= 0
+    ) {
+      Alert.alert("Error", "Please enter a valid next due amount");
+      return;
+    }
+    if (!formData.nextDueDate) {
+      Alert.alert("Error", "Please select a valid next due date");
+      return;
+    }
+    const payload = { ...formData, tenantId: tenant?._id };
+    createPayment(payload, {
+      onSuccess: () => {
+        refetchPaymentHistory();
+        Alert.alert("Success", "Payment has been recorded successfully", [
+          { text: "OK", onPress: () => navigation.goBack() },
+        ]);
+      },
+      onError: (error) => {
+        Alert.alert("Error", error.response.data?.message);
+      },
+    });
   };
 
   if (!tenant) {
@@ -122,6 +187,9 @@ const RecordPaymentScreen = () => {
             <StyledText className="text-[#1a2c4e] text-lg font-bold mb-4">
               Payment Details
             </StyledText>
+            <StyledText className="text-[#1a2c4e] text-sm font-bold mb-4">
+              Monthly Rent: Rs {tenant?.totalRentPerMonth}
+            </StyledText>
 
             {/* Amount Input */}
             <StyledView className="mb-4">
@@ -152,7 +220,7 @@ const RecordPaymentScreen = () => {
                 onPress={showDatePicker}
               >
                 <StyledText className="text-[#1a2c4e]">
-                  {formData.date.toLocaleDateString("en-US", {
+                  {formData?.paymentDate?.toLocaleDateString("en-US", {
                     year: "numeric",
                     month: "long",
                     day: "numeric",
@@ -167,8 +235,57 @@ const RecordPaymentScreen = () => {
               mode="date"
               onConfirm={handleConfirmDate}
               onCancel={hideDatePicker}
-              date={formData.date}
+              date={formData.paymentDate}
               maximumDate={new Date()}
+            />
+
+            <StyledView className="mb-4">
+              <StyledText className="text-[#1a2c4e] mb-2">
+                Next Due Amount{" "}
+                <StyledText className="text-[#e74c3c]">*</StyledText>
+              </StyledText>
+              <StyledView className="flex-row items-center border border-[#e9ecef] rounded-lg px-3">
+                <StyledText className="text-[#1a2c4e] font-bold mr-2">
+                  Rs
+                </StyledText>
+                <StyledTextInput
+                  className="flex-1 p-3 text-[#1a2c4e]"
+                  placeholder="Enter amount"
+                  keyboardType="numeric"
+                  value={formData.nextDueAmount}
+                  onChangeText={(text) =>
+                    handleInputChange("nextDueAmount", text)
+                  }
+                />
+              </StyledView>
+            </StyledView>
+
+            <StyledView className="mb-4">
+              <StyledText className="text-[#1a2c4e] mb-2">
+                Next Due Date
+              </StyledText>
+              <StyledTouchableOpacity
+                className="border border-[#e9ecef] rounded-lg p-3 flex-row justify-between items-center"
+                onPress={showNextDueDatePicker}
+              >
+                <StyledText className="text-[#1a2c4e]">
+                  {formData.nextDueDate?.toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </StyledText>
+                <Ionicons name="calendar" size={20} color="#8395a7" />
+              </StyledTouchableOpacity>
+            </StyledView>
+
+            <DateTimePickerModal
+              isVisible={isNextDueDatePickerVisible}
+              mode="date"
+              onConfirm={handleConfirmNextDueDate}
+              onCancel={hideNextDueDatePicker}
+              date={formData.nextDueDate}
+              minimumDate={formData.date}
             />
 
             {/* Payment Method */}
@@ -177,37 +294,41 @@ const RecordPaymentScreen = () => {
                 Payment Method
               </StyledText>
               <StyledView className="flex-row justify-between">
-                {["Bank Transfer", "UPI", "Cash"].map((method) => (
+                {paymentMethods?.map((method) => (
                   <StyledTouchableOpacity
-                    key={method}
+                    key={method?.value}
                     className={`flex-1 p-3 rounded-lg mx-1 items-center justify-center ${
-                      formData.paymentMethod === method
+                      formData.paymentMethod === method?.value
                         ? "bg-[#27ae60]"
                         : "bg-[#f0f2f5] border border-[#e9ecef]"
                     }`}
-                    onPress={() => handleInputChange("paymentMethod", method)}
+                    onPress={() =>
+                      handleInputChange("paymentMethod", method?.value)
+                    }
                   >
                     <FontAwesome5
                       name={
-                        method === "Bank Transfer"
+                        method?.value === "bankTransfer"
                           ? "university"
-                          : method === "UPI"
+                          : method?.value === "esewa"
                           ? "mobile-alt"
                           : "money-bill-wave"
                       }
                       size={16}
                       color={
-                        formData.paymentMethod === method ? "white" : "#8395a7"
+                        formData.paymentMethod === method?.value
+                          ? "white"
+                          : "#8395a7"
                       }
                     />
                     <StyledText
                       className={`text-sm mt-1 ${
-                        formData.paymentMethod === method
+                        formData.paymentMethod === method?.value
                           ? "text-white"
                           : "text-[#1a2c4e]"
                       }`}
                     >
-                      {method}
+                      {method?.label}
                     </StyledText>
                   </StyledTouchableOpacity>
                 ))}
@@ -262,17 +383,17 @@ const RecordPaymentScreen = () => {
                 onChangeText={(text) => handleInputChange("notes", text)}
               />
             </StyledView>
-          </StyledView>
 
-          {/* Submit Button */}
-          <StyledTouchableOpacity
-            className="bg-[#27ae60] p-4 rounded-xl mb-8 items-center"
-            onPress={handleSubmit}
-          >
-            <StyledText className="text-white font-bold text-lg">
-              Record Payment
-            </StyledText>
-          </StyledTouchableOpacity>
+            {/* Submit Button */}
+            <StyledTouchableOpacity
+              className="bg-[#27ae60] p-4 rounded-xl mb-8 items-center"
+              onPress={handleSubmit}
+            >
+              <StyledText className="text-white font-bold text-lg">
+                Record Payment
+              </StyledText>
+            </StyledTouchableOpacity>
+          </StyledView>
         </StyledScrollView>
       </StyledView>
     </KeyboardAvoidingView>

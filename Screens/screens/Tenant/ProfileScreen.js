@@ -14,7 +14,6 @@ const ProfileScreen = () => {
   const { logout: logoutUser } = useAuth();
   const { state } = useAuth();
   const tenantData = state.userData || {};
-  console.log("tenantData", tenantData);
   const profileSections = [
     {
       title: "Personal Information",

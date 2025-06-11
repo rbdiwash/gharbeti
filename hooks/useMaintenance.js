@@ -4,13 +4,15 @@ import * as maintenanceApi from "../api/maintenance-api";
 export function useMaintenance(id) {
   const queryClient = useQueryClient();
 
-  const getMaintenanceRequests = (status) => {
-    console.log(status);
+  const getMaintenanceRequests = ({ landlordId, tenantId, status } = {}) => {
+    // console.log("landlordId", landlordId);
+    // console.log("tenantId", tenantId);
+    console.log("status", status);
     return useQuery({
-      queryKey: ["maintenanceRequests", status],
-      queryFn: () => maintenanceApi.getMaintenanceRequests(status),
+      queryKey: ["maintenanceRequests", { landlordId, tenantId, status }],
+      queryFn: () =>
+        maintenanceApi.getMaintenanceRequests({ landlordId, tenantId, status }),
       select: (response) => response.data,
-      // staleTime: 1 * 60 * 1000, // 5 minutes
     });
   };
 

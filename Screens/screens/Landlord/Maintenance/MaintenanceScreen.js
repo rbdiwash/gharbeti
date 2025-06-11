@@ -15,6 +15,8 @@ import { styled } from "nativewind";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useMaintenance } from "../../../../hooks/useMaintenance";
+import { useStateData } from "../../../../hooks/useStateData";
+import { useTenants } from "../../../../hooks/useTenants";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -29,6 +31,10 @@ const MaintenanceScreen = () => {
     active: [],
     completed: [],
   });
+  const { profile } = useStateData();
+  const { data: tenants = [] } = useTenants().getTenantByLandlordId(
+    profile?._id
+  );
 
   // Using the custom hook to get maintenance requests
   const {
@@ -37,7 +43,13 @@ const MaintenanceScreen = () => {
     isError: isActiveError,
     error: activeError,
     refetch: refetchActive,
-  } = useMaintenance().getMaintenanceRequests("Pending");
+  } = useMaintenance().getMaintenanceRequests({
+    landlordId: profile?._id,
+    tenantId: null,
+    status: "Pending",
+  });
+
+  console.log("activeRequests", activeRequests);
 
   const {
     data: completedRequests,
@@ -45,7 +57,11 @@ const MaintenanceScreen = () => {
     isError: isCompletedError,
     error: completedError,
     refetch: refetchCompleted,
-  } = useMaintenance().getMaintenanceRequests("Completed");
+  } = useMaintenance().getMaintenanceRequests({
+    landlordId: profile?._id,
+    tenantId: null,
+    status: "Completed",
+  });
 
   // Filter requests based on search query
   useEffect(() => {
@@ -127,16 +143,13 @@ const MaintenanceScreen = () => {
     <StyledView className="flex-1 bg-[#f8f9fa]">
       {/* Header */}
       <StyledView className="bg-[#1a2c4e] pt-4 pb-6 px-4">
-        <StyledView className="flex-row justify-between items-center mb-4">
+        <StyledView className="flex-row justify-start items-center mb-4 gap-4">
+          <StyledTouchableOpacity onPress={() => navigation.navigate("Home")}>
+            <Ionicons name="arrow-back" size={24} color="white" />
+          </StyledTouchableOpacity>
           <StyledText className="text-white text-xl font-bold">
             Maintenance Requests
           </StyledText>
-          {/* <StyledTouchableOpacity
-            className="bg-[#27ae60] p-3 rounded-full"
-            onPress={() => navigation.navigate("NewMaintenance")}
-          >
-            <Ionicons name="add" size={24} color="white" />
-          </StyledTouchableOpacity> */}
         </StyledView>
 
         {/* Search Bar */}
@@ -179,7 +192,6 @@ const MaintenanceScreen = () => {
           }`}
           onPress={() => {
             setActiveTab("completed");
-            console.log("asdf");
             refetchCompleted();
           }}
         >
@@ -257,7 +269,7 @@ const MaintenanceScreen = () => {
                     {request.title}
                   </StyledText>
                   <StyledText className="text-[#8395a7]">
-                    {request.description}
+                    {request.description.slice(0, 50)}...
                   </StyledText>
                 </StyledView>
                 <StyledView
@@ -272,15 +284,25 @@ const MaintenanceScreen = () => {
               </StyledView>
 
               <StyledView className="flex-row justify-between items-center mt-3">
-                <StyledText className="text-[#8395a7]">
-                  {activeTab === "completed" && request.completedDate
-                    ? `Completed: ${new Date(
-                        request.completedDate
-                      ).toLocaleDateString()}`
-                    : `Reported: ${new Date(
-                        request.createdAt
-                      ).toLocaleString()}`}
-                </StyledText>
+                <View>
+                  <StyledText className="text-[#8395a7]">
+                    {activeTab === "completed" && request.completedDate
+                      ? `Completed: ${new Date(
+                          request.completedDate
+                        ).toLocaleDateString()}`
+                      : `Reported: ${new Date(
+                          request.createdAt
+                        ).toLocaleString()}`}
+                  </StyledText>
+                  <StyledText className="text-[#8395a7]">
+                    Reported By:
+                    {
+                      tenants?.find(
+                        (tenant) => tenant?._id === request?.tenantId?._id
+                      )?.name
+                    }
+                  </StyledText>
+                </View>
                 <StyledText
                   className={`font-medium ${getPriorityColor(
                     request.priority

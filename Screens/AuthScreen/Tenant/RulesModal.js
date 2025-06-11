@@ -1,7 +1,15 @@
 import { View, Text, Modal, ScrollView, TouchableOpacity } from "react-native";
 import { Entypo } from "@expo/vector-icons";
+import { useLeaseAggreements } from "../../../hooks/useLeaseAggreements";
 
 const RulesModal = ({ visible, onClose, onAccept }) => {
+  // const { state } = useAuth();
+  // const landlordData = state?.userData?.landlord || {};
+  // const { data: leaseAgreements } = useLeaseAggreements().getLeaseAggreements(
+  //   landlordData?._id
+  // );
+  // console.log("leaseAgreements", leaseAgreements);
+
   return (
     <Modal
       animationType="slide"

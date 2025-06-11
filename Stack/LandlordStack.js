@@ -41,26 +41,26 @@ const TabArr = [
   {
     route: "Tenants",
     label: "Tenants",
-    activeIcon: "user",
+    activeIcon: "team",
     component: Tenants,
   },
   {
-    route: "Report",
-    label: "Reports",
-    activeIcon: "dashboard",
-    component: Reports,
+    route: "Dues",
+    label: "Dues",
+    activeIcon: "wallet",
+    component: Dues,
   },
 
   {
     route: "Notification",
     label: "Notification",
-    activeIcon: "notification",
+    activeIcon: "bells",
     component: Notifications,
   },
   {
     route: "Settings",
     label: "More",
-    activeIcon: "ellipsis1",
+    activeIcon: "appstore1",
     component: Settings,
   },
 ];

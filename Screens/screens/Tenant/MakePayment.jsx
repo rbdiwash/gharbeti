@@ -9,6 +9,7 @@ import {
   TextInput,
   Alert,
   Image,
+  Linking,
 } from "react-native";
 import { styled } from "nativewind";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
@@ -23,13 +24,14 @@ const StyledTextInput = styled(TextInput);
 const MakePayment = () => {
   const navigation = useNavigation();
   const [paymentMethod, setPaymentMethod] = useState("digitalWallet");
-  const [upiId, setUpiId] = useState("");
+  const [esewaId, setEsewaId] = useState("");
   const [cardNumber, setCardNumber] = useState("");
   const [cardExpiry, setCardExpiry] = useState("");
   const [cardCvv, setCardCvv] = useState("");
   const [cardName, setCardName] = useState("");
   const [formData, setFormData] = useState({
     images: [],
+    partialAmount: "",
   });
 
   const paymentDetails = {
@@ -59,40 +61,51 @@ const MakePayment = () => {
       });
     }
   };
+
+  const initiateEsewaPayment = async () => {
+    try {
+      // Replace these with your actual eSewa merchant credentials
+      const merchantId = "YOUR_MERCHANT_ID";
+      const merchantSecret = "YOUR_MERCHANT_SECRET";
+      const callbackUrl = "https://your-callback-url.com/payment-success";
+
+      const amount = formData.partialAmount || paymentDetails.total;
+      const productName = "Rent Payment";
+      const productId = `RENT_${Date.now()}`;
+
+      // Create the payment URL with required parameters
+      const paymentUrl = `https://uat.esewa.com.np/epay/main?amt=${amount}&pdc=0&psc=0&txAmt=0&tAmt=${amount}&pid=${productId}&scd=${merchantId}&su=${callbackUrl}&fu=${callbackUrl}`;
+
+      // Open eSewa payment page in browser
+      const supported = await Linking.canOpenURL(paymentUrl);
+
+      if (supported) {
+        await Linking.openURL(paymentUrl);
+        // You should implement a deep link handler to catch the payment response
+        // and update your backend accordingly
+      } else {
+        Alert.alert("Error", "Cannot open eSewa payment page");
+      }
+    } catch (error) {
+      Alert.alert("Error", "Failed to initiate eSewa payment");
+    }
+  };
+
   const handlePayment = () => {
-    if (paymentMethod === "digitalWallet" && !upiId) {
-      Alert.alert("Error", "Please enter your UPI ID");
-      return;
+    if (paymentMethod === "digitalWallet") {
+      if (!esewaId) {
+        Alert.alert("Error", "Please enter your eSewa ID");
+        return;
+      }
+      initiateEsewaPayment();
+    } else {
+      // Handle receipt upload logic
+      if (formData.images.length === 0) {
+        Alert.alert("Error", "Please upload payment receipt");
+        return;
+      }
+      handleSubmit();
     }
-
-    if (paymentMethod === "receipt") {
-      if (!cardNumber || cardNumber.replace(/\s+/g, "").length < 16) {
-        Alert.alert("Error", "Please enter a valid card number");
-        return;
-      }
-
-      if (!cardExpiry || cardExpiry.length < 5) {
-        Alert.alert("Error", "Please enter a valid expiry date");
-        return;
-      }
-
-      if (!cardCvv || cardCvv.length < 3) {
-        Alert.alert("Error", "Please enter a valid CVV");
-        return;
-      }
-
-      if (!cardName) {
-        Alert.alert("Error", "Please enter the name on card");
-        return;
-      }
-    }
-
-    // Here you would typically process the payment through a payment gateway
-    Alert.alert(
-      "Payment Successful",
-      `Your payment of Rs ${paymentDetails.total} has been processed successfully.`,
-      [{ text: "OK", onPress: () => navigation.navigate("Payments") }]
-    );
   };
 
   const handleSubmit = () => {
@@ -188,7 +201,7 @@ const MakePayment = () => {
                     : "text-[#1a2c4e]"
                 } font-bold`}
               >
-                Digital Wallet
+                eSewa
               </StyledText>
             </StyledTouchableOpacity>
 
@@ -201,7 +214,7 @@ const MakePayment = () => {
               onPress={() => setPaymentMethod("receipt")}
             >
               <FontAwesome5
-                name="credit-card"
+                name="receipt"
                 size={16}
                 color={paymentMethod === "receipt" ? "white" : "#8395a7"}
                 style={{ marginRight: 8 }}
@@ -220,7 +233,7 @@ const MakePayment = () => {
             <>
               <StyledView>
                 <StyledText className="text-[#1a2c4e] font-medium mb-2">
-                  Enter Amount
+                  Enter Amount (Optional)
                 </StyledText>
                 <StyledTextInput
                   className="border border-[#e9ecef] rounded-lg p-3 mb-2"
@@ -235,13 +248,13 @@ const MakePayment = () => {
               </StyledView>
               <StyledView>
                 <StyledText className="text-[#1a2c4e] font-medium mb-2">
-                  Enter ID
+                  eSewa ID
                 </StyledText>
                 <StyledTextInput
                   className="border border-[#e9ecef] rounded-lg p-3 mb-2"
-                  placeholder="yourname@email.com"
-                  value={upiId}
-                  onChangeText={setUpiId}
+                  placeholder="Enter your eSewa ID"
+                  value={esewaId}
+                  onChangeText={setEsewaId}
                   autoCapitalize="none"
                 />
               </StyledView>
@@ -278,25 +291,18 @@ const MakePayment = () => {
         </StyledView>
 
         {/* Pay Button */}
-        {paymentMethod === "digitalWallet" ? (
-          <StyledTouchableOpacity
-            className="bg-[#27ae60] p-4 rounded-xl mb-8 items-center"
-            onPress={handlePayment}
-          >
-            <StyledText className="text-white font-bold text-lg">
-              Pay Rs {paymentDetails.total}
-            </StyledText>
-          </StyledTouchableOpacity>
-        ) : (
-          <StyledTouchableOpacity
-            className="bg-[#27ae60] p-4 rounded-xl mb-8 items-center"
-            onPress={handleSubmit}
-          >
-            <StyledText className="text-white font-bold text-lg">
-              Submit
-            </StyledText>
-          </StyledTouchableOpacity>
-        )}
+        <StyledTouchableOpacity
+          className="bg-[#27ae60] p-4 rounded-xl mb-8 items-center"
+          onPress={handlePayment}
+        >
+          <StyledText className="text-white font-bold text-lg">
+            {paymentMethod === "digitalWallet"
+              ? `Pay Rs ${
+                  formData.partialAmount || paymentDetails.total
+                } with eSewa`
+              : "Submit Receipt"}
+          </StyledText>
+        </StyledTouchableOpacity>
       </ScrollView>
     </StyledView>
   );

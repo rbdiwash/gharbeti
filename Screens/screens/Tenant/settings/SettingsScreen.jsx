@@ -3,19 +3,14 @@ import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { styled } from "nativewind";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-// import { PrimaryButton } from "../../../components/Buttons";
+import { PrimaryButton } from "../../../components/Buttons";
 import { useAuth } from "../../../context/AuthContext";
 
 // Import components
-// import ProfileSummary from "../settings/components/ProfileSummary";
-import SettingsSection from "./settings/components/SettingsSection";
-import LogoutModal from "./settings/components/LogoutModal";
-import ChangePasswordSheet from "./settings/components/ChangePasswordSheet";
-import ProfileSummary from "./settings/components/ProfileSummary";
-import { PrimaryButton } from "../../../components/Buttons";
-import { useStateData } from "../../../hooks/useStateData";
-import LanguageBottomSheet from "../Landlord/components/LanguageBottomSheet";
-import NotificationsBottomSheet from "../Landlord/components/NotificationsBottomSheet";
+import ProfileSummary from "./components/ProfileSummary";
+import SettingsSection from "./components/SettingsSection";
+import LogoutModal from "./components/LogoutModal";
+import ChangePasswordSheet from "./components/ChangePasswordSheet";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -23,7 +18,6 @@ const StyledText = styled(Text);
 const SettingsScreen = () => {
   const navigation = useNavigation();
   const { logout: logoutUser } = useAuth();
-  const { profile } = useStateData();
 
   // States for modals and sheets
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
@@ -31,30 +25,7 @@ const SettingsScreen = () => {
     useState(false);
   const [isBiometricEnabled, setIsBiometricEnabled] = useState(false);
   const [currentLanguage, setCurrentLanguage] = useState("English");
-  const [notificationsBottomSheetVisible, setNotificationsBottomSheetVisible] =
-    useState(false);
-  const [languageBottomSheetVisible, setLanguageBottomSheetVisible] =
-    useState(false);
-  const [notificationSettings, setNotificationSettings] = useState({
-    chatNotifications: true,
-    paymentReminders: true,
-    maintenanceUpdates: true,
-    noticeAlerts: true,
-    appUpdates: false,
-  });
-  const [aboutAppBottomSheetVisible, setAboutAppBottomSheetVisible] =
-    useState(false);
-  const [
-    contactSupportBottomSheetVisible,
-    setContactSupportBottomSheetVisible,
-  ] = useState(false);
 
-  const toggleNotificationSetting = (setting) => {
-    setNotificationSettings({
-      ...notificationSettings,
-      [setting]: !notificationSettings[setting],
-    });
-  };
   // Settings sections data
   const settingsSections = [
     {
@@ -98,9 +69,8 @@ const SettingsScreen = () => {
           icon: <Ionicons name="notifications" size={22} color="#e74c3c" />,
           title: "Notifications",
           subtitle: "Manage notification preferences",
+          action: () => navigation.navigate("NotificationSettings"),
           showArrow: true,
-          action: () => setNotificationsBottomSheetVisible(true),
-          toggleValue: languageBottomSheetVisible,
         },
         {
           icon: <Ionicons name="globe" size={22} color="#3498db" />,
@@ -108,8 +78,6 @@ const SettingsScreen = () => {
           subtitle: `Current: ${currentLanguage}`,
           action: () => navigation.navigate("LanguageSettings"),
           showArrow: true,
-          action: () => setLanguageBottomSheetVisible(true),
-          toggleValue: languageBottomSheetVisible,
         },
         {
           icon: <Ionicons name="moon" size={22} color="#34495e" />,
@@ -164,11 +132,6 @@ const SettingsScreen = () => {
     },
   ];
 
-  const handleLanguageChange = (language) => {
-    setCurrentLanguage(language.name);
-    setLanguageBottomSheetVisible(false);
-  };
-
   const handlePasswordChange = (passwordData) => {
     // Implement password change logic
     console.log("Password change:", passwordData);
@@ -188,14 +151,16 @@ const SettingsScreen = () => {
           <StyledView style={{ width: 24 }} />
         </StyledView>
       </StyledView>
+
       {/* Profile Summary */}
       <ProfileSummary
         user={{
-          name: profile?.name,
-          email: profile?.email,
-          phone: profile?.phoneNumber,
+          name: "Divash Ranabhat",
+          email: "rbdiwash@gmail.com",
+          phone: "+91 98765 43210",
         }}
       />
+
       {/* Settings List */}
       <ScrollView className="flex-1 px-4 pt-4">
         {settingsSections.map((section, index) => (
@@ -217,32 +182,18 @@ const SettingsScreen = () => {
           />
         </StyledView>
       </ScrollView>
+
       {/* Modals and Bottom Sheets */}
       <LogoutModal
         visible={logoutModalVisible}
         onClose={() => setLogoutModalVisible(false)}
         onLogout={logoutUser}
       />
+
       <ChangePasswordSheet
         visible={passwordBottomSheetVisible}
         onClose={() => setPasswordBottomSheetVisible(false)}
         onSubmit={handlePasswordChange}
-      />
-      <LanguageBottomSheet
-        visible={languageBottomSheetVisible}
-        onClose={() => setLanguageBottomSheetVisible(false)}
-        currentLanguage={currentLanguage}
-        onLanguageChange={handleLanguageChange}
-      />
-      <NotificationsBottomSheet
-        visible={notificationsBottomSheetVisible}
-        onClose={() => setNotificationsBottomSheetVisible(false)}
-        notificationSettings={notificationSettings}
-        onToggleSetting={toggleNotificationSetting}
-        onSaveSettings={() => {
-          alert("Success", "Notification settings updated");
-          setNotificationsBottomSheetVisible(false);
-        }}
       />
     </StyledView>
   );

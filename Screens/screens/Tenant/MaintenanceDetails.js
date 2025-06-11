@@ -252,11 +252,11 @@ const MaintenanceDetails = () => {
             <StyledText className="text-[#1a2c4e] text-lg font-bold mb-4">
               Status Updates
             </StyledText>
-            <PrimaryButton
+            {/* <PrimaryButton
               onPress={() => setChangeStatusModalVisible(true)}
               text="Change Status"
               parentClass="self-end"
-            />
+            /> */}
           </StyledView>
           {request?.updates?.map((update, index) => (
             <StyledView key={update.id} className="mb-4 last:mb-0">

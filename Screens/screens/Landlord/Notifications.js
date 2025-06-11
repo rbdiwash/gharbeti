@@ -12,6 +12,8 @@ import {
 import { styled } from "nativewind";
 import { Entypo, FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { useNotification } from "../../../hooks/useNotification";
+import { useAuth } from "../../../context/AuthContext";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -20,9 +22,15 @@ const StyledScrollView = styled(ScrollView);
 
 const NotificationsScreen = () => {
   const navigation = useNavigation();
+  const { state } = useAuth();
+  const { data: notificationsList = [] } = useNotification().getNotifications(
+    state?.userData?._id
+  );
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [actionModalVisible, setActionModalVisible] = useState(false);
-  const [notifications, setNotifications] = useState([
+
+  // Static notifications
+  const staticNotifications = [
     {
       id: 1,
       title: "Rent Due Reminder",
@@ -64,14 +72,12 @@ const NotificationsScreen = () => {
       type: "payment",
       read: true,
     },
-    {
-      id: 6,
-      title: "Payment Confirmation",
-      message: "Your rent payment of Rs 25,000 for May has been received.",
-      time: "1 month ago",
-      type: "payment",
-      read: true,
-    },
+  ];
+
+  // Combine API notifications with static notifications
+  const [notifications, setNotifications] = useState([
+    ...(notificationsList || []),
+    ...staticNotifications,
   ]);
 
   const [searchQuery, setSearchQuery] = useState("");

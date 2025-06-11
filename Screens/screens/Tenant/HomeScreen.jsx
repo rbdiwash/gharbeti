@@ -17,6 +17,8 @@ import { PrimaryButton } from "../../../components/Buttons";
 import { useAuth } from "../../../context/AuthContext";
 import { useStateData } from "../../../hooks/useStateData";
 import { getInitials } from "../../helper/const";
+import { useNotice } from "../../../hooks/useNotice";
+import { useNotification } from "../../../hooks/useNotification";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -39,23 +41,26 @@ const HomeScreen = () => {
     initializeData,
     refreshAllData,
   } = useStateData();
+  const { data: notificationsList = [] } = useNotification().getNotifications(
+    profile?._id
+  );
 
   const tenantData = profile?.tenantDetails || {};
 
   useEffect(() => {
     initializeData();
-    Animated.parallel([
-      Animated.timing(translateY, {
-        toValue: 0,
-        duration: 1000,
-        useNativeDriver: true,
-      }),
-      Animated.timing(opacity, {
-        toValue: 1,
-        duration: 1000,
-        useNativeDriver: true,
-      }),
-    ]).start();
+    // Animated.parallel([
+    //   Animated.timing(translateY, {
+    //     toValue: 0,
+    //     duration: 1000,
+    //     useNativeDriver: true,
+    //   }),
+    //   Animated.timing(opacity, {
+    //     toValue: 1,
+    //     duration: 1000,
+    //     useNativeDriver: true,
+    //   }),
+    // ]).start();
   }, [tenantData, state]);
 
   const AnimatedView = Animated.createAnimatedComponent(StyledView);
@@ -64,7 +69,8 @@ const HomeScreen = () => {
     const dueDate = new Date(tenantData?.startingDate);
     const today = new Date();
     const timeDiff = today.getTime() - dueDate.getTime();
-    const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+    const daysDiff =
+      timeDiff > 0 ? Math.ceil(timeDiff / (1000 * 60 * 60 * 24)) : 0;
     return daysDiff * tenantData?.totalRentPerMonth || 0;
   };
 
@@ -80,6 +86,7 @@ const HomeScreen = () => {
     });
   };
 
+  const { data: notices = [] } = useNotice().getNoticeRequests();
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = async () => {
@@ -147,12 +154,12 @@ const HomeScreen = () => {
         </StyledView>
 
         {/* Payment Overview Card */}
-        <AnimatedView
+        <View
           className="bg-white rounded-2xl p-4 shadow-lg mb-4"
-          style={{
-            transform: [{ translateY }],
-            opacity,
-          }}
+          // style={{
+          //   transform: [{ translateY }],
+          //   opacity,
+          // }}
         >
           <StyledView className="flex-row justify-between items-center mb-4">
             <StyledText className="text-[#1a2c4e] text-lg font-bold">
@@ -182,19 +189,28 @@ const HomeScreen = () => {
               onPress={() => navigation.navigate("MakePayment")}
             />
           </StyledView>
-        </AnimatedView>
+        </View>
       </StyledView>
 
       {/* Notices/Announcements */}
       <StyledView className="mt-4">
         <AutoScroll duration={10000} endPaddingWidth={10}>
           <StyledScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <StyledView className="bg-[#fff8e1] p-3 rounded-lg mr-2 border-l-4 border-[#ffc107]">
-              <StyledText className="text-[#1a2c4e] font-medium">
-                Reminder: Rent due on {tenantData.dueDate}
-              </StyledText>
-            </StyledView>
-            <StyledView className="bg-[#e1f5fe] p-3 rounded-lg mr-2 border-l-4 border-[#03a9f4]">
+            {notices?.map((notice, index) => (
+              <StyledView
+                className={`p-3 rounded-lg mr-2 border-l-4 ${
+                  index % 2 === 0
+                    ? "bg-[#fff8e1] border-[#ffc107]"
+                    : "bg-[#e1f5fe] border-[#03a9f4]"
+                }`}
+                key={notice._id}
+              >
+                <StyledText className="text-[#1a2c4e] font-medium">
+                  {notice.title}
+                </StyledText>
+              </StyledView>
+            ))}
+            {/* <StyledView className="bg-[#e1f5fe] p-3 rounded-lg mr-2 border-l-4 border-[#03a9f4]">
               <StyledText className="text-[#1a2c4e] font-medium">
                 Water supply maintenance on July 5th, 10AM-2PM
               </StyledText>
@@ -203,7 +219,7 @@ const HomeScreen = () => {
               <StyledText className="text-[#1a2c4e] font-medium">
                 Community event this weekend in the common area
               </StyledText>
-            </StyledView>
+            </StyledView> */}
           </StyledScrollView>
         </AutoScroll>
       </StyledView>

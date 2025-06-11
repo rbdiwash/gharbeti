@@ -34,7 +34,7 @@ const ProfileScreen = () => {
         { label: "Property", value: profile?.address },
         { label: "Rooms", value: profile?.totalRooms },
         { label: "Vacant", value: 0 },
-        { label: "Occupied", value: "1" },
+        { label: "OccEsewaed", value: "1" },
       ],
     },
   ];

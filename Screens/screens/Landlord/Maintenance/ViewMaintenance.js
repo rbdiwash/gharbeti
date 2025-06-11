@@ -20,6 +20,8 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { useMaintenance } from "../../../../hooks/useMaintenance";
 import StatusModal from "./StatusModal";
 import { PrimaryButton } from "../../../../components/Buttons";
+import { useTenants } from "../../../../hooks/useTenants";
+import { useStateData } from "../../../../hooks/useStateData";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -30,12 +32,13 @@ const MaintenanceDetailsScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const requestId = route.params?.requestId;
-
+  const [selectedStatus, setSelectedStatus] = useState(null);
   const [newComment, setNewComment] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
   const [imageModalVisible, setImageModalVisible] = useState(false);
   const [changeStatusModalVisible, setChangeStatusModalVisible] =
     useState(false);
+  const { profile } = useStateData();
 
   // Using hooks to fetch data and perform mutations
   const {
@@ -46,14 +49,14 @@ const MaintenanceDetailsScreen = () => {
     refetch,
   } = useMaintenance().getMaintenanceRequestById(requestId);
 
-  console.log(request);
-
   const { mutate: addComment, isLoading: isAddingComment } =
     useMaintenance().addMaintenanceComment();
 
   const { mutate: deleteRequest, isLoading: isDeleting } =
     useMaintenance().deleteMaintenanceRequest();
-
+  const { data: tenants = [] } = useTenants().getTenantByLandlordId(
+    profile?._id
+  );
   // Refresh data when screen comes into focus
   useFocusEffect(
     useCallback(() => {
@@ -188,13 +191,24 @@ const MaintenanceDetailsScreen = () => {
               </StyledText>
             </StyledView>
           </StyledView>
-
           <StyledView className="mb-4">
             <StyledText className="text-[#1a2c4e] font-bold mb-1">
               Description
             </StyledText>
             <StyledText className="text-[#8395a7]">
               {request?.description}
+            </StyledText>
+          </StyledView>
+
+          <StyledView className="mb-4">
+            <StyledText className="text-[#1a2c4e] font-bold mb-1">
+              Reported By
+            </StyledText>
+            <StyledText className="text-[#8395a7]">
+              {
+                tenants?.find((tenant) => tenant?._id === request?.tenantId)
+                  ?.name
+              }
             </StyledText>
           </StyledView>
 
@@ -348,6 +362,7 @@ const MaintenanceDetailsScreen = () => {
             closeModal={() => setChangeStatusModalVisible(false)}
             selectedRequest={request}
             selectedStatus={request?.status}
+            setSelectedStatus={setSelectedStatus}
           />
         </StyledView>
       </ScrollView>

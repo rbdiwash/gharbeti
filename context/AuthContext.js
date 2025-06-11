@@ -50,11 +50,12 @@ export function AuthProvider({ children }) {
     },
     onError: (error) => {
       console.log(error);
-      console.error("Login failed: ok", error?.response?.data?.message);
+      console.error("Login failed:", error?.response?.data?.message);
       Toast.show({
         type: "error",
         text1:
           error?.response?.data?.message ||
+          error ||
           "Login Failed! Something went wrong",
         position: "bottom",
       });

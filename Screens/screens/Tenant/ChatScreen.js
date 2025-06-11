@@ -16,6 +16,7 @@ import {
 import { useChat } from "../../../hooks/useChat";
 import { useStateData } from "../../../hooks/useStateData";
 import { getInitials } from "../../helper/const";
+import { useNavigation } from "@react-navigation/native";
 // import { useChat } from "../../../hooks/useChat";
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -28,6 +29,7 @@ const ChatScreen = () => {
   const scrollViewRef = useRef();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const { mutate: postChat, isLoading } = useChat().postChat();
+  const navigation = useNavigation();
   const {
     data: messageArray,
     isLoading: isMessageLoading,
@@ -79,7 +81,10 @@ const ChatScreen = () => {
     >
       {/* Header */}
       <StyledView className="bg-[#1a2c4e] pt-4 pb-4 px-4">
-        <StyledView className="flex-row items-center">
+        <StyledView className="flex-row items-center gap-3">
+          <StyledTouchableOpacity onPress={() => navigation.goBack()}>
+            <Ionicons name="arrow-back" size={24} color="white" />
+          </StyledTouchableOpacity>
           <StyledView className="w-10 h-10 rounded-full bg-white justify-center items-center mr-3">
             <StyledText className="text-primary font-bold">
               {getInitials(profile?.landlord?.name)}

@@ -12,7 +12,7 @@ export function getInitials(name) {
   return (nameParts[0].charAt(0) + nameParts[1].charAt(0)).toUpperCase();
 }
 
-export function formatDate(dateString) {
+export function formatDateTime(dateString) {
   if (!dateString) return "N/A";
   const date = new Date(dateString);
   return date.toLocaleDateString("en-US", {
@@ -21,5 +21,15 @@ export function formatDate(dateString) {
     day: "numeric",
     hour: "2-digit",
     minute: "2-digit",
+  });
+}
+
+export function formatDate(dateString) {
+  if (!dateString) return "N/A";
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
   });
 }

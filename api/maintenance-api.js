@@ -10,10 +10,18 @@ const MAINTENANCE_ENDPOINTS = {
   ADD_COMMENT: (id) => `/maintenance/${id}/comments`,
 };
 
-export const getMaintenanceRequests = async (status) => {
-  // For demo purposes, we'll mock the API call
-  // Real API call for production
-  const params = status ? { status } : {};
+export const getMaintenanceRequests = async ({
+  landlordId,
+  tenantId,
+  status,
+} = {}) => {
+  // Build query params object with only the provided parameters
+  const params = {};
+
+  if (landlordId) params.landlordId = landlordId;
+  if (tenantId) params.tenantId = tenantId;
+  if (status) params.status = status;
+
   return apiClient.get(MAINTENANCE_ENDPOINTS.GET_ALL, { params });
 };
 

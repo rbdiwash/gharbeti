@@ -6,6 +6,7 @@ import { PrimaryButton } from "../../../components/Buttons";
 import { useAuth } from "../../../context/AuthContext";
 import { getLeaseAggreements } from "../../../api/lease-aggrements";
 import { useLeaseAggreements } from "../../../hooks/useLeaseAggreements";
+import { formatDate, formatDateTime } from "../../helper/const";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -14,35 +15,24 @@ const StyledTouchableOpacity = styled(TouchableOpacity);
 const LeaseDetails = () => {
   const navigation = useNavigation();
   const { state } = useAuth();
-  const landlordId = state?.userData?.landlord?._id || {};
-  const { data: leaseAgreements } =
-    useLeaseAggreements().getLeaseAggreements(landlordId);
+  const landlordData = state?.userData?.landlord || {};
+  const tenantData = state?.userData || {};
+  const { data: leaseAgreements } = useLeaseAggreements().getLeaseAggreements(
+    landlordData?._id
+  );
   const leaseDetails = {
-    propertyName: "Green Valley Apartments",
+    propertyName: landlordData?.name,
     unitNumber: "Apartment 303",
-    address: "123 Green Valley Road, Bangalore",
-    startDate: "January 1, 2023",
-    endDate: "December 31, 2023",
-    monthlyRent: "Rs 25,000",
-    securityDeposit: "Rs 50,000",
-    maintenanceFee: "Rs 2,000",
-    noticePeriod: "30 days",
-    landlordName: "Raj Landlord",
-    landlordContact: "+91 98765 12345",
+    address: landlordData?.address,
+    startDate: formatDate(tenantData?.tenantDetails?.startingDate) || "-",
+    endDate: formatDate(tenantData?.tenantDetails?.leaseEndDate) || "-",
+    monthlyRent: tenantData?.tenantDetails?.totalRentPerMonth || "-",
+    securityDeposit: tenantData?.tenantDetails?.securityDeposit || "-",
+    maintenanceFee: tenantData?.tenantDetails?.maintenanceFee || "-",
+    noticePeriod: tenantData?.tenantDetails?.noticePeriod || "10 days",
+    landlordName: landlordData?.name,
+    landlordContact: landlordData?.phoneNumber,
   };
-
-  const leaseTerms = [
-    "Rent must be paid on or before the 1st of each month.",
-    "Late payment will incur a penalty of 5% of the monthly rent.",
-    "Tenant is responsible for all utility bills including electricity, water, and internet.",
-    "No structural modifications are allowed without written permission from the landlord.",
-    "Pets are not allowed on the premises.",
-    "Tenant must maintain the property in good condition.",
-    "Landlord reserves the right to inspect the property with 24 hours notice.",
-    "Tenant must give 30 days notice before vacating the property.",
-    "Security deposit will be refunded within 15 days of vacating, subject to deductions for damages.",
-    "Subletting is not permitted without written consent from the landlord.",
-  ];
 
   return (
     <StyledView className="flex-1 bg-[#f8f9fa]">
@@ -78,12 +68,12 @@ const LeaseDetails = () => {
             </StyledText>
           </StyledView>
 
-          <StyledView className="mb-2">
+          {/* <StyledView className="mb-2">
             <StyledText className="text-[#8395a7]">Unit Number</StyledText>
             <StyledText className="text-[#1a2c4e] font-bold">
               {leaseDetails.unitNumber}
             </StyledText>
-          </StyledView>
+          </StyledView> */}
 
           <StyledView>
             <StyledText className="text-[#8395a7]">Address</StyledText>

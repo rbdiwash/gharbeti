@@ -1,23 +1,20 @@
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  Image,
-  StatusBar,
-} from "react-native";
-import { styled } from "nativewind";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { styled } from "nativewind";
+import React, { useState } from "react";
+import {
+  FlatList,
+  Image,
+  StatusBar,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // Import mock data
-import { tenantsList } from "../../../helper/data";
-import { useTenants } from "../../../../hooks/useTenants";
-import { useAuth } from "../../../../context/AuthContext";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useStateData } from "../../../../hooks/useStateData";
+import { useTenants } from "../../../../hooks/useTenants";
 import { getInitials } from "../../../helper/const";
 
 const StyledView = styled(View);
@@ -38,9 +35,6 @@ const TenantListScreen = () => {
     error,
     refetch,
   } = useTenants().getTenantByLandlordId(profile?._id);
-  console.log("profile", profile);
-
-  console.log("tenants", tenants);
 
   // Function to handle adding a new tenant
   const addTenant = () => {
@@ -103,7 +97,7 @@ const TenantListScreen = () => {
             )}
           </StyledView>
           {/* Invitation Status */}
-          {!item.isAccepted && (
+          {!item.inviteAccepted && (
             <StyledView className="flex-row items-center mt-1">
               <StyledView className="bg-yellow-100 px-2 py-1 rounded-full">
                 <StyledText className="text-yellow-600 text-xs font-medium">
@@ -187,7 +181,7 @@ const TenantListScreen = () => {
       <FlatList
         data={tenants}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item._id}
         contentContainerStyle={{ padding: 16 }}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={renderEmptyList}

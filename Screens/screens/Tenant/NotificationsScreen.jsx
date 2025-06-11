@@ -2,6 +2,8 @@ import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { styled } from "nativewind";
 import { Entypo, FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { useNotification } from "../../../hooks/useNotification";
+import { useStateData } from "../../../hooks/useStateData";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -9,10 +11,14 @@ const StyledTouchableOpacity = styled(TouchableOpacity);
 
 const NotificationsScreen = () => {
   const navigation = useNavigation();
+  const { profile } = useStateData();
+  const { data: notificationsList = [], isLoading } =
+    useNotification().getNotifications(profile?._id);
 
-  const notifications = [
+  // Static notifications
+  const staticNotifications = [
     {
-      id: 1,
+      _id: 1,
       title: "Rent Due Reminder",
       message: "Your rent of Rs 25,000 is due in 3 days.",
       time: "2 hours ago",
@@ -20,7 +26,7 @@ const NotificationsScreen = () => {
       read: false,
     },
     {
-      id: 2,
+      _id: 2,
       title: "Maintenance Update",
       message:
         "Your maintenance request for plumbing issue has been scheduled for tomorrow.",
@@ -29,7 +35,7 @@ const NotificationsScreen = () => {
       read: false,
     },
     {
-      id: 3,
+      _id: 3,
       title: "New Notice",
       message: "A new notice about water supply interruption has been posted.",
       time: "1 day ago",
@@ -37,7 +43,7 @@ const NotificationsScreen = () => {
       read: true,
     },
     {
-      id: 4,
+      _id: 4,
       title: "Message from Landlord",
       message: "You have a new message from your landlord.",
       time: "2 days ago",
@@ -45,13 +51,19 @@ const NotificationsScreen = () => {
       read: true,
     },
     {
-      id: 5,
+      _id: 5,
       title: "Payment Confirmation",
       message: "Your rent payment of Rs 25,000 for May has been received.",
       time: "1 month ago",
       type: "payment",
       read: true,
     },
+  ];
+
+  // Combine API notifications with static notifications
+  const finalNotification = [
+    ...(notificationsList || []),
+    ...staticNotifications,
   ];
 
   const getNotificationIcon = (type) => {
@@ -106,9 +118,9 @@ const NotificationsScreen = () => {
       </StyledView>
 
       <ScrollView className="flex-1 px-4 pt-6">
-        {notifications.map((notification) => (
+        {finalNotification?.map((notification) => (
           <StyledTouchableOpacity
-            key={notification.id}
+            key={notification._id}
             className={`bg-white p-4 rounded-xl mb-4 shadow-md ${
               !notification.read ? "border-l-4 border-[#27ae60]" : ""
             }`}

@@ -22,6 +22,8 @@ import connectIPS from "../../../assets/connectIPS.png";
 import fonePay from "../../../assets/fonepay.png";
 import { useStateData } from "../../../hooks/useStateData";
 import { getInitials } from "../../helper/const";
+import { useMaintenance } from "../../../hooks/useMaintenance";
+import { usePayments } from "../../../hooks/usePayments";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -37,6 +39,24 @@ const HomeScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
   const { profile, initializeData } = useStateData();
+  const { data: maintenanceRequests = [] } =
+    useMaintenance().getMaintenanceRequests({
+      landlordId: profile?._id,
+      tenantId: "",
+      status: "Pending",
+    });
+  const { data: payments } = usePayments().getPayments(profile?._id);
+
+  const paymentsArray = payments?.payments || [];
+  const dueAmount = paymentsArray?.reduce(
+    (acc, payment) => acc + payment.nextDueAmount,
+    0
+  );
+
+  const lastPayment = paymentsArray?.reduce(
+    (acc, payment) => acc + payment.amount,
+    0
+  );
 
   useEffect(() => {
     initializeData();
@@ -179,10 +199,11 @@ const HomeScreen = () => {
                 Due Amount
               </StyledText>
               <StyledText className="text-[#1a2c4e] text-xl font-bold">
-                {isDueVisible ? `Rs ${tenantData.rentDue}` : "Rs •••••"}
+                {isDueVisible ? `Rs ${dueAmount || 0}` : "Rs •••••"}
               </StyledText>
               <StyledText className="text-[#e74c3c] text-xs">
-                Due on {tenantData.dueDate}
+                Due on{" "}
+                {new Date(paymentsArray[0]?.nextDueDate).toLocaleDateString()}
               </StyledText>
             </StyledView>
             <StyledView className="pl-4 flex-1">
@@ -190,10 +211,11 @@ const HomeScreen = () => {
                 Last Payment
               </StyledText>
               <StyledText className="text-[#1a2c4e] text-xl font-bold">
-                {isDueVisible ? `Rs ${tenantData.lastPayment}` : "Rs •••••"}
+                {isDueVisible ? `Rs ${lastPayment || 0}` : "Rs •••••"}
               </StyledText>
               <StyledText className="text-[#27ae60] text-xs">
-                Paid on {tenantData.lastPaymentDate}
+                Paid on{" "}
+                {new Date(paymentsArray[0]?.paymentDate).toLocaleDateString()}
               </StyledText>
             </StyledView>
           </StyledView>
@@ -208,27 +230,31 @@ const HomeScreen = () => {
         }
       >
         {/* Notices/Announcements */}
-        <StyledView className="mt-4">
-          <AutoScroll duration={10000} endPaddingWidth={10}>
-            <StyledScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <StyledView className="bg-[#fff8e1] p-3 rounded-lg mr-2 border-l-4 border-[#ffc107]">
-                <StyledText className="text-[#1a2c4e] font-medium">
-                  Reminder: Rent due on {tenantData.dueDate}
-                </StyledText>
-              </StyledView>
-              <StyledView className="bg-[#e1f5fe] p-3 rounded-lg mr-2 border-l-4 border-[#03a9f4]">
-                <StyledText className="text-[#1a2c4e] font-medium">
-                  Water supply maintenance on July 5th, 10AM-2PM
-                </StyledText>
-              </StyledView>
-              <StyledView className="bg-[#e8f5e9] p-3 rounded-lg mr-2 border-l-4 border-[#4caf50]">
-                <StyledText className="text-[#1a2c4e] font-medium">
-                  Community event this weekend in the common area
-                </StyledText>
-              </StyledView>
-            </StyledScrollView>
-          </AutoScroll>
-        </StyledView>
+        {maintenanceRequests?.length > 0 && (
+          <StyledView className="mt-4">
+            <AutoScroll duration={10000} endPaddingWidth={10}>
+              <StyledScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+              >
+                {maintenanceRequests?.map((request, index) => (
+                  <StyledView
+                    key={request._id}
+                    className={`p-3 rounded-lg mr-2 border-l-4 ${
+                      index % 2 === 0
+                        ? "bg-[#fce4ec] border-[#e91e63]"
+                        : "bg-[#e1f5fe] border-[#03a9f4]"
+                    }`}
+                  >
+                    <StyledText className="text-[#1a2c4e] font-medium">
+                      Maintenance: {request.title}
+                    </StyledText>
+                  </StyledView>
+                ))}
+              </StyledScrollView>
+            </AutoScroll>
+          </StyledView>
+        )}
 
         {/* Status Cards */}
         {/* <StyledView className="flex-row justify-between mt-6">
@@ -327,7 +353,7 @@ const HomeScreen = () => {
         </StyledView>
 
         {/* Lease Summary */}
-        <StyledTouchableOpacity
+        {/* <StyledTouchableOpacity
           className="mt-6 bg-white p-4 rounded-xl shadow-sm"
           onPress={() => navigation.navigate("LeaseDetails")}
         >
@@ -351,7 +377,7 @@ const HomeScreen = () => {
               {tenantData.leaseEndDate}
             </StyledText>
           </StyledView>
-        </StyledTouchableOpacity>
+        </StyledTouchableOpacity> */}
 
         {/* Payment Methods */}
         <StyledView className="mt-6 bg-white p-4 rounded-xl shadow-sm">

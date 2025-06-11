@@ -13,6 +13,7 @@ import { styled } from "nativewind";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useMaintenance } from "../../../hooks/useMaintenance";
+import { useStateData } from "../../../hooks/useStateData";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -28,13 +29,23 @@ const MaintenanceScreen = () => {
     completed: [],
   });
 
+  const { profile } = useStateData();
+
   const {
     data: activeRequests,
     isLoading: isActiveLoading,
     isError: isActiveError,
     error: activeError,
     refetch: refetchActive,
-  } = useMaintenance().getMaintenanceRequests("Pending");
+  } = useMaintenance().getMaintenanceRequests({
+    landlordId: profile?.landlord?._id,
+    tenantId: profile?._id,
+    status: "Pending",
+  });
+
+  console.log(activeRequests);
+
+  console.log("activeRequests", activeRequests);
 
   const {
     data: completedRequests,
@@ -42,9 +53,11 @@ const MaintenanceScreen = () => {
     isError: isCompletedError,
     error: completedError,
     refetch: refetchCompleted,
-  } = useMaintenance().getMaintenanceRequests("Completed");
-
-  console.log(activeRequests, completedRequests);
+  } = useMaintenance().getMaintenanceRequests({
+    landlordId: profile?.landlord?._id,
+    tenantId: profile?._id,
+    status: "Completed",
+  });
 
   useEffect(() => {
     if (activeRequests || completedRequests) {
@@ -168,7 +181,7 @@ const MaintenanceScreen = () => {
               activeTab === "active" ? "text-secondary" : "text-[#8395a7]"
             }`}
           >
-            Active ({filteredRequests.active.length})
+            Active ({filteredRequests.active.length || 0})
           </StyledText>
         </StyledTouchableOpacity>
         <StyledTouchableOpacity
@@ -182,7 +195,7 @@ const MaintenanceScreen = () => {
               activeTab === "completed" ? "text-secondary" : "text-[#8395a7]"
             }`}
           >
-            Completed ({filteredRequests.completed.length})
+            Completed ({filteredRequests.completed.length || 0})
           </StyledText>
         </StyledTouchableOpacity>
       </StyledView>

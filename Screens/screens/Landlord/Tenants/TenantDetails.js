@@ -16,6 +16,9 @@ import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTenants } from "../../../../hooks/useTenants";
+import { formatDate } from "../../../helper/const";
+import { useMaintenance } from "../../../../hooks/useMaintenance";
+import { usePayments } from "../../../../hooks/usePayments";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -23,83 +26,6 @@ const StyledTouchableOpacity = styled(TouchableOpacity);
 const StyledImage = styled(Image);
 const StyledScrollView = styled(ScrollView);
 const StyledSafeAreaView = styled(SafeAreaView);
-
-// Mock Tenant Data
-const initialTenantData = {
-  id: "1",
-  name: "Divash Ranabhat",
-  address: "Bhaktapur, Kathmandu",
-  phone: "9876543210",
-  email: "luke.findel@example.com",
-  imageUrl: "https://randomuser.me/api/portraits/men/1.jpg",
-  dueAmount: 3200,
-  totalPaid: 15000,
-  totalRooms: 3,
-  monthlyRent: 5000,
-  isActive: true,
-  rentDueDate: "15th Oct 2024",
-  leaseStartDate: "15th Jan 2024",
-  leaseEndDate: "15th Jan 2025",
-  securityDeposit: 10000,
-  documents: [
-    { type: "Citizenship", verified: true },
-    { type: "Rental Agreement", verified: true },
-  ],
-  emergencyContact: {
-    name: "Sarah Findel",
-    relation: "Wife",
-    phone: "9876543211",
-  },
-  maintenanceRequests: [
-    {
-      id: 1,
-      title: "Leaky Tap",
-      description: "Kitchen sink tap is leaking",
-      date: "10th Oct 2024",
-      status: "Pending",
-      priority: "Medium",
-    },
-    {
-      id: 2,
-      title: "Broken Light",
-      description: "Bedroom light not working",
-      date: "12th Oct 2024",
-      status: "Completed",
-      priority: "Low",
-    },
-    {
-      id: 3,
-      title: "Water Heater Issue",
-      description: "Water heater not heating properly",
-      date: "5th Oct 2024",
-      status: "In Progress",
-      priority: "High",
-    },
-  ],
-  paymentHistory: [
-    {
-      id: 1,
-      amount: 5000,
-      date: "15th Sep 2024",
-      status: "Paid",
-      method: "Bank Transfer",
-    },
-    {
-      id: 2,
-      amount: 5000,
-      date: "15th Aug 2024",
-      status: "Paid",
-      method: "Cash",
-    },
-    {
-      id: 3,
-      amount: 5000,
-      date: "15th Jul 2024",
-      status: "Paid",
-      method: "UPI",
-    },
-  ],
-};
 
 const TenantDetailsScreen = () => {
   const navigation = useNavigation();
@@ -113,6 +39,20 @@ const TenantDetailsScreen = () => {
   const handleCall = () => {
     Linking.openURL(`tel:${tenantData.phoneNumber}`);
   };
+  const paymentMethods = [
+    { label: "Bank Transfer", value: "bankTransfer" },
+    { label: "Esewa", value: "esewa" },
+    { label: "Cash", value: "cash" },
+  ];
+
+  const { data: activeMaintenanceRequests } =
+    useMaintenance().getMaintenanceRequests({
+      landlordId: tenantData?.landlord?._id,
+      tenantId: tenantData?._id,
+      status: "Pending",
+    });
+
+  const { data: paymentHistory } = usePayments().getPaymentById(tenantId);
 
   // Function to handle email
   const handleEmail = () => {
@@ -192,7 +132,7 @@ const TenantDetailsScreen = () => {
           Tenant Details
         </StyledText>
         <StyledTouchableOpacity
-          onPress={() => navigation.navigate("Edit Tenant")}
+          onPress={() => navigation.navigate("Edit Tenant", { tenantData })}
         >
           <Ionicons name="create-outline" size={24} color="#1a2c4e" />
         </StyledTouchableOpacity>
@@ -383,7 +323,7 @@ const TenantDetailsScreen = () => {
                   </StyledText>
                 </StyledView>
 
-                <StyledView className="flex-row justify-between">
+                <StyledView className="flex-row justify-between mb-3">
                   <StyledView className="flex-row items-center">
                     <Ionicons name="home-outline" size={18} color="#8395a7" />
                     <StyledText className="text-[#8395a7] ml-2">
@@ -392,6 +332,17 @@ const TenantDetailsScreen = () => {
                   </StyledView>
                   <StyledText className="text-[#1a2c4e] font-medium text-right flex-1 ml-4">
                     {tenantData?.address}
+                  </StyledText>
+                </StyledView>
+                <StyledView className="flex-row justify-between">
+                  <StyledView className="flex-row items-center">
+                    <Ionicons name="key-outline" size={18} color="#8395a7" />
+                    <StyledText className="text-[#8395a7] ml-2">
+                      Invitation Code
+                    </StyledText>
+                  </StyledView>
+                  <StyledText className="text-[#1a2c4e] font-medium text-right flex-1 ml-4">
+                    {tenantData?.invitationCode}
                   </StyledText>
                 </StyledView>
               </StyledView>
@@ -435,7 +386,7 @@ const TenantDetailsScreen = () => {
                   </StyledText>
                   <StyledText className="text-[#1a2c4e] font-medium">
                     {tenantData?.startingDate
-                      ? new Date(tenantData.startingDate).toLocaleDateString()
+                      ? formatDate(tenantData.startingDate)
                       : "N/A"}
                   </StyledText>
                 </StyledView>
@@ -523,15 +474,15 @@ const TenantDetailsScreen = () => {
                 </StyledText>
               </StyledView>
 
-              {tenantData?.maintenanceRequests?.map((request) => (
+              {activeMaintenanceRequests?.map((request) => (
                 <StyledTouchableOpacity
-                  key={request.id}
+                  key={request._id}
                   className="bg-white p-4 rounded-xl shadow-sm mb-4"
-                  onPress={() =>
-                    navigation.navigate("MaintenanceDetails", {
-                      requestId: request.id,
-                    })
-                  }
+                  onPress={() => {
+                    navigation.navigate("Maintenance Request Details", {
+                      requestId: request._id,
+                    });
+                  }}
                 >
                   <StyledView className="flex-row justify-between items-start mb-2">
                     <StyledView className="flex-1">
@@ -539,7 +490,7 @@ const TenantDetailsScreen = () => {
                         {request.title}
                       </StyledText>
                       <StyledText className="text-[#8395a7]">
-                        {request.description}
+                        {request.description.slice(0, 50)}...
                       </StyledText>
                     </StyledView>
                     <StyledView
@@ -555,7 +506,7 @@ const TenantDetailsScreen = () => {
 
                   <StyledView className="flex-row justify-between items-center mt-2">
                     <StyledText className="text-[#8395a7] text-sm">
-                      {request.date}
+                      Reported: {new Date(request.createdAt).toLocaleString()}
                     </StyledText>
                     <StyledText
                       className={`font-medium ${getPriorityColor(
@@ -592,7 +543,9 @@ const TenantDetailsScreen = () => {
                 </StyledText>
                 <StyledTouchableOpacity
                   className="bg-[#27ae60] px-3 py-1 rounded-lg flex-row items-center"
-                  onPress={() => navigation.navigate("MakePayment")}
+                  onPress={() =>
+                    navigation.navigate("RecordPayment", { tenant: tenantData })
+                  }
                 >
                   <FontAwesome5
                     name="money-bill-wave"
@@ -603,9 +556,9 @@ const TenantDetailsScreen = () => {
                 </StyledTouchableOpacity>
               </StyledView>
 
-              {tenantData.paymentHistory.map((payment) => (
+              {paymentHistory?.payments?.map((payment) => (
                 <StyledView
-                  key={payment.id}
+                  key={payment._id}
                   className="bg-white p-4 rounded-xl shadow-sm mb-4"
                 >
                   <StyledView className="flex-row justify-between items-start mb-2">
@@ -614,11 +567,28 @@ const TenantDetailsScreen = () => {
                         Rs {payment.amount}
                       </StyledText>
                       <StyledText className="text-[#8395a7]">
-                        {payment.date}
+                        {new Date(payment?.paymentDate).toLocaleString()}
                       </StyledText>
                     </StyledView>
-                    <StyledView className="bg-[#e8f5e9] px-3 py-1 rounded-full">
-                      <StyledText className="text-[#27ae60] text-xs font-medium">
+                    <StyledView
+                      className={`px-3 py-1 rounded-full ${
+                        payment.status === "completed"
+                          ? "bg-[#e8f5e9]"
+                          : payment.status === "Late"
+                          ? "bg-[#fff8e1]"
+                          : "bg-[#ffebee]"
+                      }`}
+                    >
+                      <StyledText
+                        // className="text-[#27ae60] text-xs font-medium"
+                        className={
+                          payment.status === "completed"
+                            ? "text-[#27ae60]"
+                            : payment.status === "Late"
+                            ? "text-[#f39c12]"
+                            : "text-[#e74c3c]"
+                        }
+                      >
                         {payment.status}
                       </StyledText>
                     </StyledView>
@@ -629,13 +599,17 @@ const TenantDetailsScreen = () => {
                       Payment Method
                     </StyledText>
                     <StyledText className="text-[#1a2c4e] font-medium">
-                      {payment.method}
+                      {
+                        paymentMethods.find(
+                          (method) => method.value === payment?.paymentMethod
+                        )?.label
+                      }
                     </StyledText>
                   </StyledView>
                 </StyledView>
               ))}
 
-              {tenantData.paymentHistory.length === 0 && (
+              {paymentHistory?.payments?.length === 0 && (
                 <StyledView className="bg-white p-6 rounded-xl shadow-sm items-center justify-center">
                   <FontAwesome5
                     name="money-bill-wave"
@@ -670,7 +644,7 @@ const TenantDetailsScreen = () => {
                 </StyledTouchableOpacity>
               </StyledView>
 
-              {tenantData.documents.map((document, index) => (
+              {tenantData?.documents?.map((document, index) => (
                 <StyledTouchableOpacity
                   key={index}
                   className="bg-white p-4 rounded-xl shadow-sm mb-4 flex-row items-center"
@@ -708,7 +682,7 @@ const TenantDetailsScreen = () => {
                 </StyledTouchableOpacity>
               ))}
 
-              {tenantData.documents.length === 0 && (
+              {tenantData?.documents?.length === 0 && (
                 <StyledView className="bg-white p-6 rounded-xl shadow-sm items-center justify-center">
                   <Ionicons
                     name="document-text-outline"
@@ -745,7 +719,7 @@ const TenantDetailsScreen = () => {
 
           <StyledTouchableOpacity
             className="flex-1 bg-[#27ae60] py-3 rounded-lg ml-2 items-center justify-center"
-            onPress={() => navigation.navigate("Edit Tenant")}
+            onPress={() => navigation.navigate("Edit Tenant", { tenantData })}
           >
             <StyledText className="text-white font-bold">
               Edit Details

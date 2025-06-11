@@ -11,8 +11,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../../../context/AuthContext";
 import { useTenants } from "../../../hooks/useTenants";
 import Toast from "react-native-toast-message";
-import * as LocalAuthentication from "expo-local-authentication";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useBiometric } from "../../../hooks/useBiometric";
 
 const StyledView = styled(View);
 
@@ -40,44 +39,40 @@ const TenantLogin = ({}) => {
   const [rulesModalVisible, setRulesModalVisible] = useState(false);
   const [isInvitationOn, setIsInvitationOn] = useState(false);
 
+  // Use the biometric hook
+  const {
+    isBiometricAvailable,
+    isBiometricEnabled,
+    biometricType,
+    authenticateWithBiometric,
+    saveBiometricCredentials,
+  } = useBiometric();
+
   useEffect(() => {
-    checkBiometricLogin();
-  }, []);
+    if (isBiometricEnabled) {
+      handleBiometricLogin();
+    }
+  }, [isBiometricEnabled]);
 
-  const checkBiometricLogin = async () => {
+  const handleBiometricLogin = async () => {
     try {
-      const biometricEnabled = await AsyncStorage.getItem("biometricEnabled");
-      if (biometricEnabled === "true") {
-        const result = await LocalAuthentication.authenticateAsync({
-          promptMessage: "Login with biometric",
-          fallbackLabel: "Use passcode",
-        });
-
-        if (result.success) {
-          // Get stored credentials
-          const storedEmail = await AsyncStorage.getItem("userEmail");
-          const storedPassword = await AsyncStorage.getItem("userPassword");
-
-          if (storedEmail && storedPassword) {
-            // Attempt login with stored credentials
-            const success = loginUser({
-              email: storedEmail,
-              password: storedPassword,
-            });
-
-            if (!success) {
-              Toast.show({
-                type: "error",
-                text1: "Login Failed",
-                text2: "Biometric login failed. Please try again.",
-                position: "bottom",
-              });
-            }
-          }
-        }
+      const credentials = await authenticateWithBiometric();
+      if (credentials) {
+        setData((prev) => ({
+          ...prev,
+          email: credentials.email,
+          password: credentials.password,
+        }));
+        await handleLogin(credentials.email, credentials.password);
       }
     } catch (error) {
-      console.error("Error during biometric login:", error);
+      console.error("Biometric login failed:", error);
+      Toast.show({
+        type: "error",
+        text1: "Login Failed",
+        text2: "Biometric login failed. Please try again.",
+        position: "bottom",
+      });
     }
   };
 
@@ -123,29 +118,42 @@ const TenantLogin = ({}) => {
     );
   };
 
-  const handleLogin = async () => {
-    if (data?.email.trim() === "" || data?.password.trim() === "") {
-      alert("Please enter both email and password");
-      return;
-    }
+  const handleLogin = async () =>
+    // email = data?.email,
+    // password = data?.password
+    {
+      const email = data?.email;
+      const password = data?.password;
+      if (email.trim() === "" || password.trim() === "") {
+        alert("Please enter both email and password");
+        return;
+      }
 
-    const success = loginUser({ email: data?.email, password: data?.password });
-
-    if (success) {
-      // Store credentials for biometric login if enabled
       try {
-        const biometricEnabled = await AsyncStorage.getItem("biometricEnabled");
-        if (biometricEnabled === "true") {
-          await AsyncStorage.setItem("userEmail", data.email);
-          await AsyncStorage.setItem("userPassword", data.password);
+        const success = await loginUser({ email, password });
+
+        if (success) {
+          // Store credentials for biometric login if enabled
+          if (isBiometricEnabled) {
+            await saveBiometricCredentials({ email, password });
+          }
+          return true;
+        } else {
+          throw new Error("Failed to save login state");
         }
       } catch (error) {
-        console.error("Error storing credentials:", error);
+        console.error("Login error:", error.response?.data?.message);
+        Toast.show({
+          type: "error",
+          text1: "Login Failed",
+          text2:
+            error.response?.data?.message ||
+            "Please check your credentials and try again",
+          position: "bottom",
+        });
+        return false;
       }
-    } else {
-      throw new Error("Failed to save login state");
-    }
-  };
+    };
 
   const validatePassword = () => {
     if (data.password.trim() === "") {
@@ -197,9 +205,6 @@ const TenantLogin = ({}) => {
 
   const acceptRules = () => {
     setRulesModalVisible(false);
-    // setIsLoggedIn(true);
-    // setUserType("tenant");
-    // navigation.navigate("Tenant Home");
     setState((prevState) => ({
       ...prevState,
       isLoggedIn: true,
@@ -221,6 +226,9 @@ const TenantLogin = ({}) => {
             setIsInvitationOn={setIsInvitationOn}
             handleLogin={handleLogin}
             isLoading={isVerifying}
+            isBiometricAvailable={isBiometricAvailable}
+            biometricType={biometricType}
+            onBiometricLogin={handleBiometricLogin}
           />
         ) : (
           <PasswordStep
