@@ -160,10 +160,9 @@ export function AuthProvider({ children }) {
   // Login function
   const login = useCallback(
     (credentials) => {
-      console.log(credentials);
       return loginMutation.mutateAsync(credentials);
     },
-    [loginMutation]
+    [loginMutation],
   );
 
   // Register function
@@ -171,14 +170,14 @@ export function AuthProvider({ children }) {
     (data) => {
       return registerMutation.mutateAsync(data);
     },
-    [registerMutation]
+    [registerMutation],
   );
   // Verify invitation function
   const verifyInvitation = useCallback(
     (data) => {
       return verifyInvitationMutation.mutateAsync(data);
     },
-    [verifyInvitationMutation]
+    [verifyInvitationMutation],
   );
 
   // Register tenant function
@@ -186,7 +185,7 @@ export function AuthProvider({ children }) {
     (data) => {
       return registerTenantMutation.mutateAsync(data);
     },
-    [registerTenantMutation]
+    [registerTenantMutation],
   );
 
   // Logout function
@@ -213,7 +212,7 @@ export function AuthProvider({ children }) {
             JSON.stringify({
               ...userData,
               user: newUserData,
-            })
+            }),
           );
         }
 
@@ -229,7 +228,7 @@ export function AuthProvider({ children }) {
         return false;
       }
     },
-    [state.user]
+    [state.user],
   );
 
   // Context value
@@ -245,28 +244,28 @@ export function AuthProvider({ children }) {
 
     // Login
     login,
-    isLoggingIn: loginMutation.isLoading,
+    isLoggingIn: loginMutation.isPending,
     loginError: loginMutation.error,
 
     // Register
     register: registerMutation.mutateAsync,
-    isRegistering: registerMutation.isLoading,
+    isRegistering: registerMutation.isPending,
     registrationError: registerMutation.error,
 
     // Invitation verification
     verifyInvitation,
-    isVerifyingInvitation: verifyInvitationMutation.isLoading,
+    isVerifyingInvitation: verifyInvitationMutation.isPending,
     verificationError: verifyInvitationMutation.error,
     verificationData: verifyInvitationMutation.data?.data,
 
     // Tenant registration
     registerTenant,
-    isRegistering: registerTenantMutation.isLoading,
+    isRegistering: registerTenantMutation.isPending,
     registrationError: registerTenantMutation.error,
 
     // Logout
     logout,
-    isLoggingOut: logoutMutation.isLoading,
+    isLoggingOut: logoutMutation.isPending,
 
     // Profile
     updateUserProfile,
@@ -276,9 +275,9 @@ export function AuthProvider({ children }) {
       (data) => {
         return changePasswordMutation.mutateAsync(data);
       },
-      [changePasswordMutation]
+      [changePasswordMutation],
     ),
-    isChangingPassword: changePasswordMutation.isLoading,
+    isChangingPassword: changePasswordMutation.isPending,
     changePasswordError: changePasswordMutation.error,
   };
 

@@ -1,5 +1,7 @@
 // import "react-native-gesture-handler";
 import { AntDesign } from "@expo/vector-icons";
+import Entypo from "@expo/vector-icons/Entypo";
+
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { View } from "react-native";
@@ -54,13 +56,13 @@ const TabArr = [
   {
     route: "Notification",
     label: "Notification",
-    activeIcon: "bells",
+    activeIcon: "bell",
     component: Notifications,
   },
   {
     route: "Settings",
     label: "More",
-    activeIcon: "appstore1",
+    activeIcon: "setting",
     component: Settings,
   },
 ];

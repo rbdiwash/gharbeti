@@ -4,7 +4,7 @@ import { Entypo, FontAwesome5, Ionicons } from "@expo/vector-icons";
 import AutoScroll from "@homielab/react-native-auto-scroll";
 import { useNavigation } from "@react-navigation/native";
 import { styled } from "nativewind";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Animated,
   ScrollView,
@@ -42,7 +42,7 @@ const HomeScreen = () => {
     refreshAllData,
   } = useStateData();
   const { data: notificationsList = [] } = useNotification().getNotifications(
-    profile?._id
+    profile?._id,
   );
 
   const tenantData = profile?.tenantDetails || {};
@@ -65,14 +65,14 @@ const HomeScreen = () => {
 
   const AnimatedView = Animated.createAnimatedComponent(StyledView);
 
-  const calculateDueAmount = () => {
+  const dueAmount = useMemo(() => {
     const dueDate = new Date(tenantData?.startingDate);
     const today = new Date();
     const timeDiff = today.getTime() - dueDate.getTime();
     const daysDiff =
       timeDiff > 0 ? Math.ceil(timeDiff / (1000 * 60 * 60 * 24)) : 0;
     return daysDiff * tenantData?.totalRentPerMonth || 0;
-  };
+  }, [tenantData]);
 
   const calculateDueDate = () => {
     if (!tenantData?.startingDate) return "";
@@ -177,11 +177,13 @@ const HomeScreen = () => {
                 Due Amount
               </StyledText>
               <StyledText className="text-[#1a2c4e] text-2xl font-bold">
-                Rs {calculateDueAmount()}
+                Rs {dueAmount}
               </StyledText>
-              <StyledText className="text-red-500">
-                Due on {calculateDueDate()}
-              </StyledText>
+              {dueAmount > 0 && (
+                <StyledText className="text-red-500">
+                  Due on {calculateDueDate()}
+                </StyledText>
+              )}
             </StyledView>
 
             <PrimaryButton

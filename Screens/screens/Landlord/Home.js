@@ -201,10 +201,12 @@ const HomeScreen = () => {
               <StyledText className="text-[#1a2c4e] text-xl font-bold">
                 {isDueVisible ? `Rs ${dueAmount || 0}` : "Rs •••••"}
               </StyledText>
-              <StyledText className="text-[#e74c3c] text-xs">
-                Due on{" "}
-                {new Date(paymentsArray[0]?.nextDueDate).toLocaleDateString()}
-              </StyledText>
+              {dueAmount > 0 && (
+                <StyledText className="text-[#e74c3c] text-xs">
+                  Due on{" "}
+                  {new Date(paymentsArray[0]?.nextDueDate).toLocaleDateString()}
+                </StyledText>
+              )}
             </StyledView>
             <StyledView className="pl-4 flex-1">
               <StyledText className="text-[#8395a7] text-xs">
@@ -213,10 +215,12 @@ const HomeScreen = () => {
               <StyledText className="text-[#1a2c4e] text-xl font-bold">
                 {isDueVisible ? `Rs ${lastPayment || 0}` : "Rs •••••"}
               </StyledText>
-              <StyledText className="text-[#27ae60] text-xs">
-                Paid on{" "}
-                {new Date(paymentsArray[0]?.paymentDate).toLocaleDateString()}
-              </StyledText>
+              {lastPayment > 0 && (
+                <StyledText className="text-[#27ae60] text-xs">
+                  Paid on{" "}
+                  {new Date(paymentsArray[0]?.paymentDate).toLocaleDateString()}
+                </StyledText>
+              )}
             </StyledView>
           </StyledView>
         </StyledView>

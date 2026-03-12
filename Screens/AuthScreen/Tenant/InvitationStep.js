@@ -29,7 +29,9 @@ const InvitationStep = ({
   setIsInvitationOn,
   handleLogin,
   isLoading,
+  isLoggingIn,
 }) => {
+  console.log("isLoggingIn", isLoggingIn);
   const [isPasswordSecure, setIsPasswordSecure] = useState(true);
 
   const togglePasswordVisibility = () => {
@@ -123,8 +125,8 @@ const InvitationStep = ({
             </StyledView>
           ) : (
             <StyledView className="space-y-4 mb-6">
-              <StyledText className="text-white text-xl font-bold mb-2">
-                Login to Your Account
+              <StyledText className="text-white text-center text-xl font-bold mb-2">
+                Login
               </StyledText>
 
               <StyledView>
@@ -173,10 +175,15 @@ const InvitationStep = ({
                     />
                   </TouchableOpacity>
                 </StyledView>
+                <TouchableOpacity onPress={() => navigation.replace("forget")}>
+                  <StyledText className="text-[#fff] text-sm mt-2 text-right">
+                    Forgot Password?
+                  </StyledText>
+                </TouchableOpacity>
               </StyledView>
 
               <SecondaryButton
-                text="Login"
+                text={isLoggingIn ? "Logging in..." : "Login"}
                 onPress={handleLogin}
                 size="medium"
                 parentClass="mt-4"
@@ -186,7 +193,7 @@ const InvitationStep = ({
                 className="mt-4"
                 onPress={() => setIsInvitationOn(!isInvitationOn)}
               >
-                <StyledText className="text-[#3498db] text-center">
+                <StyledText className="text-white underline text-center">
                   Already invited? Enter Invitation code here
                 </StyledText>
               </StyledTouchableOpacity>
@@ -201,7 +208,7 @@ const InvitationStep = ({
             <StyledTouchableOpacity
               onPress={() => navigation.replace("signup")}
             >
-              <StyledText className="text-[#3498db] text-center">
+              <StyledText className="text-white underline text-center">
                 Register as Landlord
               </StyledText>
             </StyledTouchableOpacity>

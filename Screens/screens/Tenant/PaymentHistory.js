@@ -14,8 +14,8 @@ import {
 import { styled } from "nativewind";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import * as FileSystem from "expo-file-system";
-import * as Sharing from "expo-sharing";
+// import * as File from "expo-file-system";
+// import * as Sharing from "expo-sharing";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -123,59 +123,54 @@ const PaymentHistory = () => {
   };
 
   const downloadReceipt = async (payment) => {
-    try {
-      if (!FileSystem || !Sharing) {
-        Alert.alert(
-          "Feature Not Available",
-          "Receipt download is not available in this environment."
-        );
-        return;
-      }
-      // In a real app, you would generate a PDF receipt here
-      // For this example, we'll simulate downloading by creating a text file
-
-      const receiptContent = `
-        PAYMENT RECEIPT
-        ------------------------------
-        Transaction ID: ${payment.transactionId}
-        Date: ${payment.paidDate}
-        Amount: Rs ${payment.amount}
-        Payment Method: ${payment.paymentMethod}
-        Month: ${payment.month} ${year}
-        ------------------------------
-        Thank you for your payment!
-      `;
-
-      const fileUri =
-        FileSystem.documentDirectory + `receipt_${payment.transactionId}.txt`;
-
-      await FileSystem.writeAsStringAsync(fileUri, receiptContent);
-
-      if (Platform.OS === "android") {
-        const UTI = "public.text";
-        const shareResult = await Sharing.shareAsync(fileUri, {
-          mimeType: "text/plain",
-          dialogTitle: "Download Receipt",
-          UTI: UTI,
-        });
-
-        if (shareResult.action === Sharing.SharedAction.SHARED) {
-          Alert.alert("Success", "Receipt downloaded successfully");
-        }
-      } else {
-        // For iOS, we can use Share API
-        await Share.share({
-          title: "Payment Receipt",
-          message: receiptContent,
-        });
-      }
-    } catch (error) {
-      Alert.alert(
-        "Error",
-        "Failed to download receipt. Please try again later."
-      );
-      console.error("Error downloading receipt:", error);
-    }
+    // try {
+    //   if (!File || !Sharing) {
+    //     Alert.alert(
+    //       "Feature Not Available",
+    //       "Receipt download is not available in this environment."
+    //     );
+    //     return;
+    //   }
+    //   // In a real app, you would generate a PDF receipt here
+    //   // For this example, we'll simulate downloading by creating a text file
+    //   const receiptContent = `
+    //     PAYMENT RECEIPT
+    //     ------------------------------
+    //     Transaction ID: ${payment.transactionId}
+    //     Date: ${payment.paidDate}
+    //     Amount: Rs ${payment.amount}
+    //     Payment Method: ${payment.paymentMethod}
+    //     Month: ${payment.month} ${year}
+    //     ------------------------------
+    //     Thank you for your payment!
+    //   `;
+    //   const fileUri =
+    //     File.documentDirectory + `receipt_${payment.transactionId}.txt`;
+    //   await File.writeAsStringAsync(fileUri, receiptContent);
+    //   if (Platform.OS === "android") {
+    //     const UTI = "public.text";
+    //     const shareResult = await Sharing.shareAsync(fileUri, {
+    //       mimeType: "text/plain",
+    //       dialogTitle: "Download Receipt",
+    //       UTI: UTI,
+    //     });
+    //     if (shareResult.action === Sharing.SharedAction.SHARED) {
+    //       Alert.alert("Success", "Receipt downloaded successfully");
+    //     }
+    //   } else {
+    //     // For iOS, we can use Share API
+    //     await Share.share({
+    //       title: "Payment Receipt",
+    //       message: receiptContent,
+    //     });
+    //   }
+    // } catch (error) {
+    //   Alert.alert(
+    //     "Error",
+    //     "Failed to download receipt. Please try again later."
+    //   );
+    //   console.error("Error downloading receipt:", error);
+    // }
   };
 
   return (

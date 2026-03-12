@@ -9,6 +9,7 @@ export function usePayments(type, selectedId) {
       queryFn: () => paymentsApi.getPayments(id),
       select: (response) => response.data,
       staleTime: 5 * 60 * 1000, // 5 minutes
+      enabled: false,
     });
   };
 
@@ -19,6 +20,7 @@ export function usePayments(type, selectedId) {
       enabled: !!id, // Only run query if id is provided
       select: (response) => response.data,
       staleTime: 2 * 60 * 1000, // 2 minutes
+      enabled: false,
     });
   };
 

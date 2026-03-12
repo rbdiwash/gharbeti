@@ -16,13 +16,7 @@ import { useBiometric } from "../../../hooks/useBiometric";
 const StyledView = styled(View);
 
 const TenantLogin = ({}) => {
-  const {
-    login: loginUser,
-    isLoggingIn,
-    loginError,
-    setState,
-    state,
-  } = useAuth();
+  const { login: loginUser, isLoggingIn, setState } = useAuth();
   const { verifyInvitation, setPassword } = useTenants();
   const { mutate: verifyInvitationMutate, isPending: isVerifying } =
     verifyInvitation();
@@ -31,9 +25,9 @@ const TenantLogin = ({}) => {
   const navigation = useNavigation();
   const [data, setData] = useState({
     invitationCode: "274785",
-    email: "rbramesh@gmail.com",
-    password: "asd123@#",
-    confirmPassword: "asd123@#",
+    email: "landlord@gmail.com",
+    password: "Asd123@#",
+    confirmPassword: "Asd123@#",
   });
 
   const [rulesModalVisible, setRulesModalVisible] = useState(false);
@@ -114,7 +108,7 @@ const TenantLogin = ({}) => {
             position: "bottom",
           });
         },
-      }
+      },
     );
   };
 
@@ -199,7 +193,7 @@ const TenantLogin = ({}) => {
           console.log(error);
           alert("Failed to set password");
         },
-      }
+      },
     );
   };
 
@@ -226,6 +220,7 @@ const TenantLogin = ({}) => {
             setIsInvitationOn={setIsInvitationOn}
             handleLogin={handleLogin}
             isLoading={isVerifying}
+            isLoggingIn={isLoggingIn}
             isBiometricAvailable={isBiometricAvailable}
             biometricType={biometricType}
             onBiometricLogin={handleBiometricLogin}

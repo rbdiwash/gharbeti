@@ -16,7 +16,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.rbdiwash.Gharbeti",
-      "newArchEnabled": true
+      "newArchEnabled": false
     },
     "android": {
       "adaptiveIcon": {
@@ -24,7 +24,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.rbdiwash.Gharbeti",
-      "newArchEnabled": true
+      "newArchEnabled": false
     },
     "web": {
       "favicon": "./assets/favicon.png"

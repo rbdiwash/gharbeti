@@ -2,10 +2,11 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Base API URL - replace with your actual API URL
-// const BASE_URL = "http://192.168.1.102:8000/api/";
-const BASE_URL = "http://10.12.138.113:8000/api/";
+// const BASE_URL = "http://192.168.1.121:8000/api/";
+const BASE_URL = "https://gharbeti-backend-rzrs.onrender.com/api/";
 // const BASE_URL = "http://localhost:8000/api/";
 // Create an Axios instance with default config
+
 const apiClient = axios.create({
   baseURL: BASE_URL,
   headers: {
@@ -28,7 +29,7 @@ apiClient.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Response interceptor to handle common errors
@@ -53,7 +54,7 @@ apiClient.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export default apiClient;

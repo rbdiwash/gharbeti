@@ -20,6 +20,7 @@ const StyledTextInput = styled(TextInput);
 
 const ForgotPassword = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [input, setInput] = useState("");
 
   return (
     <>
@@ -29,13 +30,15 @@ const ForgotPassword = ({ navigation }) => {
             <Image source={logo} className="w-64 h-64" />
           </StyledView>
           <StyledText className="text-white text-base text-center mb-4">
-            Enter your Mobile number. We will send you a confirmation code.
+            Enter your Mobile number or Email. We will send you a verification
+            code.
           </StyledText>
           <StyledTextInput
-            placeholder="Phone Number"
+            placeholder="Phone Number or Email"
             className="w-full border border-gray-300 text-white p-3 rounded-lg mb-4"
             placeholderTextColor={"#fff"}
-            keyboardType="numeric"
+            value={input}
+            onChangeText={(text) => setInput(text)}
           />
           <StyledTouchableOpacity
             className="bg-[#F59A73] w-full py-2 rounded-lg mt-4"

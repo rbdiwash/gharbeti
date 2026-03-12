@@ -25,6 +25,7 @@ export const register = async (data) => {
 };
 
 export const login = async (credentials) => {
+  console.log("credentials", credentials);
   const response = await apiClient.post(AUTH_ENDPOINTS.LOGIN, credentials);
   // Store token and user data
   if (response.data) {

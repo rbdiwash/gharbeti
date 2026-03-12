@@ -21,7 +21,10 @@ const StyledTextInput = styled(TextInput);
 const LoginScreen = ({ navigation }) => {
   const { login: loginUser } = useAuth();
 
-  const [data, setData] = useState({ email: "", password: "" });
+  const [data, setData] = useState({
+    email: "landlord@gmail.com",
+    password: "Asd123@#",
+  });
   const [isPasswordSecure, setIsPasswordSecure] = useState(false);
 
   const handleInputChange = (text, name) => {
@@ -34,6 +37,7 @@ const LoginScreen = ({ navigation }) => {
   ``;
 
   const handleLogin = () => {
+    console.log("data", data);
     const success = loginUser("landlord", "admin");
     if (!success) {
       throw new Error("Failed to save login state");

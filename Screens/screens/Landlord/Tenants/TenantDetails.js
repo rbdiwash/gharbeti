@@ -140,75 +140,84 @@ const TenantDetailsScreen = () => {
 
       <StyledScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Profile Section */}
-        <StyledView className="px-4 pb-6 items-center">
-          {tenantData?.imageUrl ? (
-            <StyledImage
-              source={{ uri: tenantData.imageUrl }}
-              className="w-24 h-24 rounded-full border-4 border-white shadow-md"
-            />
-          ) : (
-            <StyledView className="w-24 h-24 rounded-full bg-[#27ae60] items-center justify-center border-4 border-white shadow-md">
-              <StyledText className="text-white text-2xl font-bold">
-                {tenantData?.name?.charAt(0)}
-              </StyledText>
-            </StyledView>
-          )}
-
-          <StyledText className="mt-3 text-[#1a2c4e] text-xl font-bold">
-            {tenantData?.name}
-          </StyledText>
-          <StyledText className="text-[#8395a7]">
-            {tenantData?.address}
-          </StyledText>
-
-          <StyledView className="flex-row mt-4">
-            <StyledView
-              className={`px-3 py-1 rounded-full ${
-                tenantData?.isActive ? "bg-[#e8f5e9]" : "bg-[#ffebee]"
-              }`}
-            >
-              <StyledText
-                className={
-                  tenantData?.isActive
-                    ? "text-[#27ae60] font-medium"
-                    : "text-[#e74c3c] font-medium"
-                }
-              >
-                {tenantData?.isActive ? "Active" : "Inactive"}
-              </StyledText>
-            </StyledView>
-            {!tenantData?.isAccepted && (
-              <StyledView className="flex-row items-center mt-1">
-                <StyledView className="bg-yellow-100 px-2 py-1 rounded-full">
-                  <StyledText className="text-yellow-600 text-xs font-medium">
-                    Pending Invitation
-                  </StyledText>
-                </StyledView>
+        <StyledView className="px-4 pb-2">
+          <StyledView className="flex-row items-center">
+            {tenantData?.imageUrl ? (
+              <StyledImage
+                source={{ uri: tenantData.imageUrl }}
+                className="w-14 h-14 rounded-full border-2 border-white shadow-md"
+              />
+            ) : (
+              <StyledView className="w-14 h-14 rounded-full bg-[#27ae60] items-center justify-center border-2 border-white shadow-md">
+                <StyledText className="text-white text-lg font-bold">
+                  {tenantData?.name?.charAt(0)}
+                </StyledText>
               </StyledView>
             )}
+
+            <StyledView className="flex-1 ml-3">
+              <StyledView className="flex-row items-center justify-between">
+                <StyledText
+                  className="text-[#1a2c4e] text-lg font-bold"
+                  numberOfLines={1}
+                >
+                  {tenantData?.name}
+                </StyledText>
+              </StyledView>
+
+              <StyledText className="text-[#8395a7] text-xs" numberOfLines={1}>
+                {tenantData?.address}
+              </StyledText>
+
+              <StyledView className="flex-row flex-wrap items-center mt-1">
+                <StyledView
+                  className={`px-2 py-0.5 rounded-full ${
+                    tenantData?.isActive ? "bg-[#e8f5e9]" : "bg-[#ffebee]"
+                  }`}
+                >
+                  <StyledText
+                    className={
+                      tenantData?.isActive
+                        ? "text-[#27ae60] text-xs font-medium"
+                        : "text-[#e74c3c] text-xs font-medium"
+                    }
+                  >
+                    {tenantData?.isActive ? "Active" : "Inactive"}
+                  </StyledText>
+                </StyledView>
+
+                {!tenantData?.isAccepted && (
+                  <StyledView className="bg-yellow-100 px-2 py-0.5 rounded-full ml-2">
+                    <StyledText className="text-yellow-700 text-xs font-medium">
+                      Pending Invitation
+                    </StyledText>
+                  </StyledView>
+                )}
+              </StyledView>
+            </StyledView>
           </StyledView>
 
           {/* Quick Actions */}
-          <StyledView className="flex-row mt-4 w-full justify-center">
+          <StyledView className="flex-row mt-3 justify-center">
             <StyledTouchableOpacity
-              className="bg-[#e8f5e9] p-3 rounded-full mr-4"
+              className="bg-[#e8f5e9] p-2 rounded-full mr-3"
               onPress={handleCall}
             >
-              <Ionicons name="call" size={22} color="#27ae60" />
+              <Ionicons name="call" size={20} color="#27ae60" />
             </StyledTouchableOpacity>
 
             <StyledTouchableOpacity
-              className="bg-[#e3f2fd] p-3 rounded-full mr-4"
+              className="bg-[#e3f2fd] p-2 rounded-full mr-3"
               onPress={handleEmail}
             >
-              <Ionicons name="mail" size={22} color="#3498db" />
+              <Ionicons name="mail" size={20} color="#3498db" />
             </StyledTouchableOpacity>
 
             <StyledTouchableOpacity
-              className="bg-[#e8f5e9] p-3 rounded-full"
+              className="bg-[#e8f5e9] p-2 rounded-full"
               onPress={() => navigation.navigate("Chat")}
             >
-              <Ionicons name="chatbubble" size={22} color="#27ae60" />
+              <Ionicons name="chatbubble" size={20} color="#27ae60" />
             </StyledTouchableOpacity>
           </StyledView>
         </StyledView>
@@ -474,52 +483,52 @@ const TenantDetailsScreen = () => {
                 </StyledText>
               </StyledView>
 
-              {activeMaintenanceRequests?.map((request) => (
-                <StyledTouchableOpacity
-                  key={request._id}
-                  className="bg-white p-4 rounded-xl shadow-sm mb-4"
-                  onPress={() => {
-                    navigation.navigate("Maintenance Request Details", {
-                      requestId: request._id,
-                    });
-                  }}
-                >
-                  <StyledView className="flex-row justify-between items-start mb-2">
-                    <StyledView className="flex-1">
-                      <StyledText className="text-[#1a2c4e] text-lg font-bold">
-                        {request.title}
+              {activeMaintenanceRequests?.length > 0 ? (
+                activeMaintenanceRequests?.map((request) => (
+                  <StyledTouchableOpacity
+                    key={request._id}
+                    className="bg-white p-4 rounded-xl shadow-sm mb-4"
+                    onPress={() => {
+                      navigation.navigate("Maintenance Request Details", {
+                        requestId: request._id,
+                      });
+                    }}
+                  >
+                    <StyledView className="flex-row justify-between items-start mb-2">
+                      <StyledView className="flex-1">
+                        <StyledText className="text-[#1a2c4e] text-lg font-bold">
+                          {request.title}
+                        </StyledText>
+                        <StyledText className="text-[#8395a7]">
+                          {request.description.slice(0, 50)}...
+                        </StyledText>
+                      </StyledView>
+                      <StyledView
+                        className={`${getStatusColor(
+                          request.status
+                        )} px-3 py-1 rounded-full ml-2`}
+                      >
+                        <StyledText className="text-white text-xs font-medium">
+                          {request.status}
+                        </StyledText>
+                      </StyledView>
+                    </StyledView>
+
+                    <StyledView className="flex-row justify-between items-center mt-2">
+                      <StyledText className="text-[#8395a7] text-sm">
+                        Reported: {new Date(request.createdAt).toLocaleString()}
                       </StyledText>
-                      <StyledText className="text-[#8395a7]">
-                        {request.description.slice(0, 50)}...
+                      <StyledText
+                        className={`font-medium ${getPriorityColor(
+                          request.priority
+                        )}`}
+                      >
+                        {request.priority} Priority
                       </StyledText>
                     </StyledView>
-                    <StyledView
-                      className={`${getStatusColor(
-                        request.status
-                      )} px-3 py-1 rounded-full ml-2`}
-                    >
-                      <StyledText className="text-white text-xs font-medium">
-                        {request.status}
-                      </StyledText>
-                    </StyledView>
-                  </StyledView>
-
-                  <StyledView className="flex-row justify-between items-center mt-2">
-                    <StyledText className="text-[#8395a7] text-sm">
-                      Reported: {new Date(request.createdAt).toLocaleString()}
-                    </StyledText>
-                    <StyledText
-                      className={`font-medium ${getPriorityColor(
-                        request.priority
-                      )}`}
-                    >
-                      {request.priority} Priority
-                    </StyledText>
-                  </StyledView>
-                </StyledTouchableOpacity>
-              ))}
-
-              {tenantData?.maintenanceRequests?.length === 0 && (
+                  </StyledTouchableOpacity>
+                ))
+              ) : (
                 <StyledView className="bg-white p-6 rounded-xl shadow-sm items-center justify-center">
                   <Ionicons
                     name="construct-outline"
@@ -556,60 +565,60 @@ const TenantDetailsScreen = () => {
                 </StyledTouchableOpacity>
               </StyledView>
 
-              {paymentHistory?.payments?.map((payment) => (
-                <StyledView
-                  key={payment._id}
-                  className="bg-white p-4 rounded-xl shadow-sm mb-4"
-                >
-                  <StyledView className="flex-row justify-between items-start mb-2">
-                    <StyledView>
-                      <StyledText className="text-[#1a2c4e] text-lg font-bold">
-                        Rs {payment.amount}
-                      </StyledText>
-                      <StyledText className="text-[#8395a7]">
-                        {new Date(payment?.paymentDate).toLocaleString()}
-                      </StyledText>
-                    </StyledView>
-                    <StyledView
-                      className={`px-3 py-1 rounded-full ${
-                        payment.status === "completed"
-                          ? "bg-[#e8f5e9]"
-                          : payment.status === "Late"
-                          ? "bg-[#fff8e1]"
-                          : "bg-[#ffebee]"
-                      }`}
-                    >
-                      <StyledText
-                        // className="text-[#27ae60] text-xs font-medium"
-                        className={
+              {paymentHistory?.payments?.length > 0 ? (
+                paymentHistory?.payments?.map((payment) => (
+                  <StyledView
+                    key={payment._id}
+                    className="bg-white p-4 rounded-xl shadow-sm mb-4"
+                  >
+                    <StyledView className="flex-row justify-between items-start mb-2">
+                      <StyledView>
+                        <StyledText className="text-[#1a2c4e] text-lg font-bold">
+                          Rs {payment.amount}
+                        </StyledText>
+                        <StyledText className="text-[#8395a7]">
+                          {new Date(payment?.paymentDate).toLocaleString()}
+                        </StyledText>
+                      </StyledView>
+                      <StyledView
+                        className={`px-3 py-1 rounded-full ${
                           payment.status === "completed"
-                            ? "text-[#27ae60]"
+                            ? "bg-[#e8f5e9]"
                             : payment.status === "Late"
-                            ? "text-[#f39c12]"
-                            : "text-[#e74c3c]"
-                        }
+                            ? "bg-[#fff8e1]"
+                            : "bg-[#ffebee]"
+                        }`}
                       >
-                        {payment.status}
+                        <StyledText
+                          // className="text-[#27ae60] text-xs font-medium"
+                          className={
+                            payment.status === "completed"
+                              ? "text-[#27ae60]"
+                              : payment.status === "Late"
+                              ? "text-[#f39c12]"
+                              : "text-[#e74c3c]"
+                          }
+                        >
+                          {payment.status}
+                        </StyledText>
+                      </StyledView>
+                    </StyledView>
+
+                    <StyledView className="flex-row justify-between items-center mt-2">
+                      <StyledText className="text-[#8395a7]">
+                        Payment Method
+                      </StyledText>
+                      <StyledText className="text-[#1a2c4e] font-medium">
+                        {
+                          paymentMethods.find(
+                            (method) => method.value === payment?.paymentMethod
+                          )?.label
+                        }
                       </StyledText>
                     </StyledView>
                   </StyledView>
-
-                  <StyledView className="flex-row justify-between items-center mt-2">
-                    <StyledText className="text-[#8395a7]">
-                      Payment Method
-                    </StyledText>
-                    <StyledText className="text-[#1a2c4e] font-medium">
-                      {
-                        paymentMethods.find(
-                          (method) => method.value === payment?.paymentMethod
-                        )?.label
-                      }
-                    </StyledText>
-                  </StyledView>
-                </StyledView>
-              ))}
-
-              {paymentHistory?.payments?.length === 0 && (
+                ))
+              ) : (
                 <StyledView className="bg-white p-6 rounded-xl shadow-sm items-center justify-center">
                   <FontAwesome5
                     name="money-bill-wave"
@@ -644,45 +653,45 @@ const TenantDetailsScreen = () => {
                 </StyledTouchableOpacity>
               </StyledView>
 
-              {tenantData?.documents?.map((document, index) => (
-                <StyledTouchableOpacity
-                  key={index}
-                  className="bg-white p-4 rounded-xl shadow-sm mb-4 flex-row items-center"
-                  onPress={() => alert("View document")}
-                >
-                  <StyledView className="bg-[#e3f2fd] p-3 rounded-lg mr-3">
-                    <Ionicons
-                      name="document-text-outline"
-                      size={24}
-                      color="#3498db"
-                    />
-                  </StyledView>
-
-                  <StyledView className="flex-1">
-                    <StyledText className="text-[#1a2c4e] font-bold">
-                      {document.type}
-                    </StyledText>
-                    <StyledText className="text-[#8395a7] text-sm">
-                      Tap to view document
-                    </StyledText>
-                  </StyledView>
-
-                  {document.verified && (
-                    <StyledView className="bg-[#e8f5e9] px-2 py-1 rounded-full flex-row items-center">
+              {tenantData?.documents?.length > 0 ? (
+                tenantData?.documents?.map((document, index) => (
+                  <StyledTouchableOpacity
+                    key={index}
+                    className="bg-white p-4 rounded-xl shadow-sm mb-4 flex-row items-center"
+                    onPress={() => alert("View document")}
+                  >
+                    <StyledView className="bg-[#e3f2fd] p-3 rounded-lg mr-3">
                       <Ionicons
-                        name="checkmark-circle"
-                        size={14}
-                        color="#27ae60"
+                        name="document-text-outline"
+                        size={24}
+                        color="#3498db"
                       />
-                      <StyledText className="text-[#27ae60] text-xs ml-1">
-                        Verified
+                    </StyledView>
+
+                    <StyledView className="flex-1">
+                      <StyledText className="text-[#1a2c4e] font-bold">
+                        {document.type}
+                      </StyledText>
+                      <StyledText className="text-[#8395a7] text-sm">
+                        Tap to view document
                       </StyledText>
                     </StyledView>
-                  )}
-                </StyledTouchableOpacity>
-              ))}
 
-              {tenantData?.documents?.length === 0 && (
+                    {document.verified && (
+                      <StyledView className="bg-[#e8f5e9] px-2 py-1 rounded-full flex-row items-center">
+                        <Ionicons
+                          name="checkmark-circle"
+                          size={14}
+                          color="#27ae60"
+                        />
+                        <StyledText className="text-[#27ae60] text-xs ml-1">
+                          Verified
+                        </StyledText>
+                      </StyledView>
+                    )}
+                  </StyledTouchableOpacity>
+                ))
+              ) : (
                 <StyledView className="bg-white p-6 rounded-xl shadow-sm items-center justify-center">
                   <Ionicons
                     name="document-text-outline"

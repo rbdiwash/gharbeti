@@ -242,7 +242,6 @@ const Dues = () => {
     };
     createNotification(payload, {
       onSuccess: (data) => {
-        console.log(data);
         Alert.alert("Success", "Notification sent successfully");
       },
       onError: (error) => {
