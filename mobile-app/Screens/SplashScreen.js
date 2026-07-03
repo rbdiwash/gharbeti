@@ -117,7 +117,7 @@ const SplashScreen = ({ navigation }) => {
           {currentSlideIndex === slides.length - 1 ? (
             <View>
               <TouchableOpacity
-                onPress={() => navigation.replace("tenantLogin")}
+                onPress={() => navigation.replace("login")}
                 className={"bg-white rounded px-4 py-2 text-center"}
               >
                 <Text className="text-center font-bold">GET STARTED</Text>

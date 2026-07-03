@@ -16,7 +16,7 @@ import LandlordProfile from "../Screens/screens/Landlord/LandlordProfile/Profile
 import EditProfile from "../Screens/screens/Landlord/LandlordProfile/EditProfile";
 import MaintenanceStack from "../Screens/screens/Landlord/Maintenance/MaintenanceStack";
 import Notifications from "../Screens/screens/Landlord/Notifications";
-import HomeScreen from "../Screens/screens/Landlord/OldHome";
+
 import RecordPaymentScreen from "../Screens/screens/Landlord/RecordPaymentScreen";
 import Reports from "../Screens/screens/Landlord/Reports";
 import Settings from "../Screens/screens/Landlord/Settings";
@@ -135,11 +135,7 @@ const LoggedInLandlordStack = () => {
           component={MainTabs}
           options={{ headerShown: false }}
         />
-        <Stack.Screen
-          name="OldHome"
-          component={HomeScreen}
-          options={{ headerShown: false }}
-        />
+
         <Stack.Screen
           name="Notifications"
           component={Notifications}

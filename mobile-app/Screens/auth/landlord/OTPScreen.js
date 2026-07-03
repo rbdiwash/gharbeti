@@ -10,7 +10,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { OtpInput } from "react-native-otp-entry";
 import Toast from "react-native-toast-message";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../../context/AuthContext";
 
 const RESEND_SECONDS = 60;
 

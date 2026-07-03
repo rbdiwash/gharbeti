@@ -88,6 +88,7 @@ export function AuthProvider({ children }) {
     },
     onError: (error) => {
       // Don't show toast for 403 unverified email — LoginScreen handles navigation
+      console.log(error);
       if (error?.response?.data?.isEmailVerified === false) {
         setOtpVisible(true);
       } else {

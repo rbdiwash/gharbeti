@@ -21,6 +21,7 @@ import khalti from "../../../assets/khalti.png";
 import connectIPS from "../../../assets/connectIPS.png";
 import fonePay from "../../../assets/fonepay.png";
 import { useStateData } from "../../../hooks/useStateData";
+import { useAuth } from "../../../context/AuthContext";
 import { getInitials } from "../../helper/const";
 import { useMaintenance } from "../../../hooks/useMaintenance";
 import { usePayments } from "../../../hooks/usePayments";
@@ -39,6 +40,9 @@ const HomeScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
   const { profile, initializeData } = useStateData();
+  const { role } = useAuth();
+  const userRole = role || profile?.role;
+  const isLandlord = userRole === "landlord";
   const { data: maintenanceRequests = [] } =
     useMaintenance().getMaintenanceRequests({
       landlordId: profile?._id,
@@ -86,7 +90,7 @@ const HomeScreen = () => {
   // Handle refresh
   const onRefresh = () => {
     setRefreshing(true);
-    navigation.navigate("OldHome");
+    navigation.navigate("Home");
     // Simulate data fetching
     setTimeout(() => {
       setRefreshing(false);
@@ -141,9 +145,24 @@ const HomeScreen = () => {
               </StyledView>
             </TouchableOpacity>
             <StyledView>
-              <StyledText className="text-[#8395a7] text-xs">
-                Welcome back
-              </StyledText>
+              <StyledView className="flex-row items-center gap-2 mb-0.5">
+                <StyledText className="text-[#8395a7] text-xs">
+                  Welcome back
+                </StyledText>
+                <StyledView
+                  className={`px-2 py-0.5 rounded-full ${
+                    isLandlord ? "bg-[#eaf7f0]" : "bg-[#fff4ec]"
+                  }`}
+                >
+                  <StyledText
+                    className={`text-[10px] font-semibold uppercase tracking-wide ${
+                      isLandlord ? "text-primary" : "text-secondary"
+                    }`}
+                  >
+                    {isLandlord ? "Landlord" : "Tenant"}
+                  </StyledText>
+                </StyledView>
+              </StyledView>
               <StyledText className="text-white text-lg font-bold">
                 {profile?.name}
               </StyledText>

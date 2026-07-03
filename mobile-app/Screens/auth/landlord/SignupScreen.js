@@ -11,7 +11,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../../context/AuthContext";
 import Toast from "react-native-toast-message";
 
 export default function SignupScreen({ navigation }) {
@@ -235,7 +235,7 @@ export default function SignupScreen({ navigation }) {
 
           <View style={styles.loginRow}>
             <Text style={styles.loginText}>Already have an account?</Text>
-            <TouchableOpacity onPress={() => navigation.replace("tenantLogin")}>
+            <TouchableOpacity onPress={() => navigation.replace("login")}>
               <Text style={styles.loginLink}>Sign In</Text>
             </TouchableOpacity>
           </View>

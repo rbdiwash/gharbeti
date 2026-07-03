@@ -24,16 +24,14 @@ const StyledTextInput = styled(TextInput);
 const LeaseDetails = () => {
   const navigation = useNavigation();
   const { state } = useAuth();
-  const landlordId = state?.userData?._id || {};
+  const landlordId = state?.userData?._id;
   const { getLeaseAggreements } = useLeaseAggreements();
   const { data: leaseAgreements } = getLeaseAggreements(landlordId);
   const { mutate: createLeaseAgreement, isLoading: isCreating } =
     useLeaseAggreements().createLeaseAgreement();
   const [newTerm, setNewTerm] = useState("");
   const [leaseTerms, setLeaseTerms] = useState([]);
-
-  console.log(leaseAgreements);
-
+  console.log(leaseAgreements, "leaseAgreements");
   useEffect(() => {
     if (leaseAgreements) {
       setLeaseTerms(leaseAgreements?.agreementPoints || []);
@@ -165,7 +163,7 @@ const LeaseDetails = () => {
         .join("\n\n");
 
       const shareMessage = `Lease Agreement Terms\n\n${leaseTermsText}\n\nCreated: ${formatDateTime(
-        leaseAgreements?.createdAt
+        leaseAgreements?.createdAt,
       )}\nLast Updated: ${formatDateTime(leaseAgreements?.updatedAt)}`;
 
       const result = await Share.share({
@@ -224,14 +222,16 @@ const LeaseDetails = () => {
               Lease Terms
             </StyledText>
           </StyledView>
-          <StyledView className="flex-col justify-between mb-4">
-            <StyledText className="text-[#8395a7] text-xs">
-              Created: {formatDateTime(leaseAgreements?.createdAt)}
-            </StyledText>
-            <StyledText className="text-[#8395a7] text-xs">
-              Updated: {formatDateTime(leaseAgreements?.updatedAt)}
-            </StyledText>
-          </StyledView>
+          {leaseAgreements && (
+            <StyledView className="flex-col justify-between mb-4">
+              <StyledText className="text-[#8395a7] text-xs">
+                Created: {formatDateTime(leaseAgreements?.createdAt)}
+              </StyledText>
+              <StyledText className="text-[#8395a7] text-xs">
+                Updated: {formatDateTime(leaseAgreements?.updatedAt)}
+              </StyledText>
+            </StyledView>
+          )}
 
           {leaseTerms?.map((term, index) => (
             <StyledView

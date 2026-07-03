@@ -6,12 +6,10 @@ export function useLeaseAggreements() {
 
   const getLeaseAggreements = (id) => {
     return useQuery({
-      queryKey: ["leaseAggreements"],
+      queryKey: ["leaseAgreements", id],
       queryFn: () => leaseApi.getLeaseAggreements(id),
-      select: (response) => {
-        return response.data?.agreements;
-      },
-      // staleTime: 1 * 60 * 1000, // 5 minutes
+      enabled: !!id,
+      select: (response) => response?.data?.agreements ?? [],
     });
   };
 
@@ -19,8 +17,7 @@ export function useLeaseAggreements() {
     return useMutation({
       mutationFn: (data) => leaseApi.createLeaseAgreement(data),
       onSuccess: () => {
-        // Invalidate maintenance requests query to refetch
-        queryClient.invalidateQueries({ queryKey: ["maintenanceRequests"] });
+        queryClient.invalidateQueries({ queryKey: ["leaseAgreements"] });
       },
     });
   };
@@ -29,11 +26,10 @@ export function useLeaseAggreements() {
     return useMutation({
       mutationFn: ({ id, data }) => leaseApi.updateLeaseAgreement(id, data),
       onSuccess: (_, variables) => {
-        // Invalidate specific maintenance request query
+        queryClient.invalidateQueries({ queryKey: ["leaseAgreements"] });
         queryClient.invalidateQueries({
-          queryKey: ["maintenanceRequest", variables.id],
+          queryKey: ["leaseAgreements", variables.id],
         });
-        queryClient.invalidateQueries({ queryKey: ["maintenanceRequests"] });
       },
     });
   };

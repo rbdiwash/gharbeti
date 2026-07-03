@@ -3,6 +3,7 @@ import { useNavigation } from "@react-navigation/native";
 import { styled } from "nativewind";
 import React, { useMemo, useState } from "react";
 import {
+  Alert,
   FlatList,
   Image,
   StatusBar,
@@ -14,8 +15,10 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // Import mock data
+import { useAuth } from "../../../../context/AuthContext";
 import { useStateData } from "../../../../hooks/useStateData";
 import { useTenants } from "../../../../hooks/useTenants";
+import { useLeaseAggreements } from "../../../../hooks/useLeaseAggreements";
 import { getInitials } from "../../../helper/const";
 
 const StyledView = styled(View);
@@ -29,7 +32,9 @@ const TenantListScreen = () => {
   const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const { state } = useAuth();
   const { profile } = useStateData();
+  const landlordId = profile?._id ?? state?.userData?._id;
 
   const {
     data: tenants = [],
@@ -37,7 +42,18 @@ const TenantListScreen = () => {
     isError,
     error,
     refetch,
-  } = useTenants().getTenantByLandlordId(profile?._id);
+  } = useTenants().getTenantByLandlordId(landlordId);
+
+  const {
+    data: leaseAgreement,
+    isLoading: isLoadingLease,
+    refetch: refetchLease,
+  } = useLeaseAggreements().getLeaseAggreements(landlordId);
+
+  const hasLeaseAgreement =
+    (Array.isArray(leaseAgreement) && leaseAgreement.length > 0) ||
+    (Array.isArray(leaseAgreement?.agreementPoints) &&
+      leaseAgreement.agreementPoints.length > 0);
 
   const filteredTenants = useMemo(() => {
     if (!searchQuery.trim()) return tenants;
@@ -56,19 +72,64 @@ const TenantListScreen = () => {
     });
   }, [tenants, searchQuery]);
 
-  // Function to handle adding a new tenant
   const addTenant = () => {
+    if (isLoadingLease) return;
+
+    if (!hasLeaseAgreement) {
+      Alert.alert(
+        "Lease Agreement Required",
+        "Please add a lease agreement before inviting a tenant. Tenants must review and accept your house rules during onboarding.",
+        [
+          { text: "Cancel", style: "cancel" },
+          {
+            text: "Add Lease Agreement",
+            onPress: () => navigation.navigate("LeaseDetails"),
+          },
+        ],
+      );
+      return;
+    }
+
     navigation.navigate("Add Tenants");
   };
 
   // Function to handle refreshing the list
   const handleRefresh = () => {
     setRefreshing(true);
-    // Simulate data fetching
     refetch();
+    refetchLease();
     setTimeout(() => {
       setRefreshing(false);
     }, 1500);
+  };
+
+  const renderLeaseWarning = () => {
+    if (isLoadingLease || hasLeaseAgreement) return null;
+
+    return (
+      <StyledView className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4">
+        <StyledView className="flex-row items-start">
+          <Ionicons name="warning" size={22} color="#d97706" />
+          <StyledView className="flex-1 ml-3">
+            <StyledText className="text-amber-900 font-bold text-base mb-1">
+              Lease Agreement Required
+            </StyledText>
+            <StyledText className="text-amber-800 text-sm leading-5">
+              Please add a lease agreement before inviting a tenant. Tenants
+              must review and accept your house rules during onboarding.
+            </StyledText>
+            <StyledTouchableOpacity
+              className="mt-3 self-start bg-amber-500 px-4 py-2 rounded-lg"
+              onPress={() => navigation.navigate("LeaseDetails")}
+            >
+              <StyledText className="text-white font-semibold text-sm">
+                Add Lease Agreement
+              </StyledText>
+            </StyledTouchableOpacity>
+          </StyledView>
+        </StyledView>
+      </StyledView>
+    );
   };
 
   // Render each tenant item
@@ -219,6 +280,7 @@ const TenantListScreen = () => {
         contentContainerStyle={{ padding: 16, paddingBottom: 110 }}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={renderEmptyList}
+        ListFooterComponent={renderLeaseWarning}
         onRefresh={handleRefresh}
         refreshing={refreshing}
       />

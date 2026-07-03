@@ -9,7 +9,7 @@ import {
   Modal,
 } from "react-native";
 import { styled } from "nativewind";
-import logo from "../../assets/icon.png";
+import logo from "../../../assets/icon.png";
 import { OtpInput } from "react-native-otp-entry";
 import { AntDesign } from "@expo/vector-icons";
 

@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import logo from "../../assets/icon.png";
+import logo from "../../../assets/icon.png";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
