@@ -11,9 +11,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.rbdiwash.Gharbeti",
@@ -25,7 +23,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.rbdiwash.Gharbeti",
-      "newArchEnabled": false,
+      "newArchEnabled": true,
       "softwareKeyboardLayoutMode": "pan"
     },
     "web": {
@@ -36,9 +34,6 @@
         "projectId": "69c82c0e-2ff4-44ee-a3ed-27773d93af32"
       }
     },
-    "plugins": [
-      "expo-font",
-      "expo-build-properties"
-    ]
+    "plugins": ["expo-font", "expo-build-properties"]
   }
 }
