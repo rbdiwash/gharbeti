@@ -2,8 +2,8 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Base API URL - replace with your actual API URL
-const BASE_URL = "http://192.168.1.109:8000/api/";
-// const BASE_URL = "https://gharbeti-backend-rzrs.onrender.com/api/";
+// const BASE_URL = "http://192.168.1.109:8000/api/";
+const BASE_URL = "https://gharbeti-backend-rzrs.onrender.com/api/";
 // const BASE_URL = "http://localhost:8000/api/";
 // Create an Axios instance with default config
 
